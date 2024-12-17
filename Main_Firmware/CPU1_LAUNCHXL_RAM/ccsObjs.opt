@@ -1,6 +1,0 @@
-"./main.obj"
-"./device/device.obj"
-"./device/f28004x_codestartbranch.obj"
-"../28004x_generic_ram_lnk.cmd"
-"C:/ti/c2000WARE/C2000Ware_4_01_00_00/driverlib/f28004x/driverlib/ccs/Debug/driverlib.lib"
--llibc.a

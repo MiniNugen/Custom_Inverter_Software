@@ -1,0 +1,22 @@
+{
+  "folders": [
+    {
+      "path": "file:///d%3A/Github/Custom_Inverter_Software"
+    }
+  ],
+  "settings": {},
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "lab_lp_f28004x",
+        "type": "ccs-debug",
+        "request": "launch",
+        "projectInfo": {
+          "name": "lab_lp_f28004x",
+          "resourceId": "/lab_lp_f28004x"
+        }
+      }
+    ]
+  }
+}
