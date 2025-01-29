@@ -1,0 +1,17 @@
+[
+   {
+      "directory" : "D:/Github/Custom_Inverter_Software/adc_ex1_soc_software/CPU1_RAM",
+      "command"   : "clang++ -I\"D:/Github/Custom_Inverter_Software/adc_ex1_soc_software\" -I\"C:/ti/c2000ware/C2000Ware_5_04_00_00\" -I\"D:/Github/Custom_Inverter_Software/adc_ex1_soc_software/device\" -I\"C:/ti/c2000ware/C2000Ware_5_04_00_00/driverlib/f28004x/driverlib/\" -I\"C:/ti/ccs2000/ccs/tools/compiler/ti-cgt-c2000_22.6.1A23259/include\" -DDEBUG -I\"D:/Github/Custom_Inverter_Software/adc_ex1_soc_software/CPU1_RAM/syscfg\"",
+      "file"      : "D:/Github/Custom_Inverter_Software/adc_ex1_soc_software/adc_ex1_soc_software.c"
+   },
+   {
+      "directory" : "D:/Github/Custom_Inverter_Software/adc_ex1_soc_software/CPU1_RAM",
+      "command"   : "clang++ -I\"D:/Github/Custom_Inverter_Software/adc_ex1_soc_software\" -I\"C:/ti/c2000ware/C2000Ware_5_04_00_00\" -I\"D:/Github/Custom_Inverter_Software/adc_ex1_soc_software/device\" -I\"C:/ti/c2000ware/C2000Ware_5_04_00_00/driverlib/f28004x/driverlib/\" -I\"C:/ti/ccs2000/ccs/tools/compiler/ti-cgt-c2000_22.6.1A23259/include\" -DDEBUG -I\"D:/Github/Custom_Inverter_Software/adc_ex1_soc_software/CPU1_RAM/syscfg\"",
+      "file"      : "D:/Github/Custom_Inverter_Software/adc_ex1_soc_software/device/device.c"
+   },
+   {
+      "directory" : "D:/Github/Custom_Inverter_Software/adc_ex1_soc_software/CPU1_RAM",
+      "command"   : "clang++ -I\"D:/Github/Custom_Inverter_Software/adc_ex1_soc_software\" -I\"C:/ti/c2000ware/C2000Ware_5_04_00_00\" -I\"D:/Github/Custom_Inverter_Software/adc_ex1_soc_software/device\" -I\"C:/ti/c2000ware/C2000Ware_5_04_00_00/driverlib/f28004x/driverlib/\" -I\"C:/ti/ccs2000/ccs/tools/compiler/ti-cgt-c2000_22.6.1A23259/include\" -DDEBUG -I\"D:/Github/Custom_Inverter_Software/adc_ex1_soc_software/CPU1_RAM/syscfg\"",
+      "file"      : "D:/Github/Custom_Inverter_Software/adc_ex1_soc_software/device/f28004x_codestartbranch.asm"
+   }
+]
