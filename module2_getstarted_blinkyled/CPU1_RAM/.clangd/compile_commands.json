@@ -1,0 +1,17 @@
+[
+   {
+      "directory" : "C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/module2_getstarted_blinkyled/CPU1_RAM",
+      "command"   : "clang++ -I\"C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/module2_getstarted_blinkyled\" -I\"C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/module2_getstarted_blinkyled/device\" -I\"C:/ti/c2000WARE/C2000Ware_4_01_00_00/driverlib/f28004x/driverlib\" -I\"C:/ti/ccs2000/ccs/tools/compiler/ti-cgt-c2000_22.6.1A23259/include\" -DDEBUG -DCPU1 -I\"C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/module2_getstarted_blinkyled/CPU1_RAM/syscfg\"",
+      "file"      : "C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/module2_getstarted_blinkyled/device/device.c"
+   },
+   {
+      "directory" : "C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/module2_getstarted_blinkyled/CPU1_RAM",
+      "command"   : "clang++ -I\"C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/module2_getstarted_blinkyled\" -I\"C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/module2_getstarted_blinkyled/device\" -I\"C:/ti/c2000WARE/C2000Ware_4_01_00_00/driverlib/f28004x/driverlib\" -I\"C:/ti/ccs2000/ccs/tools/compiler/ti-cgt-c2000_22.6.1A23259/include\" -DDEBUG -DCPU1 -I\"C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/module2_getstarted_blinkyled/CPU1_RAM/syscfg\"",
+      "file"      : "C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/module2_getstarted_blinkyled/device/f28004x_codestartbranch.asm"
+   },
+   {
+      "directory" : "C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/module2_getstarted_blinkyled/CPU1_RAM",
+      "command"   : "clang++ -I\"C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/module2_getstarted_blinkyled\" -I\"C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/module2_getstarted_blinkyled/device\" -I\"C:/ti/c2000WARE/C2000Ware_4_01_00_00/driverlib/f28004x/driverlib\" -I\"C:/ti/ccs2000/ccs/tools/compiler/ti-cgt-c2000_22.6.1A23259/include\" -DDEBUG -DCPU1 -I\"C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/module2_getstarted_blinkyled/CPU1_RAM/syscfg\"",
+      "file"      : "C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/module2_getstarted_blinkyled/module2_main.c"
+   }
+]

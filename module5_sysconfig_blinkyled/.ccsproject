@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?ccsproject version="1.0"?>
+<projectOptions>
+	<ccsVariant value="50:Theia-based"/>
+	<ccsVersion value="70.0.0"/>
+	<deviceFamily value="C2000"/>
+	<executableActions value=""/>
+	<createSlaveProjects value=""/>
+	<templateProperties value="id=module5_sysconfig_blinkyled.projectspec.module5_sysconfig_blinkyled"/>
+	<origin value="C:\ti\c2000WARE\C2000Ware_4_01_00_00\training\device\f28004x\module5_sysconfig_blinkyled\module5_sysconfig_blinkyled.projectspec"/>
+	<filesToOpen value=""/>
+</projectOptions>
