@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 1.7
+ * Model version                  : 1.9
  * Simulink Coder version         : 24.1 (R2024a) 19-Nov-2023
- * C/C++ source code generated on : Sat Feb  1 13:54:01 2025
+ * C/C++ source code generated on : Mon Feb 17 14:55:34 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -119,7 +119,7 @@ struct P_Main_Firmware_T_ {
   real_T SineWave_Bias;                /* Expression: 0.5
                                         * Referenced by: '<Root>/Sine Wave'
                                         */
-  real_T SineWave_Freq;                /* Expression: 0.25*2*pi
+  real_T SineWave_Freq;                /* Expression: 2*2*pi
                                         * Referenced by: '<Root>/Sine Wave'
                                         */
   real_T SineWave_Phase;               /* Expression: 0
