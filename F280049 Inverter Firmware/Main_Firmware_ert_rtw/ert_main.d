@@ -8,18 +8,24 @@ ert_main.obj: C:/PROGRA~1/MATLAB/R2024a/simulink/include/rtw_continuous.h
 ert_main.obj: C:/PROGRA~1/MATLAB/R2024a/simulink/include/rtw_solver.h
 ert_main.obj: C:/PROGRA~1/MATLAB/R2024a/toolbox/coder/xcp/src/target/ext_mode/include/ext_mode.h
 ert_main.obj: C:/Users/minhp/ONEDRI~1/DOCUME~1/GitHub/CUSTOM~1/F28004~1/Main_Firmware_ert_rtw/ext_mode_types.h
-ert_main.obj: C:/PROGRA~1/MATLAB/R2024a/toolbox/c2b/tic2000_shared/src/c2000BoardSupport.h
-ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/stdbool.h
+ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/stddef.h
 ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/_ti_config.h
 ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/linkage.h
+ert_main.obj: C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\Main_Firmware_types.h
+ert_main.obj: C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\rt_nonfinite.h
+ert_main.obj: C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\rtGetInf.h
+ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/string.h
+ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/sys/cdefs.h
+ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/xlocale/_string.h
+ert_main.obj: C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\MW_target_hardware_resources.h
+ert_main.obj: C:/PROGRA~1/MATLAB/R2024a/toolbox/c2b/tic2000_shared/src/c2000BoardSupport.h
+ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/stdbool.h
 ert_main.obj: C:/PROGRA~1/MATLAB/R2024a/toolbox/c2b/tic2000/inc/MW_f28004x_includes.h
 ert_main.obj: C:/ti/C2000W~1/C2000W~1/DEVICE~1/f28004x/headers/include/f28004x_device.h
 ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/assert.h
 ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/stdarg.h
 ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/sys/_types.h
-ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/sys/cdefs.h
 ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/machine/_types.h
-ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/stddef.h
 ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/stdint.h
 ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/_stdint40.h
 ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/sys/stdint.h
@@ -83,14 +89,7 @@ ert_main.obj: C:\ti\C2000W~1\C2000W~1\DRIVER~1\f28004x\DRIVER~1\inc/hw_dma.h
 ert_main.obj: C:/ti/C2000W~1/C2000W~1/DRIVER~1/f28004x/DRIVER~1/clb.h
 ert_main.obj: C:\ti\C2000W~1\C2000W~1\DRIVER~1\f28004x\DRIVER~1\inc/hw_clb.h
 ert_main.obj: C:/Users/minhp/ONEDRI~1/DOCUME~1/GitHub/CUSTOM~1/F28004~1/Main_Firmware_ert_rtw/MW_target_hardware_resources.h
-ert_main.obj: C:/PROGRA~1/MATLAB/R2024a/toolbox/c2b/tic2000/inc/MW_f28004x_includes.h
 ert_main.obj: C:/PROGRA~1/MATLAB/R2024a/toolbox/c2b/tic2000_shared/src/c2000SchedulerTimer.h
-ert_main.obj: C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\Main_Firmware_types.h
-ert_main.obj: C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\rt_nonfinite.h
-ert_main.obj: C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\rtGetInf.h
-ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/string.h
-ert_main.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/xlocale/_string.h
-ert_main.obj: C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\MW_target_hardware_resources.h
 ert_main.obj: C:/PROGRA~1/MATLAB/R2024a/toolbox/coder/xcp/src/target/server/include/xcp.h
 ert_main.obj: C:/PROGRA~1/MATLAB/R2024a/toolbox/coder/xcp/src/target/server/common/xcp_common.h
 ert_main.obj: C:/PROGRA~1/MATLAB/R2024a/toolbox/coder/xcp/src/target/server/platform/include/xcp_platform.h
@@ -111,18 +110,24 @@ C:/PROGRA~1/MATLAB/R2024a/simulink/include/rtw_continuous.h:
 C:/PROGRA~1/MATLAB/R2024a/simulink/include/rtw_solver.h:
 C:/PROGRA~1/MATLAB/R2024a/toolbox/coder/xcp/src/target/ext_mode/include/ext_mode.h:
 C:/Users/minhp/ONEDRI~1/DOCUME~1/GitHub/CUSTOM~1/F28004~1/Main_Firmware_ert_rtw/ext_mode_types.h:
-C:/PROGRA~1/MATLAB/R2024a/toolbox/c2b/tic2000_shared/src/c2000BoardSupport.h:
-C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/stdbool.h:
+C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/stddef.h:
 C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/_ti_config.h:
 C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/linkage.h:
+C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\Main_Firmware_types.h:
+C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\rt_nonfinite.h:
+C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\rtGetInf.h:
+C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/string.h:
+C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/sys/cdefs.h:
+C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/xlocale/_string.h:
+C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\MW_target_hardware_resources.h:
+C:/PROGRA~1/MATLAB/R2024a/toolbox/c2b/tic2000_shared/src/c2000BoardSupport.h:
+C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/stdbool.h:
 C:/PROGRA~1/MATLAB/R2024a/toolbox/c2b/tic2000/inc/MW_f28004x_includes.h:
 C:/ti/C2000W~1/C2000W~1/DEVICE~1/f28004x/headers/include/f28004x_device.h:
 C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/assert.h:
 C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/stdarg.h:
 C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/sys/_types.h:
-C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/sys/cdefs.h:
 C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/machine/_types.h:
-C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/stddef.h:
 C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/stdint.h:
 C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/_stdint40.h:
 C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/sys/stdint.h:
@@ -186,14 +191,7 @@ C:\ti\C2000W~1\C2000W~1\DRIVER~1\f28004x\DRIVER~1\inc/hw_dma.h:
 C:/ti/C2000W~1/C2000W~1/DRIVER~1/f28004x/DRIVER~1/clb.h:
 C:\ti\C2000W~1\C2000W~1\DRIVER~1\f28004x\DRIVER~1\inc/hw_clb.h:
 C:/Users/minhp/ONEDRI~1/DOCUME~1/GitHub/CUSTOM~1/F28004~1/Main_Firmware_ert_rtw/MW_target_hardware_resources.h:
-C:/PROGRA~1/MATLAB/R2024a/toolbox/c2b/tic2000/inc/MW_f28004x_includes.h:
 C:/PROGRA~1/MATLAB/R2024a/toolbox/c2b/tic2000_shared/src/c2000SchedulerTimer.h:
-C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\Main_Firmware_types.h:
-C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\rt_nonfinite.h:
-C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\rtGetInf.h:
-C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/string.h:
-C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/xlocale/_string.h:
-C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\MW_target_hardware_resources.h:
 C:/PROGRA~1/MATLAB/R2024a/toolbox/coder/xcp/src/target/server/include/xcp.h:
 C:/PROGRA~1/MATLAB/R2024a/toolbox/coder/xcp/src/target/server/common/xcp_common.h:
 C:/PROGRA~1/MATLAB/R2024a/toolbox/coder/xcp/src/target/server/platform/include/xcp_platform.h:

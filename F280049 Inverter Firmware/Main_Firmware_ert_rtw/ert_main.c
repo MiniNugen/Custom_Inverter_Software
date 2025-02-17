@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 1.9
+ * Model version                  : 1.15
  * Simulink Coder version         : 24.1 (R2024a) 19-Nov-2023
- * C/C++ source code generated on : Mon Feb 17 14:55:34 2025
+ * C/C++ source code generated on : Mon Feb 17 15:56:47 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -46,7 +46,7 @@ volatile boolean_T stopRequested;
 volatile boolean_T runModel;
 int main(void)
 {
-  float modelBaseRate = 0.001;
+  float modelBaseRate = 1.0E-6;
   float systemClock = 100;
   extmodeErrorCode_T errorCode = EXTMODE_SUCCESS;
 
