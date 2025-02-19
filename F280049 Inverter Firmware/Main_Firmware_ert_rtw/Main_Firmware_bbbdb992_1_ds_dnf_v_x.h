@@ -2,6 +2,7 @@
  * This file is generated for the Simscape network associated with the solver block 'Main_Firmware/FOC test/Solver Configuration'.
  */
 /* Main_Firmware_bbbdb992_1_ds_dnf_v_x.h - header for method Main_Firmware_bbbdb992_1_ds_dnf_v_x */
+
 #ifdef __cplusplus
 
 extern "C"

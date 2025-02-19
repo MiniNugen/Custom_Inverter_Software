@@ -85,9 +85,9 @@ MW_c28xx_board.obj: C:/PROGRA~1/MATLAB/R2024a/simulink/include/rtw_continuous.h
 MW_c28xx_board.obj: C:/PROGRA~1/MATLAB/R2024a/simulink/include/rtw_solver.h
 MW_c28xx_board.obj: C:/PROGRA~1/MATLAB/R2024a/toolbox/coder/xcp/src/target/ext_mode/include/ext_mode.h
 MW_c28xx_board.obj: C:/Users/minhp/ONEDRI~1/DOCUME~1/GitHub/CUSTOM~1/F28004~1/Main_Firmware_ert_rtw/ext_mode_types.h
+MW_c28xx_board.obj: C:/ti/C2000W~1/C2000W~1/LIBRAR~1/math/IQmath/c28/include/IQmathLib.h
+MW_c28xx_board.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/limits.h
 MW_c28xx_board.obj: C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\Main_Firmware_types.h
-MW_c28xx_board.obj: C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\rt_nonfinite.h
-MW_c28xx_board.obj: C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\rtGetInf.h
 MW_c28xx_board.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/string.h
 MW_c28xx_board.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/xlocale/_string.h
 MW_c28xx_board.obj: C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\MW_target_hardware_resources.h
@@ -181,9 +181,9 @@ C:/PROGRA~1/MATLAB/R2024a/simulink/include/rtw_continuous.h:
 C:/PROGRA~1/MATLAB/R2024a/simulink/include/rtw_solver.h:
 C:/PROGRA~1/MATLAB/R2024a/toolbox/coder/xcp/src/target/ext_mode/include/ext_mode.h:
 C:/Users/minhp/ONEDRI~1/DOCUME~1/GitHub/CUSTOM~1/F28004~1/Main_Firmware_ert_rtw/ext_mode_types.h:
+C:/ti/C2000W~1/C2000W~1/LIBRAR~1/math/IQmath/c28/include/IQmathLib.h:
+C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/limits.h:
 C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\Main_Firmware_types.h:
-C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\rt_nonfinite.h:
-C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\rtGetInf.h:
 C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/string.h:
 C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/xlocale/_string.h:
 C:\Users\minhp\OneDrive\ -\ University\ of\ Windsor\Documents\GitHub\Custom_Inverter_Software\F280049\ Inverter\ Firmware\Main_Firmware_ert_rtw\MW_target_hardware_resources.h:

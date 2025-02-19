@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 1.15
+ * Model version                  : 1.21
  * Simulink Coder version         : 24.1 (R2024a) 19-Nov-2023
- * C/C++ source code generated on : Mon Feb 17 15:56:47 2025
+ * C/C++ source code generated on : Tue Feb 18 19:30:25 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -41,10 +41,6 @@
 #ifndef rtmSetTPtr
 #define rtmSetTPtr(rtm, val)           ((rtm)->Timing.t = (val))
 #endif
-
-/* private model entry point functions */
-extern void Main_Firmware_derivatives(void);
-
 #endif                                 /* Main_Firmware_private_h_ */
 
 /*

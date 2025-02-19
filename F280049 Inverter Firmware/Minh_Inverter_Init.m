@@ -22,6 +22,7 @@ f = 0.000303448; %viscous friction coefficient
 Current_max = 30; %max current draw [A]
 Voltage_max = 100   ; %max supply voltag [V]
 Torque_max = Current_max*3*lambda*ppair/2; %max torque current can generate [Nm]
+EPWM_F = 200000; %EPWM switching frequency (Hz)
 
 C_d = 0.219;
 A_f = 2.22;

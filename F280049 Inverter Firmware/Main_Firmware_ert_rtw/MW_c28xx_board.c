@@ -48,6 +48,20 @@ void init_board (void)
 #ifdef CPU1
 #endif                                 // #ifdef CPU1
 
+  /* initial ePWM GPIO assignment... */
+  config_ePWM_GPIO();
+  EALLOW;
+
+  /* Enable clock to ePWM */
+  CpuSysRegs.PCLKCR2.bit.EPWM1 = 1U;
+  CpuSysRegs.PCLKCR2.bit.EPWM4 = 1U;
+  CpuSysRegs.PCLKCR2.bit.EPWM2 = 1U;
+
+  /* Disable TBCLK within ePWM before module configuration */
+  CpuSysRegs.PCLKCR0.bit.TBCLKSYNC = 0U;
+  EDIS;
+  config_ePWMSyncSource();
+
   /* initial GPIO qualification settings.... */
   EALLOW;
   GpioCtrlRegs.GPAQSEL1.all = 0x0U;
