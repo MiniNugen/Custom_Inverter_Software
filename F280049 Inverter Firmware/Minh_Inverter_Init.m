@@ -1,7 +1,7 @@
  clc
 clear
 
-% Motor Parameters
+%% Motor Parameters
 r = 0.36;
 m = 1835;
 rho = 1.2;
@@ -18,9 +18,13 @@ J = m*r^2/k^2;% Drive inertia [kg*m^2]
 lambda = 0.1194; % Flux linkage
 f = 0.000303448; %viscous friction coefficient
 
-%inverter parameters
+%% inverter parameters
+bat_Voltage = 100; %max power supply voltage
 Current_max = 30; %max current draw [A]
-Voltage_max = 100   ; %max supply voltag [V]
+Voltage_max = Current_max*Rs; %max supply voltag [V]
+if (Voltage_max > bat_Voltage)
+    Voltage_max = bat_Voltage; %Max voltage cannot exceed power supply
+end
 Torque_max = Current_max*3*lambda*ppair/2; %max torque current can generate [Nm]
 EPWM_F = 200000; %EPWM switching frequency (Hz)
 
@@ -28,15 +32,11 @@ C_d = 0.219;
 A_f = 2.22;
 C_rr = 0.01;
 
-
-
-% % %%sisotools testing
-% s = tf('s');
-% G = 1/(s*Ls+Rs); %current plant tf
-% figure(1)
-% margin(G);
-% figure(2)
-% margin(G*Kp);
-% % G2 = 1/(s*J/ppair + f/ppair); %speed plant tf
+% pid controller tuning
+% to tune controller make linearized model in simulink using the
+% Input/Output tool
+Kp = ?;
+Ki = 5000;
+Kd = ?;
 
 disp('Motor parameters initialized!')
