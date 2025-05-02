@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 1.21
- * Simulink Coder version         : 24.1 (R2024a) 19-Nov-2023
- * C/C++ source code generated on : Tue Feb 18 19:30:25 2025
+ * Model version                  : 2.7
+ * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
+ * C/C++ source code generated on : Fri May  2 13:51:43 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -27,17 +27,25 @@ volatile int IsrOverrun = 0;
 static boolean_T OverrunFlag = 0;
 void rt_OneStep(void)
 {
+  extmodeSimulationTime_T currentTime = (extmodeSimulationTime_T) 0;
+
   /* Check for overrun. Protect OverrunFlag against preemption */
   if (OverrunFlag++) {
     IsrOverrun = 1;
+    executeOverrunService();
     OverrunFlag--;
     return;
   }
 
   enableTimer0Interrupt();
+  currentTime = (extmodeSimulationTime_T) (Main_Firmware_M->Timing.clockTick0+
+    Main_Firmware_M->Timing.clockTickH0* 4294967296.0);
   Main_Firmware_step();
 
   /* Get model outputs here */
+
+  /* Trigger External Mode event */
+  extmodeEvent(0, currentTime);
   disableTimer0Interrupt();
   OverrunFlag--;
 }
@@ -46,7 +54,7 @@ volatile boolean_T stopRequested;
 volatile boolean_T runModel;
 int main(void)
 {
-  float modelBaseRate = 0.0001;
+  float modelBaseRate = 5.0E-6;
   float systemClock = 100;
   extmodeErrorCode_T errorCode = EXTMODE_SUCCESS;
 
@@ -79,8 +87,8 @@ int main(void)
   globalInterruptEnable();
 
   /* External Mode initialization */
-  errorCode = extmodeInit(Main_Firmware_M->extModeInfo, &rtmGetTFinal
-    (Main_Firmware_M));
+  errorCode = extmodeInit(Main_Firmware_M->extModeInfo, (extmodeSimulationTime_T
+    *)rteiGetPtrTFinalTicks(Main_Firmware_M->extModeInfo));
   if (errorCode != EXTMODE_SUCCESS) {
     /* Code to handle External Mode initialization errors
        may be added here */
@@ -105,7 +113,7 @@ int main(void)
   while (runModel) {
     /* Run External Mode background activities */
     errorCode = extmodeBackgroundRun();
-    if (errorCode != EXTMODE_SUCCESS) {
+    if (errorCode != EXTMODE_SUCCESS && errorCode != EXTMODE_EMPTY) {
       /* Code to handle External Mode background task errors
          may be added here */
     }

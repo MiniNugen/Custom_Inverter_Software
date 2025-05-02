@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 1.21
- * Simulink Coder version         : 24.1 (R2024a) 19-Nov-2023
- * C/C++ source code generated on : Tue Feb 18 19:30:25 2025
+ * Model version                  : 2.7
+ * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
+ * C/C++ source code generated on : Fri May  2 13:51:43 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -21,26 +21,25 @@
 #define Main_Firmware_private_h_
 #include "rtwtypes.h"
 #include "multiword_types.h"
+#include "Main_Firmware.h"
 #include "Main_Firmware_types.h"
-#include "rtw_continuous.h"
-#include "rtw_solver.h"
 
 /* Private macros used by the generated code to access rtModel */
-#ifndef rtmIsMajorTimeStep
-#define rtmIsMajorTimeStep(rtm)        (((rtm)->Timing.simTimeStep) == MAJOR_TIME_STEP)
-#endif
-
-#ifndef rtmIsMinorTimeStep
-#define rtmIsMinorTimeStep(rtm)        (((rtm)->Timing.simTimeStep) == MINOR_TIME_STEP)
-#endif
-
 #ifndef rtmSetTFinal
 #define rtmSetTFinal(rtm, val)         ((rtm)->Timing.tFinal = (val))
 #endif
 
-#ifndef rtmSetTPtr
-#define rtmSetTPtr(rtm, val)           ((rtm)->Timing.t = (val))
-#endif
+extern void Main_Fir_Subsystempi2delay_Init(real_T *rty_dq, real_T *rty_dq_f,
+  P_Subsystempi2delay_Main_Firm_T *localP);
+extern void Main_Firmware_Subsystempi2delay(uint16_T rtu_Enable, const real_T
+  rtu_alpha_beta[2], real_T rtu_wt, real_T *rty_dq, real_T *rty_dq_f,
+  DW_Subsystempi2delay_Main_Fir_T *localDW);
+extern void Main_Firmware_Subsystem1_Init(real_T *rty_dq, real_T *rty_dq_e,
+  P_Subsystem1_Main_Firmware_T *localP);
+extern void Main_Firmware_Subsystem1(uint16_T rtu_Enable, const real_T
+  rtu_alpha_beta[2], real_T rtu_wt, real_T *rty_dq, real_T *rty_dq_e,
+  DW_Subsystem1_Main_Firmware_T *localDW);
+
 #endif                                 /* Main_Firmware_private_h_ */
 
 /*

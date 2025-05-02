@@ -1,12 +1,12 @@
-// Created on 18-Feb-2025 19:30:36
+// Created on 02-May-2025 13:52:00
 #ifndef RTIOSTREAM_SERIAL_C28X_H_
 #define RTIOSTREAM_SERIAL_C28X_H_
 
 #include "MW_target_hardware_resources.h"
 
-// Baud Rate = 114679
+// Baud Rate = 6250000
 #define MW_PIL_SCIHBAUD 0
-#define MW_PIL_SCILBAUD 108
+#define MW_PIL_SCILBAUD 1
 
 #define EXT_SCI_RX_PIN 28
 #define EXT_SCI_TX_PIN 29
