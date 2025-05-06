@@ -1,7 +1,7 @@
 ******************************************************************************
              TMS320C2000 Linker PC v22.6.0                     
 ******************************************************************************
->> Linked Fri May  2 13:52:26 2025
+>> Linked Mon May  5 13:40:58 2025
 
 OUTPUT FILE NAME:   <../Main_Firmware.out>
 ENTRY POINT SYMBOL: "_c_int00"  address: 00083eb6
@@ -16,7 +16,7 @@ PAGE 0:
   RAMLS_PROG            0000a000   00002000  000000bb  00001f45  RWIX
   RAMGS_PROG            00012000   00002000  00000000  00002000  RWIX
   BEGIN                 00080000   00000002  00000002  00000000  RWIX
-  FLASH_BANK0_SEC0      00080002   0000fffe  00004696  0000b968  RWIX
+  FLASH_BANK0_SEC0      00080002   0000fffe  00004691  0000b96d  RWIX
   FLASH_BANK1_SEC0      00090000   00010000  00000000  00010000  RWIX
   RESET                 003fffc0   00000002  00000000  00000002  RWIX
 
@@ -158,7 +158,7 @@ ramfuncs   0    00080004    0000006c     RUN ADDR = 0000a000
                   00080004    00000043     rtiostream_serial_c28x.obj (ramfuncs:retain)
                   00080047    00000029     datamodify_xcp.obj (ramfuncs)
 
-.cinit     0    00084440    0000023d     
+.cinit     0    00084440    00000238     
                   00084440    000000df     Main_Firmware_data.obj (.cinit)
                   0008451f    0000005b     xcp_ext_classic_trigger.obj (.cinit)
                   0008457a    00000053     xcp_ext_common.obj (.cinit)
@@ -174,15 +174,14 @@ ramfuncs   0    00080004    0000006c     RUN ADDR = 0000a000
                   00084652    00000008     xcp_transport.obj (.cinit)
                   0008465a    00000005     rts2800_fpu32.lib : _lock.c.obj (.cinit:__lock)
                   0008465f    00000005                       : _lock.c.obj (.cinit:__unlock)
-                  00084664    00000005     xcp_ext_common.obj (.cinit:_xcpCurrentSimulationTimeInTicks)
-                  00084669    00000005     rtiostream_serial_c28x.obj (.cinit)
-                  0008466e    00000005     xcp_calibration.obj (.cinit)
-                  00084673    00000004     MW_c28xGPIO.obj (.cinit)
-                  00084677    00000004     MW_c28xGlobalInterrupts.obj (.cinit)
-                  0008467b    00000002     --HOLE-- [fill = 0]
+                  00084664    00000005     rtiostream_serial_c28x.obj (.cinit)
+                  00084669    00000005     xcp_calibration.obj (.cinit)
+                  0008466e    00000004     MW_c28xGPIO.obj (.cinit)
+                  00084672    00000004     MW_c28xGlobalInterrupts.obj (.cinit)
+                  00084676    00000002     --HOLE-- [fill = 0]
 
-.switch    0    00084680    00000020     
-                  00084680    00000020     xcp.obj (.switch:_genericOutputPacketHandler)
+.switch    0    00084678    00000020     
+                  00084678    00000020     xcp.obj (.switch:_genericOutputPacketHandler)
 
 AdcaResultRegsFile 
 *          1    00000b00    00000018     UNINITIALIZED
@@ -781,7 +780,7 @@ MODULE SUMMARY
        xcp_standard.obj                    554     57                 8                 
        xcp_frame_serial.obj                530     20                 5                 
        xcp_ext_classic_trigger.obj         430     91                 28                
-       xcp_ext_common.obj                  403     88                 38                
+       xcp_ext_common.obj                  403     83                 38                
        f28004x_pievect.obj                 37      448                0                 
        f28004x_gpio.obj                    483     0                  0                 
        rtiostream_serial_c28x.obj          469     5                  2                 
@@ -810,7 +809,7 @@ MODULE SUMMARY
        sysctl.obj                          8       0                  0                 
        MW_c28xx_overrun.obj                1       0                  0                 
     +--+-----------------------------------+-------+------------------+--------------------+
-       Total:                              16828   1165               12980             
+       Total:                              16828   1160               12980             
                                                                                         
     C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/lib/rts2800_fpu32.lib
        boot28.asm.obj                      86      0                  0                 
@@ -828,7 +827,7 @@ MODULE SUMMARY
                                                                                         
        Stack:                              0       0                  1024              
     +--+-----------------------------------+-------+------------------+--------------------+
-       Grand Total:                        17068   1189               14014             
+       Grand Total:                        17068   1184               14014             
 
 
 GLOBAL DATA SYMBOLS: SORTED BY DATA PAGE

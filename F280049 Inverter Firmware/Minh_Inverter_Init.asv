@@ -14,7 +14,8 @@ Lq = Ld;            % [H] Quadrature-axis inductance (SPMSM assumption)
 lambda = 0.0375;    % [Wb] Permanent magnet flux linkage
 rpm_max = 5000;                             % [RPM] Max rate rotor RPM
 speed_max=rpm_max*2*pi/60;                  % [Rad/s] Max rated speed for the motor
-Encoder_Offset = 17.2*pi/180
+PhaseA_offset = -17.5;                      % [Deg] Offset angle between phase A and the encoder's 0 degree (theta-PhaseA)
+Encoder_Offset = (-47.5)*pi/180;            % Tra
 
 %% Car parameters
 m = 1;              % [kg] Vehicle mass
@@ -42,16 +43,7 @@ C_d = 0.7041;     % [-] Aerodynamic drag coefficient
 A_f = 1.24;       % [m^2] Frontal area
 C_rr = 0.02;      % [-] Rolling resistance coefficient
 
-% pid controller tuning
-% to tune controller make linearized model in simulink using the
-% Input/Output tool
-% Kp = ?;
-% Ki = 5000;
-% Kd = ?;
-
-%Possible gains???
-
-
+%% PI and PD Tuning (Test)
 Kpq=(Lq*2*pi*EPWM_F)/10;
 Kpd=(Ld*2*pi*EPWM_F)/10;
 Kiq=Kpd*(Rs/Lq);

@@ -14,7 +14,8 @@ Lq = Ld;            % [H] Quadrature-axis inductance (SPMSM assumption)
 lambda = 0.0375;    % [Wb] Permanent magnet flux linkage
 rpm_max = 5000;                             % [RPM] Max rate rotor RPM
 speed_max=rpm_max*2*pi/60;                  % [Rad/s] Max rated speed for the motor
-Encoder_Offset = -17.439*pi/180;             % [Rad] Offset angle between phase A and the encoder's 0 degree (theta-PhaseA)
+PhaseA_offset = -17.5;                      % [Deg] Offset angle between phase A and the encoder's 0 degree (theta-PhaseA)
+Encoder_Offset = 0;                    % [Rad] Translates PhaseA_offset to account for how we define the 
 
 %% Car parameters
 m = 1;              % [kg] Vehicle mass
