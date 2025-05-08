@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 2.8
+ * Model version                  : 2.12
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Mon May  5 13:40:06 2025
+ * C/C++ source code generated on : Wed May  7 18:27:31 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -27,6 +27,12 @@
 /* Block signals (default storage) */
 B_Main_Firmware_T Main_Firmware_B;
 
+/* Continuous states */
+X_Main_Firmware_T Main_Firmware_X;
+
+/* Disabled State Vector */
+XDis_Main_Firmware_T Main_Firmware_XDis;
+
 /* Block states (default storage) */
 DW_Main_Firmware_T Main_Firmware_DW;
 
@@ -35,851 +41,1205 @@ static RT_MODEL_Main_Firmware_T Main_Firmware_M_;
 RT_MODEL_Main_Firmware_T *const Main_Firmware_M = &Main_Firmware_M_;
 
 /*
+ * This function updates continuous states using the ODE3 fixed-step
+ * solver algorithm
+ */
+static void rt_ertODEUpdateContinuousStates(RTWSolverInfo *si )
+{
+  /* Solver Matrices */
+  static const real_T rt_ODE3_A[3] = {
+    1.0/2.0, 3.0/4.0, 1.0
+  };
+
+  static const real_T rt_ODE3_B[3][3] = {
+    { 1.0/2.0, 0.0, 0.0 },
+
+    { 0.0, 3.0/4.0, 0.0 },
+
+    { 2.0/9.0, 1.0/3.0, 4.0/9.0 }
+  };
+
+  time_T t = rtsiGetT(si);
+  time_T tnew = rtsiGetSolverStopTime(si);
+  time_T h = rtsiGetStepSize(si);
+  real_T *x = rtsiGetContStates(si);
+  ODE3_IntgData *id = (ODE3_IntgData *)rtsiGetSolverData(si);
+  real_T *y = id->y;
+  real_T *f0 = id->f[0];
+  real_T *f1 = id->f[1];
+  real_T *f2 = id->f[2];
+  real_T hB[3];
+  int_T i;
+  int_T nXc = 7;
+  rtsiSetSimTimeStep(si,MINOR_TIME_STEP);
+
+  /* Save the state values at time t in y, we'll use x as ynew. */
+  (void) memcpy(y, x,
+                (uint_T)nXc*sizeof(real_T));
+
+  /* Assumes that rtsiSetT and ModelOutputs are up-to-date */
+  /* f0 = f(t,y) */
+  rtsiSetdX(si, f0);
+  Main_Firmware_derivatives();
+
+  /* f(:,2) = feval(odefile, t + hA(1), y + f*hB(:,1), args(:)(*)); */
+  hB[0] = h * rt_ODE3_B[0][0];
+  for (i = 0; i < nXc; i++) {
+    x[i] = y[i] + (f0[i]*hB[0]);
+  }
+
+  rtsiSetT(si, t + h*rt_ODE3_A[0]);
+  rtsiSetdX(si, f1);
+  Main_Firmware_step();
+  Main_Firmware_derivatives();
+
+  /* f(:,3) = feval(odefile, t + hA(2), y + f*hB(:,2), args(:)(*)); */
+  for (i = 0; i <= 1; i++) {
+    hB[i] = h * rt_ODE3_B[1][i];
+  }
+
+  for (i = 0; i < nXc; i++) {
+    x[i] = y[i] + (f0[i]*hB[0] + f1[i]*hB[1]);
+  }
+
+  rtsiSetT(si, t + h*rt_ODE3_A[1]);
+  rtsiSetdX(si, f2);
+  Main_Firmware_step();
+  Main_Firmware_derivatives();
+
+  /* tnew = t + hA(3);
+     ynew = y + f*hB(:,3); */
+  for (i = 0; i <= 2; i++) {
+    hB[i] = h * rt_ODE3_B[2][i];
+  }
+
+  for (i = 0; i < nXc; i++) {
+    x[i] = y[i] + (f0[i]*hB[0] + f1[i]*hB[1] + f2[i]*hB[2]);
+  }
+
+  rtsiSetT(si, tnew);
+  rtsiSetSimTimeStep(si,MAJOR_TIME_STEP);
+}
+
+/*
  * System initialize for enable system:
- *    '<S116>/Subsystem - pi//2 delay'
- *    '<S178>/Subsystem - pi//2 delay'
+ *    '<S115>/Subsystem - pi//2 delay'
+ *    '<S177>/Subsystem - pi//2 delay'
  */
 void Main_Fir_Subsystempi2delay_Init(real_T *rty_dq, real_T *rty_dq_f,
   P_Subsystempi2delay_Main_Firm_T *localP)
 {
-  /* SystemInitialize for Outport: '<S120>/dq' */
+  /* SystemInitialize for Outport: '<S119>/dq' */
   *rty_dq = localP->dq_Y0[0];
   *rty_dq_f = localP->dq_Y0[1];
 }
 
 /*
- * Output and update for enable system:
- *    '<S116>/Subsystem - pi//2 delay'
- *    '<S178>/Subsystem - pi//2 delay'
+ * Disable for enable system:
+ *    '<S115>/Subsystem - pi//2 delay'
+ *    '<S177>/Subsystem - pi//2 delay'
  */
-void Main_Firmware_Subsystempi2delay(uint16_T rtu_Enable, const real_T
-  rtu_alpha_beta[2], real_T rtu_wt, real_T *rty_dq, real_T *rty_dq_f,
-  DW_Subsystempi2delay_Main_Fir_T *localDW)
+void Main__Subsystempi2delay_Disable(DW_Subsystempi2delay_Main_Fir_T *localDW)
 {
-  real_T tmp;
-  real_T tmp_0;
-
-  /* Outputs for Enabled SubSystem: '<S116>/Subsystem - pi//2 delay' incorporates:
-   *  EnablePort: '<S120>/Enable'
-   */
-  if (rtu_Enable > 0U) {
-    /* Fcn: '<S120>/Fcn' incorporates:
-     *  Fcn: '<S120>/Fcn1'
-     */
-    tmp = cos(rtu_wt);
-    tmp_0 = sin(rtu_wt);
-    *rty_dq = rtu_alpha_beta[0] * tmp_0 - rtu_alpha_beta[1] * tmp;
-
-    /* Fcn: '<S120>/Fcn1' */
-    *rty_dq_f = rtu_alpha_beta[0] * tmp + rtu_alpha_beta[1] * tmp_0;
-    srUpdateBC(localDW->Subsystempi2delay_SubsysRanBC);
-  }
-
-  /* End of Outputs for SubSystem: '<S116>/Subsystem - pi//2 delay' */
-}
-
-/*
- * System initialize for enable system:
- *    '<S116>/Subsystem1'
- *    '<S178>/Subsystem1'
- */
-void Main_Firmware_Subsystem1_Init(real_T *rty_dq, real_T *rty_dq_e,
-  P_Subsystem1_Main_Firmware_T *localP)
-{
-  /* SystemInitialize for Outport: '<S121>/dq' */
-  *rty_dq = localP->dq_Y0[0];
-  *rty_dq_e = localP->dq_Y0[1];
+  localDW->Subsystempi2delay_MODE = false;
 }
 
 /*
  * Output and update for enable system:
- *    '<S116>/Subsystem1'
- *    '<S178>/Subsystem1'
+ *    '<S115>/Subsystem - pi//2 delay'
+ *    '<S177>/Subsystem - pi//2 delay'
  */
-void Main_Firmware_Subsystem1(uint16_T rtu_Enable, const real_T rtu_alpha_beta[2],
-  real_T rtu_wt, real_T *rty_dq, real_T *rty_dq_e, DW_Subsystem1_Main_Firmware_T
+void Main_Firmware_Subsystempi2delay(RT_MODEL_Main_Firmware_T * const
+  Main_Firmware_M, uint16_T rtu_Enable, const real_T rtu_alpha_beta[2], real_T
+  rtu_wt, real_T *rty_dq, real_T *rty_dq_f, DW_Subsystempi2delay_Main_Fir_T
   *localDW)
 {
   real_T tmp;
   real_T tmp_0;
 
-  /* Outputs for Enabled SubSystem: '<S116>/Subsystem1' incorporates:
-   *  EnablePort: '<S121>/Enable'
+  /* Outputs for Enabled SubSystem: '<S115>/Subsystem - pi//2 delay' incorporates:
+   *  EnablePort: '<S119>/Enable'
    */
-  if (rtu_Enable > 0U) {
-    /* Fcn: '<S121>/Fcn' incorporates:
-     *  Fcn: '<S121>/Fcn1'
+  if (rtmIsMajorTimeStep(Main_Firmware_M) && rtsiIsModeUpdateTimeStep
+      (&Main_Firmware_M->solverInfo)) {
+    if (rtu_Enable > 0U) {
+      localDW->Subsystempi2delay_MODE = true;
+    } else if (localDW->Subsystempi2delay_MODE) {
+      Main__Subsystempi2delay_Disable(localDW);
+    }
+  }
+
+  if (localDW->Subsystempi2delay_MODE) {
+    /* Fcn: '<S119>/Fcn' incorporates:
+     *  Fcn: '<S119>/Fcn1'
+     */
+    tmp = cos(rtu_wt);
+    tmp_0 = sin(rtu_wt);
+    *rty_dq = rtu_alpha_beta[0] * tmp_0 - rtu_alpha_beta[1] * tmp;
+
+    /* Fcn: '<S119>/Fcn1' */
+    *rty_dq_f = rtu_alpha_beta[0] * tmp + rtu_alpha_beta[1] * tmp_0;
+    if (rtsiIsModeUpdateTimeStep(&Main_Firmware_M->solverInfo)) {
+      srUpdateBC(localDW->Subsystempi2delay_SubsysRanBC);
+    }
+  }
+
+  /* End of Outputs for SubSystem: '<S115>/Subsystem - pi//2 delay' */
+}
+
+/*
+ * System initialize for enable system:
+ *    '<S115>/Subsystem1'
+ *    '<S177>/Subsystem1'
+ */
+void Main_Firmware_Subsystem1_Init(real_T *rty_dq, real_T *rty_dq_e,
+  P_Subsystem1_Main_Firmware_T *localP)
+{
+  /* SystemInitialize for Outport: '<S120>/dq' */
+  *rty_dq = localP->dq_Y0[0];
+  *rty_dq_e = localP->dq_Y0[1];
+}
+
+/*
+ * Disable for enable system:
+ *    '<S115>/Subsystem1'
+ *    '<S177>/Subsystem1'
+ */
+void Main_Firmwar_Subsystem1_Disable(DW_Subsystem1_Main_Firmware_T *localDW)
+{
+  localDW->Subsystem1_MODE = false;
+}
+
+/*
+ * Output and update for enable system:
+ *    '<S115>/Subsystem1'
+ *    '<S177>/Subsystem1'
+ */
+void Main_Firmware_Subsystem1(RT_MODEL_Main_Firmware_T * const Main_Firmware_M,
+  uint16_T rtu_Enable, const real_T rtu_alpha_beta[2], real_T rtu_wt, real_T
+  *rty_dq, real_T *rty_dq_e, DW_Subsystem1_Main_Firmware_T *localDW)
+{
+  real_T tmp;
+  real_T tmp_0;
+
+  /* Outputs for Enabled SubSystem: '<S115>/Subsystem1' incorporates:
+   *  EnablePort: '<S120>/Enable'
+   */
+  if (rtmIsMajorTimeStep(Main_Firmware_M) && rtsiIsModeUpdateTimeStep
+      (&Main_Firmware_M->solverInfo)) {
+    if (rtu_Enable > 0U) {
+      localDW->Subsystem1_MODE = true;
+    } else if (localDW->Subsystem1_MODE) {
+      Main_Firmwar_Subsystem1_Disable(localDW);
+    }
+  }
+
+  if (localDW->Subsystem1_MODE) {
+    /* Fcn: '<S120>/Fcn' incorporates:
+     *  Fcn: '<S120>/Fcn1'
      */
     tmp = sin(rtu_wt);
     tmp_0 = cos(rtu_wt);
     *rty_dq = rtu_alpha_beta[0] * tmp_0 + rtu_alpha_beta[1] * tmp;
 
-    /* Fcn: '<S121>/Fcn1' */
+    /* Fcn: '<S120>/Fcn1' */
     *rty_dq_e = -rtu_alpha_beta[0] * tmp + rtu_alpha_beta[1] * tmp_0;
-    srUpdateBC(localDW->Subsystem1_SubsysRanBC);
+    if (rtsiIsModeUpdateTimeStep(&Main_Firmware_M->solverInfo)) {
+      srUpdateBC(localDW->Subsystem1_SubsysRanBC);
+    }
   }
 
-  /* End of Outputs for SubSystem: '<S116>/Subsystem1' */
+  /* End of Outputs for SubSystem: '<S115>/Subsystem1' */
 }
 
 /* Model step function */
 void Main_Firmware_step(void)
 {
-  real_T rtb_Gain3[3];
-  real_T Iq_tmp;
-  real_T rtb_Electricalspeed;
-  real_T rtb_Filter;
-  real_T rtb_FilterCoefficient;
-  real_T rtb_Gain4_f;
-  real_T rtb_Iq_error;
-  real_T rtb_Product1_b;
-  real_T rtb_Sum1_m;
-  real_T rtb_TSamp;
-  int16_T rtb_Compare;
-
-  /* Reset subsysRan breadcrumbs */
-  srClearBC(Main_Firmware_DW.Subsystempi2delay.Subsystempi2delay_SubsysRanBC);
-
-  /* Reset subsysRan breadcrumbs */
-  srClearBC(Main_Firmware_DW.Subsystem1.Subsystem1_SubsysRanBC);
-
-  /* Reset subsysRan breadcrumbs */
-  srClearBC(Main_Firmware_DW.Subsystempi2delay_SubsysRanBC);
-
-  /* Reset subsysRan breadcrumbs */
-  srClearBC(Main_Firmware_DW.Subsystem1_SubsysRanBC);
-
-  /* Saturate: '<S1>/Saturation' incorporates:
-   *  Delay: '<S1>/Sampling Delay'
-   */
-  if (Main_Firmware_DW.SamplingDelay_DSTATE[0] >
-      Main_Firmware_P.Saturation_UpperSat) {
-    rtb_Gain3[0] = Main_Firmware_P.Saturation_UpperSat;
-  } else if (Main_Firmware_DW.SamplingDelay_DSTATE[0] <
-             Main_Firmware_P.Saturation_LowerSat) {
-    rtb_Gain3[0] = Main_Firmware_P.Saturation_LowerSat;
-  } else {
-    rtb_Gain3[0] = Main_Firmware_DW.SamplingDelay_DSTATE[0];
-  }
-
-  if (Main_Firmware_DW.SamplingDelay_DSTATE[1] >
-      Main_Firmware_P.Saturation_UpperSat) {
-    rtb_Gain3[1] = Main_Firmware_P.Saturation_UpperSat;
-  } else if (Main_Firmware_DW.SamplingDelay_DSTATE[1] <
-             Main_Firmware_P.Saturation_LowerSat) {
-    rtb_Gain3[1] = Main_Firmware_P.Saturation_LowerSat;
-  } else {
-    rtb_Gain3[1] = Main_Firmware_DW.SamplingDelay_DSTATE[1];
-  }
-
-  if (Main_Firmware_DW.SamplingDelay_DSTATE[2] >
-      Main_Firmware_P.Saturation_UpperSat) {
-    rtb_Gain3[2] = Main_Firmware_P.Saturation_UpperSat;
-  } else if (Main_Firmware_DW.SamplingDelay_DSTATE[2] <
-             Main_Firmware_P.Saturation_LowerSat) {
-    rtb_Gain3[2] = Main_Firmware_P.Saturation_LowerSat;
-  } else {
-    rtb_Gain3[2] = Main_Firmware_DW.SamplingDelay_DSTATE[2];
-  }
-
-  /* End of Saturate: '<S1>/Saturation' */
-
-  /* S-Function (c2802xpwm): '<S2>/A' */
-  uint16_T tbprdValue1Outputs = (EPwm1Regs.TBPRD + 1);
-
-  /*-- Update CMPA value for ePWM1 --*/
-  {
-    EPwm1Regs.CMPA.bit.CMPA = (uint16_T)((uint32_T)(EPwm1Regs.TBPRD + 1) *
-      rtb_Gain3[0] * 0.01);
-  }
-
-  /* S-Function (c2802xpwm): '<S2>/B' */
-  uint16_T tbprdValue4Outputs = (EPwm4Regs.TBPRD + 1);
-
-  /*-- Update CMPA value for ePWM4 --*/
-  {
-    EPwm4Regs.CMPA.bit.CMPA = (uint16_T)((uint32_T)(EPwm4Regs.TBPRD + 1) *
-      rtb_Gain3[1] * 0.01);
-  }
-
-  /* S-Function (c2802xpwm): '<S2>/C' */
-  uint16_T tbprdValue2Outputs = (EPwm2Regs.TBPRD + 1);
-
-  /*-- Update CMPA value for ePWM2 --*/
-  {
-    EPwm2Regs.CMPA.bit.CMPA = (uint16_T)((uint32_T)(EPwm2Regs.TBPRD + 1) *
-      rtb_Gain3[2] * 0.01);
-  }
-
-  /* S-Function (c280xgpio_do): '<S2>/Digital Output1' incorporates:
-   *  Constant: '<S2>/Constant'
-   */
-  {
-    if (Main_Firmware_P.Constant_Value) {
-      GpioDataRegs.GPASET.bit.GPIO31 = 1U;
+  if (rtmIsMajorTimeStep(Main_Firmware_M)) {
+    /* set solver stop time */
+    if (!(Main_Firmware_M->Timing.clockTick0+1)) {
+      rtsiSetSolverStopTime(&Main_Firmware_M->solverInfo,
+                            ((Main_Firmware_M->Timing.clockTickH0 + 1) *
+        Main_Firmware_M->Timing.stepSize0 * 4294967296.0));
     } else {
-      GpioDataRegs.GPACLEAR.bit.GPIO31 = 1U;
+      rtsiSetSolverStopTime(&Main_Firmware_M->solverInfo,
+                            ((Main_Firmware_M->Timing.clockTick0 + 1) *
+        Main_Firmware_M->Timing.stepSize0 + Main_Firmware_M->Timing.clockTickH0 *
+        Main_Firmware_M->Timing.stepSize0 * 4294967296.0));
     }
+  }                                    /* end MajorTimeStep */
+
+  /* Update absolute time of base rate at minor time step */
+  if (rtmIsMinorTimeStep(Main_Firmware_M)) {
+    Main_Firmware_M->Timing.t[0] = rtsiGetT(&Main_Firmware_M->solverInfo);
   }
 
-  /* Sum: '<S175>/Subtract' incorporates:
-   *  DiscretePulseGenerator: '<S2>/LED Heartbeat'
-   */
-  Main_Firmware_B.Subtract = (Main_Firmware_DW.clockTickCounter <
-    Main_Firmware_P.LEDHeartbeat_Duty) && (Main_Firmware_DW.clockTickCounter >=
-    0L) ? Main_Firmware_P.LEDHeartbeat_Amp : 0.0;
-
-  /* DiscretePulseGenerator: '<S2>/LED Heartbeat' */
-  if (Main_Firmware_DW.clockTickCounter >= Main_Firmware_P.LEDHeartbeat_Period -
-      1.0) {
-    Main_Firmware_DW.clockTickCounter = 0L;
-  } else {
-    Main_Firmware_DW.clockTickCounter++;
-  }
-
-  /* S-Function (c280xgpio_do): '<S2>/Digital Output' */
   {
-    if (Main_Firmware_B.Subtract) {
-      GpioDataRegs.GPASET.bit.GPIO23 = 1U;
+    real_T rtb_Gain_c[3];
+    real_T rtb_Gain4_k;
+    real_T rtb_Id_err;
+    real_T rtb_Iq_error;
+    real_T rtb_Product1_p;
+    real_T rtb_Sum1_d_tmp;
+    real_T rtb_Sum1_j;
+    real_T *lastU;
+    int16_T i;
+    boolean_T tmp;
+
+    /* Reset subsysRan breadcrumbs */
+    srClearBC(Main_Firmware_DW.Subsystempi2delay.Subsystempi2delay_SubsysRanBC);
+
+    /* Reset subsysRan breadcrumbs */
+    srClearBC(Main_Firmware_DW.Subsystem1.Subsystem1_SubsysRanBC);
+
+    /* Reset subsysRan breadcrumbs */
+    srClearBC(Main_Firmware_DW.Subsystempi2delay_SubsysRanBC);
+
+    /* Reset subsysRan breadcrumbs */
+    srClearBC(Main_Firmware_DW.Subsystem1_SubsysRanBC);
+
+    /* Outputs for Enabled SubSystem: '<S184>/Subsystem1' incorporates:
+     *  EnablePort: '<S188>/Enable'
+     */
+    tmp = rtmIsMajorTimeStep(Main_Firmware_M);
+
+    /* End of Outputs for SubSystem: '<S184>/Subsystem1' */
+    if (tmp) {
+      /* Delay: '<S1>/Sampling Delay' */
+      rtb_Id_err = Main_Firmware_DW.SamplingDelay_DSTATE[0];
+
+      /* Saturate: '<S1>/Saturation' */
+      if (rtb_Id_err > Main_Firmware_P.Saturation_UpperSat) {
+        rtb_Id_err = Main_Firmware_P.Saturation_UpperSat;
+      } else if (rtb_Id_err < Main_Firmware_P.Saturation_LowerSat) {
+        rtb_Id_err = Main_Firmware_P.Saturation_LowerSat;
+      }
+
+      /* Gain: '<S2>/Gain' incorporates:
+       *  Saturate: '<S1>/Saturation'
+       */
+      rtb_Gain_c[0] = Main_Firmware_P.Gain_Gain * rtb_Id_err;
+
+      /* Delay: '<S1>/Sampling Delay' */
+      rtb_Id_err = Main_Firmware_DW.SamplingDelay_DSTATE[1];
+
+      /* Saturate: '<S1>/Saturation' */
+      if (rtb_Id_err > Main_Firmware_P.Saturation_UpperSat) {
+        rtb_Id_err = Main_Firmware_P.Saturation_UpperSat;
+      } else if (rtb_Id_err < Main_Firmware_P.Saturation_LowerSat) {
+        rtb_Id_err = Main_Firmware_P.Saturation_LowerSat;
+      }
+
+      /* Gain: '<S2>/Gain' incorporates:
+       *  Saturate: '<S1>/Saturation'
+       */
+      rtb_Gain_c[1] = Main_Firmware_P.Gain_Gain * rtb_Id_err;
+
+      /* Delay: '<S1>/Sampling Delay' */
+      rtb_Id_err = Main_Firmware_DW.SamplingDelay_DSTATE[2];
+
+      /* Saturate: '<S1>/Saturation' */
+      if (rtb_Id_err > Main_Firmware_P.Saturation_UpperSat) {
+        rtb_Id_err = Main_Firmware_P.Saturation_UpperSat;
+      } else if (rtb_Id_err < Main_Firmware_P.Saturation_LowerSat) {
+        rtb_Id_err = Main_Firmware_P.Saturation_LowerSat;
+      }
+
+      /* Gain: '<S2>/Gain' incorporates:
+       *  Saturate: '<S1>/Saturation'
+       */
+      rtb_Gain_c[2] = Main_Firmware_P.Gain_Gain * rtb_Id_err;
+
+      /* S-Function (c2802xpwm): '<S2>/A' */
+      uint16_T tbprdValue1Outputs = (EPwm1Regs.TBPRD + 1);
+
+      /*-- Update CMPA value for ePWM1 --*/
+      {
+        EPwm1Regs.CMPA.bit.CMPA = (uint16_T)((uint32_T)(EPwm1Regs.TBPRD + 1) *
+          rtb_Gain_c[0] * 0.01);
+      }
+
+      /* S-Function (c2802xpwm): '<S2>/B' */
+      uint16_T tbprdValue4Outputs = (EPwm4Regs.TBPRD + 1);
+
+      /*-- Update CMPA value for ePWM4 --*/
+      {
+        EPwm4Regs.CMPA.bit.CMPA = (uint16_T)((uint32_T)(EPwm4Regs.TBPRD + 1) *
+          rtb_Gain_c[1] * 0.01);
+      }
+
+      /* S-Function (c2802xpwm): '<S2>/C' */
+      uint16_T tbprdValue2Outputs = (EPwm2Regs.TBPRD + 1);
+
+      /*-- Update CMPA value for ePWM2 --*/
+      {
+        EPwm2Regs.CMPA.bit.CMPA = (uint16_T)((uint32_T)(EPwm2Regs.TBPRD + 1) *
+          rtb_Gain_c[2] * 0.01);
+      }
+
+      /* S-Function (c280xgpio_do): '<S2>/Digital Output1' incorporates:
+       *  Constant: '<S2>/Constant'
+       */
+      {
+        if (Main_Firmware_P.Constant_Value) {
+          GpioDataRegs.GPASET.bit.GPIO31 = 1U;
+        } else {
+          GpioDataRegs.GPACLEAR.bit.GPIO31 = 1U;
+        }
+      }
+
+      /* DiscretePulseGenerator: '<S2>/LED Heartbeat' */
+      Main_Firmware_B.LEDHeartbeat = (Main_Firmware_DW.clockTickCounter <
+        Main_Firmware_P.LEDHeartbeat_Duty) && (Main_Firmware_DW.clockTickCounter
+        >= 0L) ? Main_Firmware_P.LEDHeartbeat_Amp : 0.0;
+
+      /* DiscretePulseGenerator: '<S2>/LED Heartbeat' */
+      if (Main_Firmware_DW.clockTickCounter >=
+          Main_Firmware_P.LEDHeartbeat_Period - 1.0) {
+        Main_Firmware_DW.clockTickCounter = 0L;
+      } else {
+        Main_Firmware_DW.clockTickCounter++;
+      }
+
+      /* S-Function (c280xgpio_do): '<S2>/Digital Output' */
+      {
+        if (Main_Firmware_B.LEDHeartbeat) {
+          GpioDataRegs.GPASET.bit.GPIO23 = 1U;
+        } else {
+          GpioDataRegs.GPACLEAR.bit.GPIO23 = 1U;
+        }
+      }
+    }
+
+    /* TransferFcn: '<S174>/Transfer Fcn' */
+    Main_Firmware_B.TransferFcn = Main_Firmware_P.TransferFcn_C *
+      Main_Firmware_X.TransferFcn_CSTATE;
+
+    /* Step: '<Root>/Step1' incorporates:
+     *  Step: '<Root>/Step'
+     */
+    rtb_Iq_error = Main_Firmware_M->Timing.t[0];
+    if (rtb_Iq_error < Main_Firmware_P.Step1_Time) {
+      Main_Firmware_B.Saturation = Main_Firmware_P.Step1_Y0;
     } else {
-      GpioDataRegs.GPACLEAR.bit.GPIO23 = 1U;
-    }
-  }
-
-  /* DiscreteTransferFcn: '<S175>/Discrete Transfer Fcn' */
-  Main_Firmware_B.DiscreteTransferFcn =
-    Main_Firmware_P.DiscreteTransferFcn_NumCoef *
-    Main_Firmware_DW.DiscreteTransferFcn_states;
-
-  /* Sum: '<S4>/Sum' incorporates:
-   *  Constant: '<S4>/Constant'
-   *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator2'
-   *  Gain: '<S4>/Gain6'
-   */
-  Main_Firmware_B.RotorAngle = 1.0 / Main_Firmware_P.ppair *
-    Main_Firmware_DW.DiscreteTimeIntegrator2_DSTATE +
-    Main_Firmware_P.Encoder_Offset;
-
-  /* SignalConversion generated from: '<Root>/Mux5' */
-  Main_Firmware_B.TmpSignalConversionAtTAQSigLogg[0] =
-    Main_Firmware_B.DiscreteTransferFcn;
-  Main_Firmware_B.TmpSignalConversionAtTAQSigLogg[1] = 0.0;
-  Main_Firmware_B.TmpSignalConversionAtTAQSigLogg[2] =
-    Main_Firmware_B.RotorAngle;
-
-  /* RelationalOperator: '<S186>/Compare' incorporates:
-   *  Constant: '<S185>/Constant'
-   *  Constant: '<S186>/Constant'
-   */
-  rtb_Compare = (Main_Firmware_P.dq0toAlphaBetaZero_Alignment ==
-                 Main_Firmware_P.CompareToConstant_const);
-
-  /* Outputs for Enabled SubSystem: '<S185>/Subsystem1' incorporates:
-   *  EnablePort: '<S189>/Enable'
-   */
-  /* RelationalOperator: '<S186>/Compare' */
-  if (rtb_Compare > 0) {
-    /* Fcn: '<S189>/Fcn' incorporates:
-     *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator2'
-     *  Fcn: '<S189>/Fcn1'
-     */
-    rtb_TSamp = sin(Main_Firmware_DW.DiscreteTimeIntegrator2_DSTATE);
-    rtb_FilterCoefficient = cos(Main_Firmware_DW.DiscreteTimeIntegrator2_DSTATE);
-
-    /* Fcn: '<S189>/Fcn' incorporates:
-     *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator'
-     *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator1'
-     */
-    Main_Firmware_B.Fcn = Main_Firmware_DW.DiscreteTimeIntegrator_DSTATE *
-      rtb_FilterCoefficient - Main_Firmware_DW.DiscreteTimeIntegrator1_DSTATE *
-      rtb_TSamp;
-
-    /* Fcn: '<S189>/Fcn1' incorporates:
-     *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator'
-     *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator1'
-     */
-    Main_Firmware_B.Fcn1 = Main_Firmware_DW.DiscreteTimeIntegrator_DSTATE *
-      rtb_TSamp + Main_Firmware_DW.DiscreteTimeIntegrator1_DSTATE *
-      rtb_FilterCoefficient;
-    srUpdateBC(Main_Firmware_DW.Subsystem1_SubsysRanBC);
-  }
-
-  /* End of Outputs for SubSystem: '<S185>/Subsystem1' */
-
-  /* Outputs for Enabled SubSystem: '<S185>/Subsystem - pi//2 delay' incorporates:
-   *  EnablePort: '<S188>/Enable'
-   */
-  /* RelationalOperator: '<S187>/Compare' incorporates:
-   *  Constant: '<S185>/Constant'
-   *  Constant: '<S187>/Constant'
-   */
-  if (Main_Firmware_P.dq0toAlphaBetaZero_Alignment ==
-      Main_Firmware_P.CompareToConstant1_const) {
-    /* Fcn: '<S188>/Fcn' incorporates:
-     *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator2'
-     *  Fcn: '<S188>/Fcn1'
-     */
-    rtb_TSamp = cos(Main_Firmware_DW.DiscreteTimeIntegrator2_DSTATE);
-
-    /* Fcn: '<S188>/Fcn' incorporates:
-     *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator'
-     *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator1'
-     *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator2'
-     */
-    Main_Firmware_B.Fcn_l = Main_Firmware_DW.DiscreteTimeIntegrator_DSTATE * sin
-      (Main_Firmware_DW.DiscreteTimeIntegrator2_DSTATE) +
-      Main_Firmware_DW.DiscreteTimeIntegrator1_DSTATE * rtb_TSamp;
-
-    /* Fcn: '<S188>/Fcn1' incorporates:
-     *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator'
-     *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator1'
-     *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator2'
-     */
-    Main_Firmware_B.Fcn1_a = -Main_Firmware_DW.DiscreteTimeIntegrator_DSTATE *
-      rtb_TSamp + Main_Firmware_DW.DiscreteTimeIntegrator1_DSTATE * sin
-      (Main_Firmware_DW.DiscreteTimeIntegrator2_DSTATE);
-    srUpdateBC(Main_Firmware_DW.Subsystempi2delay_SubsysRanBC);
-  }
-
-  /* End of RelationalOperator: '<S187>/Compare' */
-  /* End of Outputs for SubSystem: '<S185>/Subsystem - pi//2 delay' */
-
-  /* Switch: '<S185>/Switch' incorporates:
-   *  RelationalOperator: '<S186>/Compare'
-   */
-  if (rtb_Compare != 0) {
-    /* SignalConversion generated from: '<S184>/Gain3' */
-    rtb_Gain3[0] = Main_Firmware_B.Fcn;
-    rtb_Gain3[1] = Main_Firmware_B.Fcn1;
-  } else {
-    /* SignalConversion generated from: '<S184>/Gain3' */
-    rtb_Gain3[0] = Main_Firmware_B.Fcn_l;
-    rtb_Gain3[1] = Main_Firmware_B.Fcn1_a;
-  }
-
-  /* End of Switch: '<S185>/Switch' */
-
-  /* SignalConversion generated from: '<S184>/Gain3' incorporates:
-   *  Constant: '<S4>/Constant3'
-   */
-  rtb_Gain3[2] = Main_Firmware_P.Constant3_Value;
-
-  /* Gain: '<S184>/Gain3' */
-  rtb_TSamp = rtb_Gain3[1];
-  rtb_FilterCoefficient = rtb_Gain3[0];
-  rtb_Filter = rtb_Gain3[2];
-  for (rtb_Compare = 0; rtb_Compare < 3; rtb_Compare++) {
-    /* Gain: '<S184>/Gain3' */
-    Main_Firmware_B.Gain3[rtb_Compare] = (Main_Firmware_P.Gain3_Gain[rtb_Compare
-      + 3] * rtb_TSamp + Main_Firmware_P.Gain3_Gain[rtb_Compare] *
-      rtb_FilterCoefficient) + Main_Firmware_P.Gain3_Gain[rtb_Compare + 6] *
-      rtb_Filter;
-  }
-
-  /* Gain: '<S3>/Gain2' incorporates:
-   *  Constant: '<S3>/Const'
-   *  Sum: '<S3>/Subtract'
-   */
-  rtb_Electricalspeed = (Main_Firmware_B.RotorAngle -
-    Main_Firmware_P.Encoder_Offset) * Main_Firmware_P.ppair;
-
-  /* SampleTimeMath: '<S6>/TSamp'
-   *
-   * About '<S6>/TSamp':
-   *  y = u * K where K = 1 / ( w * Ts )
-   *   */
-  rtb_TSamp = rtb_Electricalspeed * Main_Firmware_P.TSamp_WtEt;
-
-  /* Sum: '<S6>/Diff' incorporates:
-   *  UnitDelay: '<S6>/UD'
-   *
-   * Block description for '<S6>/Diff':
-   *
-   *  Add in CPU
-   *
-   * Block description for '<S6>/UD':
-   *
-   *  Store in Global RAM
-   */
-  rtb_Gain4_f = rtb_TSamp - Main_Firmware_DW.UD_DSTATE;
-
-  /* Saturate: '<S3>/Saturation' incorporates:
-   *  Constant: '<Root>/Constant'
-   */
-  if (Main_Firmware_P.Constant_Value_d > Main_Firmware_P.speed_max) {
-    rtb_Product1_b = Main_Firmware_P.speed_max;
-  } else if (Main_Firmware_P.Constant_Value_d < -Main_Firmware_P.speed_max) {
-    rtb_Product1_b = -Main_Firmware_P.speed_max;
-  } else {
-    rtb_Product1_b = Main_Firmware_P.Constant_Value_d;
-  }
-
-  /* Sum: '<S3>/Sum6' incorporates:
-   *  Gain: '<S3>/Gain7'
-   *  Saturate: '<S3>/Saturation'
-   */
-  rtb_Filter = Main_Firmware_P.ppair * rtb_Product1_b - rtb_Gain4_f;
-
-  /* Gain: '<S159>/Filter Coefficient' incorporates:
-   *  DiscreteIntegrator: '<S151>/Filter'
-   *  Gain: '<S149>/Derivative Gain'
-   *  Sum: '<S151>/SumD'
-   */
-  rtb_FilterCoefficient = (Main_Firmware_P.SpeedPID1_D * rtb_Filter -
-    Main_Firmware_DW.Filter_DSTATE) * Main_Firmware_P.SpeedPID1_N;
-
-  /* Switch: '<S3>/Switch' incorporates:
-   *  Constant: '<Root>/Constant2'
-   */
-  if (Main_Firmware_P.Constant2_Value > Main_Firmware_P.Switch_Threshold) {
-    /* Sum: '<S165>/Sum' incorporates:
-     *  Constant: '<Root>/Constant1'
-     */
-    Main_Firmware_B.Te = Main_Firmware_P.Constant1_Value;
-  } else {
-    /* Sum: '<S165>/Sum' incorporates:
-     *  Gain: '<S161>/Proportional Gain'
-     */
-    Main_Firmware_B.Te = Main_Firmware_P.SpeedPID1_P * rtb_Filter +
-      rtb_FilterCoefficient;
-
-    /* Saturate: '<S163>/Saturation' */
-    if (Main_Firmware_B.Te > Main_Firmware_P.Torque_max) {
-      /* Sum: '<S165>/Sum' */
-      Main_Firmware_B.Te = Main_Firmware_P.Torque_max;
-    } else if (Main_Firmware_B.Te < -Main_Firmware_P.Torque_max) {
-      /* Sum: '<S165>/Sum' */
-      Main_Firmware_B.Te = -Main_Firmware_P.Torque_max;
+      Main_Firmware_B.Saturation = Main_Firmware_P.Step1_YFinal;
     }
 
-    /* End of Saturate: '<S163>/Saturation' */
-  }
+    /* Saturate: '<S3>/Saturation' */
+    if (Main_Firmware_B.Saturation > Main_Firmware_P.speed_max) {
+      /* Step: '<Root>/Step1' incorporates:
+       *  Saturate: '<S3>/Saturation'
+       */
+      Main_Firmware_B.Saturation = Main_Firmware_P.speed_max;
+    } else if (Main_Firmware_B.Saturation < -Main_Firmware_P.speed_max) {
+      /* Step: '<Root>/Step1' incorporates:
+       *  Saturate: '<S3>/Saturation'
+       */
+      Main_Firmware_B.Saturation = -Main_Firmware_P.speed_max;
+    }
 
-  /* End of Switch: '<S3>/Switch' */
+    /* End of Saturate: '<S3>/Saturation' */
 
-  /* Saturate: '<S3>/Saturation1' */
-  if (Main_Firmware_B.Te > Main_Firmware_P.Torque_max) {
-    /* Sum: '<S165>/Sum' incorporates:
-     *  Saturate: '<S3>/Saturation1'
+    /* Integrator: '<S173>/Integrator2' */
+    /* Limited  Integrator  */
+    if (Main_Firmware_X.Integrator2_CSTATE >=
+        Main_Firmware_P.Integrator2_UpperSat) {
+      Main_Firmware_X.Integrator2_CSTATE = Main_Firmware_P.Integrator2_UpperSat;
+    } else if (Main_Firmware_X.Integrator2_CSTATE <=
+               Main_Firmware_P.Integrator2_LowerSat) {
+      Main_Firmware_X.Integrator2_CSTATE = Main_Firmware_P.Integrator2_LowerSat;
+    }
+
+    /* Sum: '<S4>/Sum' incorporates:
+     *  Constant: '<S4>/Constant'
+     *  Gain: '<S4>/Gain6'
+     *  Integrator: '<S173>/Integrator2'
      */
-    Main_Firmware_B.Te = Main_Firmware_P.Torque_max;
-  } else if (Main_Firmware_B.Te < -Main_Firmware_P.Torque_max) {
-    /* Sum: '<S165>/Sum' incorporates:
-     *  Saturate: '<S3>/Saturation1'
+    Main_Firmware_B.RotorAngle = 1.0 / Main_Firmware_P.ppair *
+      Main_Firmware_X.Integrator2_CSTATE + Main_Firmware_P.Encoder_Offset;
+    if (tmp) {
+      /* SignalConversion generated from: '<Root>/Mux5' */
+      Main_Firmware_B.TmpSignalConversionAtTAQSigLogg[0] =
+        Main_Firmware_B.TransferFcn;
+      Main_Firmware_B.TmpSignalConversionAtTAQSigLogg[1] =
+        Main_Firmware_B.Saturation;
+      Main_Firmware_B.TmpSignalConversionAtTAQSigLogg[2] =
+        Main_Firmware_B.RotorAngle;
+
+      /* RelationalOperator: '<S185>/Compare' incorporates:
+       *  Constant: '<S184>/Constant'
+       *  Constant: '<S185>/Constant'
+       */
+      Main_Firmware_B.Compare = (uint16_T)
+        (Main_Firmware_P.dq0toAlphaBetaZero_Alignment ==
+         Main_Firmware_P.CompareToConstant_const);
+    }
+
+    /* Integrator: '<S173>/Integrator' */
+    /* Limited  Integrator  */
+    if (Main_Firmware_X.Integrator_CSTATE >= Main_Firmware_P.Integrator_UpperSat)
+    {
+      Main_Firmware_X.Integrator_CSTATE = Main_Firmware_P.Integrator_UpperSat;
+    } else if (Main_Firmware_X.Integrator_CSTATE <=
+               Main_Firmware_P.Integrator_LowerSat) {
+      Main_Firmware_X.Integrator_CSTATE = Main_Firmware_P.Integrator_LowerSat;
+    }
+
+    /* Integrator: '<S173>/Integrator1' */
+    /* Limited  Integrator  */
+    if (Main_Firmware_X.Integrator1_CSTATE >=
+        Main_Firmware_P.Integrator1_UpperSat) {
+      Main_Firmware_X.Integrator1_CSTATE = Main_Firmware_P.Integrator1_UpperSat;
+    } else if (Main_Firmware_X.Integrator1_CSTATE <=
+               Main_Firmware_P.Integrator1_LowerSat) {
+      Main_Firmware_X.Integrator1_CSTATE = Main_Firmware_P.Integrator1_LowerSat;
+    }
+
+    /* Outputs for Enabled SubSystem: '<S184>/Subsystem1' incorporates:
+     *  EnablePort: '<S188>/Enable'
      */
-    Main_Firmware_B.Te = -Main_Firmware_P.Torque_max;
-  }
+    if (tmp && rtsiIsModeUpdateTimeStep(&Main_Firmware_M->solverInfo)) {
+      /* RelationalOperator: '<S185>/Compare' */
+      Main_Firmware_DW.Subsystem1_MODE = (Main_Firmware_B.Compare > 0U);
+    }
 
-  /* End of Saturate: '<S3>/Saturation1' */
+    if (Main_Firmware_DW.Subsystem1_MODE) {
+      /* Fcn: '<S188>/Fcn' incorporates:
+       *  Fcn: '<S188>/Fcn1'
+       *  Integrator: '<S173>/Integrator2'
+       */
+      rtb_Id_err = sin(Main_Firmware_X.Integrator2_CSTATE);
+      rtb_Product1_p = cos(Main_Firmware_X.Integrator2_CSTATE);
 
-  /* Gain: '<S174>/Gain5' incorporates:
-   *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator1'
-   */
-  Main_Firmware_B.Gain5 = 1.5 * Main_Firmware_P.ppair * Main_Firmware_P.lambda *
-    Main_Firmware_DW.DiscreteTimeIntegrator1_DSTATE;
+      /* Fcn: '<S188>/Fcn' incorporates:
+       *  Integrator: '<S173>/Integrator'
+       *  Integrator: '<S173>/Integrator1'
+       */
+      Main_Firmware_B.Fcn = Main_Firmware_X.Integrator_CSTATE * rtb_Product1_p -
+        Main_Firmware_X.Integrator1_CSTATE * rtb_Id_err;
 
-  /* SignalConversion generated from: '<Root>/Mux4' */
-  Main_Firmware_B.TmpSignalConversionAtTAQSigLo_m[0] = Main_Firmware_B.Te;
-  Main_Firmware_B.TmpSignalConversionAtTAQSigLo_m[1] = Main_Firmware_B.Gain5;
+      /* Fcn: '<S188>/Fcn1' incorporates:
+       *  Integrator: '<S173>/Integrator'
+       *  Integrator: '<S173>/Integrator1'
+       */
+      Main_Firmware_B.Fcn1 = Main_Firmware_X.Integrator_CSTATE * rtb_Id_err +
+        Main_Firmware_X.Integrator1_CSTATE * rtb_Product1_p;
+      if (rtsiIsModeUpdateTimeStep(&Main_Firmware_M->solverInfo)) {
+        srUpdateBC(Main_Firmware_DW.Subsystem1_SubsysRanBC);
+      }
+    }
 
-  /* Gain: '<S117>/Gain3' */
-  rtb_Filter = Main_Firmware_B.Gain3[1];
-  rtb_Iq_error = Main_Firmware_B.Gain3[0];
-  rtb_Sum1_m = Main_Firmware_B.Gain3[2];
-  for (rtb_Compare = 0; rtb_Compare < 3; rtb_Compare++) {
-    /* Gain: '<S117>/Gain1' incorporates:
-     *  Gain: '<S117>/Gain3'
+    /* End of Outputs for SubSystem: '<S184>/Subsystem1' */
+    if (tmp) {
+      /* Outputs for Enabled SubSystem: '<S184>/Subsystem - pi//2 delay' incorporates:
+       *  EnablePort: '<S187>/Enable'
+       */
+      if (rtsiIsModeUpdateTimeStep(&Main_Firmware_M->solverInfo)) {
+        /* RelationalOperator: '<S186>/Compare' incorporates:
+         *  Constant: '<S184>/Constant'
+         *  Constant: '<S186>/Constant'
+         */
+        Main_Firmware_DW.Subsystempi2delay_MODE =
+          (Main_Firmware_P.dq0toAlphaBetaZero_Alignment ==
+           Main_Firmware_P.CompareToConstant1_const);
+      }
+
+      /* End of Outputs for SubSystem: '<S184>/Subsystem - pi//2 delay' */
+    }
+
+    /* Outputs for Enabled SubSystem: '<S184>/Subsystem - pi//2 delay' incorporates:
+     *  EnablePort: '<S187>/Enable'
      */
-    Main_Firmware_B.Gain1[rtb_Compare] =
-      ((Main_Firmware_P.Gain3_Gain_k[rtb_Compare + 3] * rtb_Filter +
-        Main_Firmware_P.Gain3_Gain_k[rtb_Compare] * rtb_Iq_error) +
-       Main_Firmware_P.Gain3_Gain_k[rtb_Compare + 6] * rtb_Sum1_m) *
-      Main_Firmware_P.Gain1_Gain;
-  }
+    if (Main_Firmware_DW.Subsystempi2delay_MODE) {
+      /* Fcn: '<S187>/Fcn' incorporates:
+       *  Integrator: '<S173>/Integrator'
+       *  Integrator: '<S173>/Integrator1'
+       *  Integrator: '<S173>/Integrator2'
+       */
+      Main_Firmware_B.Fcn_g = Main_Firmware_X.Integrator_CSTATE * sin
+        (Main_Firmware_X.Integrator2_CSTATE) +
+        Main_Firmware_X.Integrator1_CSTATE * cos
+        (Main_Firmware_X.Integrator2_CSTATE);
 
-  /* End of Gain: '<S117>/Gain3' */
+      /* Fcn: '<S187>/Fcn1' incorporates:
+       *  Integrator: '<S173>/Integrator'
+       *  Integrator: '<S173>/Integrator1'
+       *  Integrator: '<S173>/Integrator2'
+       */
+      Main_Firmware_B.Fcn1_l = -Main_Firmware_X.Integrator_CSTATE * cos
+        (Main_Firmware_X.Integrator2_CSTATE) +
+        Main_Firmware_X.Integrator1_CSTATE * sin
+        (Main_Firmware_X.Integrator2_CSTATE);
+      if (rtsiIsModeUpdateTimeStep(&Main_Firmware_M->solverInfo)) {
+        srUpdateBC(Main_Firmware_DW.Subsystempi2delay_SubsysRanBC);
+      }
+    }
 
-  /* RelationalOperator: '<S118>/Compare' incorporates:
-   *  Constant: '<S116>/Constant'
-   *  Constant: '<S118>/Constant'
-   */
-  rtb_Compare = (Main_Firmware_P.AlphaBetaZerotodq0_Alignment ==
-                 Main_Firmware_P.CompareToConstant_const_o);
+    /* End of Outputs for SubSystem: '<S184>/Subsystem - pi//2 delay' */
 
-  /* Outputs for Enabled SubSystem: '<S116>/Subsystem1' */
-  /* Gain: '<S117>/Gain1' */
-  Main_Firmware_Subsystem1((uint16_T)rtb_Compare, &Main_Firmware_B.Gain1[0],
-    rtb_Electricalspeed, &Main_Firmware_B.Fcn_k, &Main_Firmware_B.Fcn1_n,
-    &Main_Firmware_DW.Subsystem1);
+    /* Switch: '<S184>/Switch' incorporates:
+     *  RelationalOperator: '<S185>/Compare'
+     */
+    if (Main_Firmware_B.Compare != 0U) {
+      /* SignalConversion generated from: '<S183>/Gain3' */
+      rtb_Id_err = Main_Firmware_B.Fcn;
+      rtb_Product1_p = Main_Firmware_B.Fcn1;
+    } else {
+      /* SignalConversion generated from: '<S183>/Gain3' */
+      rtb_Id_err = Main_Firmware_B.Fcn_g;
+      rtb_Product1_p = Main_Firmware_B.Fcn1_l;
+    }
 
-  /* End of Outputs for SubSystem: '<S116>/Subsystem1' */
+    /* End of Switch: '<S184>/Switch' */
+    for (i = 0; i < 3; i++) {
+      /* Gain: '<S183>/Gain3' incorporates:
+       *  Constant: '<S4>/Constant3'
+       */
+      Main_Firmware_B.Gain3[i] = (Main_Firmware_P.Gain3_Gain[i + 3] *
+        rtb_Product1_p + Main_Firmware_P.Gain3_Gain[i] * rtb_Id_err) +
+        Main_Firmware_P.Gain3_Gain[i + 6] * Main_Firmware_P.Constant3_Value;
+    }
 
-  /* Outputs for Enabled SubSystem: '<S116>/Subsystem - pi//2 delay' */
-  /* RelationalOperator: '<S119>/Compare' incorporates:
-   *  Constant: '<S116>/Constant'
-   *  Constant: '<S119>/Constant'
-   *  Gain: '<S117>/Gain1'
-   */
-  Main_Firmware_Subsystempi2delay((uint16_T)
-    (Main_Firmware_P.AlphaBetaZerotodq0_Alignment ==
-     Main_Firmware_P.CompareToConstant1_const_k), &Main_Firmware_B.Gain1[0],
-    rtb_Electricalspeed, &Main_Firmware_B.Fcn_j, &Main_Firmware_B.Fcn1_e,
-    &Main_Firmware_DW.Subsystempi2delay);
+    /* Gain: '<S3>/Gain2' incorporates:
+     *  Constant: '<S3>/Const'
+     *  Sum: '<S3>/Subtract'
+     */
+    Main_Firmware_B.Electricalspeed = (Main_Firmware_B.RotorAngle -
+      Main_Firmware_P.Encoder_Offset) * Main_Firmware_P.ppair;
 
-  /* End of Outputs for SubSystem: '<S116>/Subsystem - pi//2 delay' */
+    /* Derivative: '<S3>/Derivative' */
+    rtb_Product1_p = Main_Firmware_M->Timing.t[0];
+    if ((Main_Firmware_DW.TimeStampA >= rtb_Product1_p) &&
+        (Main_Firmware_DW.TimeStampB >= rtb_Product1_p)) {
+      rtb_Product1_p = 0.0;
+    } else {
+      rtb_Id_err = Main_Firmware_DW.TimeStampA;
+      lastU = &Main_Firmware_DW.LastUAtTimeA;
+      if (Main_Firmware_DW.TimeStampA < Main_Firmware_DW.TimeStampB) {
+        if (Main_Firmware_DW.TimeStampB < rtb_Product1_p) {
+          rtb_Id_err = Main_Firmware_DW.TimeStampB;
+          lastU = &Main_Firmware_DW.LastUAtTimeB;
+        }
+      } else if (Main_Firmware_DW.TimeStampA >= rtb_Product1_p) {
+        rtb_Id_err = Main_Firmware_DW.TimeStampB;
+        lastU = &Main_Firmware_DW.LastUAtTimeB;
+      }
 
-  /* Switch: '<S116>/Switch' incorporates:
-   *  RelationalOperator: '<S118>/Compare'
-   */
-  if (rtb_Compare != 0) {
-    /* Switch: '<S116>/Switch' */
-    Main_Firmware_B.Switch[0] = Main_Firmware_B.Fcn_k;
-    Main_Firmware_B.Switch[1] = Main_Firmware_B.Fcn1_n;
-  } else {
-    /* Switch: '<S116>/Switch' */
-    Main_Firmware_B.Switch[0] = Main_Firmware_B.Fcn_j;
-    Main_Firmware_B.Switch[1] = Main_Firmware_B.Fcn1_e;
-  }
+      rtb_Product1_p = (Main_Firmware_B.Electricalspeed - *lastU) /
+        (rtb_Product1_p - rtb_Id_err);
+    }
 
-  /* End of Switch: '<S116>/Switch' */
+    /* End of Derivative: '<S3>/Derivative' */
 
-  /* SignalConversion generated from: '<S3>/Park Transform' */
-  Main_Firmware_B.TmpSignalConversionAtTAQSigLo_j[0] = Main_Firmware_B.Switch[0];
-  Main_Firmware_B.TmpSignalConversionAtTAQSigLo_j[1] = Main_Firmware_B.Switch[1];
-  Main_Firmware_B.TmpSignalConversionAtTAQSigLo_j[2] = Main_Firmware_B.Gain1[2];
+    /* Sum: '<S3>/Sum6' incorporates:
+     *  Gain: '<S3>/Gain7'
+     */
+    rtb_Id_err = Main_Firmware_P.ppair * Main_Firmware_B.Saturation -
+      rtb_Product1_p;
 
-  /* Sum: '<S3>/Sum4' incorporates:
-   *  Constant: '<S3>/Constant1'
-   */
-  rtb_Filter = Main_Firmware_P.Constant1_Value_n - Main_Firmware_B.Switch[0];
+    /* Gain: '<S158>/Filter Coefficient' incorporates:
+     *  Gain: '<S148>/Derivative Gain'
+     *  Integrator: '<S150>/Filter'
+     *  Sum: '<S150>/SumD'
+     */
+    Main_Firmware_B.FilterCoefficient = (Main_Firmware_P.SpeedPD_D * rtb_Id_err
+      - Main_Firmware_X.Filter_CSTATE) * Main_Firmware_P.SpeedPD_N;
 
-  /* Sum: '<S55>/Sum' incorporates:
-   *  DiscreteIntegrator: '<S46>/Integrator'
-   *  Gain: '<S51>/Proportional Gain'
-   */
-  rtb_Sum1_m = Main_Firmware_P.I_dqPID1_P * rtb_Filter +
-    Main_Firmware_DW.Integrator_DSTATE;
+    /* Switch: '<S3>/Switch' incorporates:
+     *  Constant: '<Root>/Constant2'
+     */
+    if (Main_Firmware_P.Constant2_Value > Main_Firmware_P.Switch_Threshold) {
+      /* Step: '<Root>/Step' */
+      if (rtb_Iq_error < Main_Firmware_P.Step_Time) {
+        /* Sum: '<S164>/Sum' incorporates:
+         *  Switch: '<S3>/Switch'
+         */
+        Main_Firmware_B.Te = Main_Firmware_P.Step_Y0;
+      } else {
+        /* Sum: '<S164>/Sum' incorporates:
+         *  Switch: '<S3>/Switch'
+         */
+        Main_Firmware_B.Te = Main_Firmware_P.Step_YFinal;
+      }
+    } else {
+      /* Sum: '<S164>/Sum' incorporates:
+       *  Gain: '<S160>/Proportional Gain'
+       */
+      Main_Firmware_B.Te = Main_Firmware_P.SpeedPD_P * rtb_Id_err +
+        Main_Firmware_B.FilterCoefficient;
 
-  /* Saturate: '<S53>/Saturation' */
-  if (rtb_Sum1_m > Main_Firmware_P.Voltage_max) {
-    rtb_Sum1_m = Main_Firmware_P.Voltage_max;
-  } else if (rtb_Sum1_m < -Main_Firmware_P.Voltage_max) {
-    rtb_Sum1_m = -Main_Firmware_P.Voltage_max;
-  }
+      /* Saturate: '<S162>/Saturation' */
+      if (Main_Firmware_B.Te > Main_Firmware_P.Torque_max) {
+        /* Sum: '<S164>/Sum' incorporates:
+         *  Switch: '<S3>/Switch'
+         */
+        Main_Firmware_B.Te = Main_Firmware_P.Torque_max;
+      } else if (Main_Firmware_B.Te < -Main_Firmware_P.Torque_max) {
+        /* Sum: '<S164>/Sum' incorporates:
+         *  Switch: '<S3>/Switch'
+         */
+        Main_Firmware_B.Te = -Main_Firmware_P.Torque_max;
+      }
 
-  /* Sum: '<S3>/Sum1' incorporates:
-   *  Gain: '<S5>/Gain3'
-   *  Gain: '<S5>/Gain4'
-   *  Product: '<S5>/Product1'
-   *  Saturate: '<S53>/Saturation'
-   *  Sum: '<S5>/Add1'
-   */
-  rtb_Product1_b = (Main_Firmware_P.Ld * rtb_Gain4_f * Main_Firmware_B.Switch[0]
-                    + Main_Firmware_P.lambda * rtb_Gain4_f) + rtb_Sum1_m;
+      /* End of Saturate: '<S162>/Saturation' */
+    }
 
-  /* Saturate: '<S3>/Limiter 1' */
-  if (rtb_Product1_b > Main_Firmware_P.Voltage_max) {
-    rtb_Product1_b = Main_Firmware_P.Voltage_max;
-  } else if (rtb_Product1_b < Main_Firmware_P.Limiter1_LowerSat) {
-    rtb_Product1_b = Main_Firmware_P.Limiter1_LowerSat;
-  }
+    /* End of Switch: '<S3>/Switch' */
 
-  /* End of Saturate: '<S3>/Limiter 1' */
+    /* Gain: '<S173>/Gain5' incorporates:
+     *  Integrator: '<S173>/Integrator1'
+     */
+    Main_Firmware_B.Gain5 = 1.5 * Main_Firmware_P.ppair * Main_Firmware_P.lambda
+      * Main_Firmware_X.Integrator1_CSTATE;
+    if (tmp) {
+      /* SignalConversion generated from: '<Root>/Mux4' */
+      Main_Firmware_B.TmpSignalConversionAtTAQSigLo_m[0] = Main_Firmware_B.Te;
+      Main_Firmware_B.TmpSignalConversionAtTAQSigLo_m[1] = Main_Firmware_B.Gain5;
+    }
 
-  /* Gain: '<S3>/Gain6' incorporates:
-   *  Gain: '<S174>/Gain4'
-   */
-  Iq_tmp = Main_Firmware_P.ppair * Main_Firmware_P.lambda;
-  Main_Firmware_B.Iq = 2.0 / (Iq_tmp * 3.0) * Main_Firmware_B.Te;
+    /* Gain: '<S116>/Gain3' */
+    rtb_Id_err = Main_Firmware_B.Gain3[1];
+    rtb_Iq_error = Main_Firmware_B.Gain3[0];
+    rtb_Gain4_k = Main_Firmware_B.Gain3[2];
+    for (i = 0; i < 3; i++) {
+      /* Gain: '<S116>/Gain1' incorporates:
+       *  Gain: '<S116>/Gain3'
+       */
+      Main_Firmware_B.Gain1[i] = ((Main_Firmware_P.Gain3_Gain_k[i + 3] *
+        rtb_Id_err + Main_Firmware_P.Gain3_Gain_k[i] * rtb_Iq_error) +
+        Main_Firmware_P.Gain3_Gain_k[i + 6] * rtb_Gain4_k) *
+        Main_Firmware_P.Gain1_Gain;
+    }
 
-  /* Saturate: '<S3>/Limiter1' */
-  if (Main_Firmware_B.Iq > Main_Firmware_P.Current_max) {
+    /* End of Gain: '<S116>/Gain3' */
+    if (tmp) {
+      /* RelationalOperator: '<S117>/Compare' incorporates:
+       *  Constant: '<S115>/Constant'
+       *  Constant: '<S117>/Constant'
+       */
+      Main_Firmware_B.Compare_o = (uint16_T)
+        (Main_Firmware_P.AlphaBetaZerotodq0_Alignment ==
+         Main_Firmware_P.CompareToConstant_const_o);
+    }
+
+    /* Outputs for Enabled SubSystem: '<S115>/Subsystem1' */
+    /* Gain: '<S116>/Gain1' */
+    Main_Firmware_Subsystem1(Main_Firmware_M, Main_Firmware_B.Compare_o,
+      &Main_Firmware_B.Gain1[0], Main_Firmware_B.Electricalspeed,
+      &Main_Firmware_B.Fcn_k, &Main_Firmware_B.Fcn1_n,
+      &Main_Firmware_DW.Subsystem1);
+
+    /* End of Outputs for SubSystem: '<S115>/Subsystem1' */
+    if (tmp) {
+      /* RelationalOperator: '<S118>/Compare' incorporates:
+       *  Constant: '<S115>/Constant'
+       *  Constant: '<S118>/Constant'
+       */
+      Main_Firmware_B.Compare_n = (uint16_T)
+        (Main_Firmware_P.AlphaBetaZerotodq0_Alignment ==
+         Main_Firmware_P.CompareToConstant1_const_k);
+    }
+
+    /* Outputs for Enabled SubSystem: '<S115>/Subsystem - pi//2 delay' */
+    /* Gain: '<S116>/Gain1' */
+    Main_Firmware_Subsystempi2delay(Main_Firmware_M, Main_Firmware_B.Compare_n,
+      &Main_Firmware_B.Gain1[0], Main_Firmware_B.Electricalspeed,
+      &Main_Firmware_B.Fcn_jc, &Main_Firmware_B.Fcn1_e,
+      &Main_Firmware_DW.Subsystempi2delay);
+
+    /* End of Outputs for SubSystem: '<S115>/Subsystem - pi//2 delay' */
+
+    /* Switch: '<S115>/Switch' incorporates:
+     *  RelationalOperator: '<S117>/Compare'
+     */
+    if (Main_Firmware_B.Compare_o != 0U) {
+      /* Switch: '<S115>/Switch' */
+      Main_Firmware_B.Switch[0] = Main_Firmware_B.Fcn_k;
+      Main_Firmware_B.Switch[1] = Main_Firmware_B.Fcn1_n;
+    } else {
+      /* Switch: '<S115>/Switch' */
+      Main_Firmware_B.Switch[0] = Main_Firmware_B.Fcn_jc;
+      Main_Firmware_B.Switch[1] = Main_Firmware_B.Fcn1_e;
+    }
+
+    /* End of Switch: '<S115>/Switch' */
+    if (tmp) {
+      /* SignalConversion generated from: '<S3>/Park Transform' */
+      Main_Firmware_B.TmpSignalConversionAtTAQSigLo_j[0] =
+        Main_Firmware_B.Switch[0];
+      Main_Firmware_B.TmpSignalConversionAtTAQSigLo_j[1] =
+        Main_Firmware_B.Switch[1];
+      Main_Firmware_B.TmpSignalConversionAtTAQSigLo_j[2] =
+        Main_Firmware_B.Gain1[2];
+    }
+
+    /* Sum: '<S3>/Sum4' incorporates:
+     *  Constant: '<S3>/Constant1'
+     */
+    rtb_Id_err = Main_Firmware_P.Constant1_Value - Main_Firmware_B.Switch[0];
+
+    /* Integrator: '<S97>/Integrator' */
+    /* Limited  Integrator  */
+    if (Main_Firmware_X.Integrator_CSTATE_h >= Main_Firmware_P.Voltage_max) {
+      Main_Firmware_X.Integrator_CSTATE_h = Main_Firmware_P.Voltage_max;
+    } else if (Main_Firmware_X.Integrator_CSTATE_h <=
+               -Main_Firmware_P.Voltage_max) {
+      Main_Firmware_X.Integrator_CSTATE_h = -Main_Firmware_P.Voltage_max;
+    }
+
+    /* Sum: '<S106>/Sum' incorporates:
+     *  Gain: '<S102>/Proportional Gain'
+     *  Integrator: '<S97>/Integrator'
+     */
+    rtb_Sum1_j = Main_Firmware_P.I_dqPID3_P * rtb_Id_err +
+      Main_Firmware_X.Integrator_CSTATE_h;
+
+    /* Saturate: '<S104>/Saturation' */
+    if (rtb_Sum1_j > Main_Firmware_P.Voltage_max) {
+      rtb_Sum1_j = Main_Firmware_P.Voltage_max;
+    } else if (rtb_Sum1_j < -Main_Firmware_P.Voltage_max) {
+      rtb_Sum1_j = -Main_Firmware_P.Voltage_max;
+    }
+
+    /* Sum: '<S3>/Sum1' incorporates:
+     *  Gain: '<S5>/Gain3'
+     *  Gain: '<S5>/Gain4'
+     *  Product: '<S5>/Product1'
+     *  Saturate: '<S104>/Saturation'
+     *  Sum: '<S5>/Add1'
+     */
+    rtb_Gain4_k = (Main_Firmware_P.Ld * rtb_Product1_p * Main_Firmware_B.Switch
+                   [0] + Main_Firmware_P.lambda * rtb_Product1_p) + rtb_Sum1_j;
+
+    /* Saturate: '<S3>/Limiter 1' */
+    if (rtb_Gain4_k > Main_Firmware_P.Voltage_max) {
+      rtb_Gain4_k = Main_Firmware_P.Voltage_max;
+    } else if (rtb_Gain4_k < Main_Firmware_P.Limiter1_LowerSat) {
+      rtb_Gain4_k = Main_Firmware_P.Limiter1_LowerSat;
+    }
+
+    /* End of Saturate: '<S3>/Limiter 1' */
+
     /* Gain: '<S3>/Gain6' incorporates:
+     *  Gain: '<S173>/Gain4'
+     */
+    rtb_Sum1_d_tmp = Main_Firmware_P.ppair * Main_Firmware_P.lambda;
+    rtb_Sum1_j = 2.0 / (rtb_Sum1_d_tmp * 3.0) * Main_Firmware_B.Te;
+
+    /* Saturate: '<S3>/Limiter1' */
+    if (rtb_Sum1_j > Main_Firmware_P.Current_max) {
+      rtb_Sum1_j = Main_Firmware_P.Current_max;
+    } else if (rtb_Sum1_j < -Main_Firmware_P.Current_max) {
+      rtb_Sum1_j = -Main_Firmware_P.Current_max;
+    }
+
+    /* Sum: '<S3>/Sum3' incorporates:
      *  Saturate: '<S3>/Limiter1'
      */
-    Main_Firmware_B.Iq = Main_Firmware_P.Current_max;
-  } else if (Main_Firmware_B.Iq < -Main_Firmware_P.Current_max) {
-    /* Gain: '<S3>/Gain6' incorporates:
-     *  Saturate: '<S3>/Limiter1'
+    rtb_Iq_error = rtb_Sum1_j - Main_Firmware_B.Switch[1];
+
+    /* Integrator: '<S45>/Integrator' */
+    /* Limited  Integrator  */
+    if (Main_Firmware_X.Integrator_CSTATE_hk >= Main_Firmware_P.Voltage_max) {
+      Main_Firmware_X.Integrator_CSTATE_hk = Main_Firmware_P.Voltage_max;
+    } else if (Main_Firmware_X.Integrator_CSTATE_hk <=
+               -Main_Firmware_P.Voltage_max) {
+      Main_Firmware_X.Integrator_CSTATE_hk = -Main_Firmware_P.Voltage_max;
+    }
+
+    /* Sum: '<S54>/Sum' incorporates:
+     *  Gain: '<S50>/Proportional Gain'
+     *  Integrator: '<S45>/Integrator'
      */
-    Main_Firmware_B.Iq = -Main_Firmware_P.Current_max;
-  }
+    rtb_Sum1_j = Main_Firmware_P.I_dqPID_P * rtb_Iq_error +
+      Main_Firmware_X.Integrator_CSTATE_hk;
 
-  /* End of Saturate: '<S3>/Limiter1' */
+    /* Saturate: '<S52>/Saturation' */
+    if (rtb_Sum1_j > Main_Firmware_P.Voltage_max) {
+      rtb_Sum1_j = Main_Firmware_P.Voltage_max;
+    } else if (rtb_Sum1_j < -Main_Firmware_P.Voltage_max) {
+      rtb_Sum1_j = -Main_Firmware_P.Voltage_max;
+    }
 
-  /* Sum: '<S3>/Sum3' */
-  rtb_Iq_error = Main_Firmware_B.Iq - Main_Firmware_B.Switch[1];
-
-  /* Sum: '<S107>/Sum' incorporates:
-   *  DiscreteIntegrator: '<S98>/Integrator'
-   *  Gain: '<S103>/Proportional Gain'
-   */
-  rtb_Sum1_m = Main_Firmware_P.I_dqPID2_P * rtb_Iq_error +
-    Main_Firmware_DW.Integrator_DSTATE_o;
-
-  /* Saturate: '<S105>/Saturation' */
-  if (rtb_Sum1_m > Main_Firmware_P.Voltage_max) {
-    rtb_Sum1_m = Main_Firmware_P.Voltage_max;
-  } else if (rtb_Sum1_m < -Main_Firmware_P.Voltage_max) {
-    rtb_Sum1_m = -Main_Firmware_P.Voltage_max;
-  }
-
-  /* Sum: '<S3>/Sum7' incorporates:
-   *  Gain: '<S5>/Gain1'
-   *  Product: '<S5>/Product'
-   *  Saturate: '<S105>/Saturation'
-   */
-  rtb_Sum1_m += -Main_Firmware_P.Lq * rtb_Gain4_f * Main_Firmware_B.Switch[1];
-
-  /* Saturate: '<S3>/Limiter' */
-  if (rtb_Sum1_m > Main_Firmware_P.Voltage_max) {
-    rtb_Sum1_m = Main_Firmware_P.Voltage_max;
-  } else if (rtb_Sum1_m < Main_Firmware_P.Limiter_LowerSat) {
-    rtb_Sum1_m = Main_Firmware_P.Limiter_LowerSat;
-  }
-
-  /* End of Saturate: '<S3>/Limiter' */
-
-  /* Sum: '<S9>/Add' incorporates:
-   *  Product: '<S9>/Product'
-   *  Product: '<S9>/Product1'
-   *  Trigonometry: '<S9>/Trigonometric Function'
-   *  Trigonometry: '<S9>/Trigonometric Function1'
-   */
-  Main_Firmware_B.a = rtb_Product1_b * cos(rtb_Electricalspeed) - sin
-    (rtb_Electricalspeed) * rtb_Sum1_m;
-
-  /* Bias: '<S9>/Bias' */
-  rtb_Gain4_f = rtb_Electricalspeed + Main_Firmware_P.Bias_Bias;
-
-  /* Sum: '<S9>/Add1' incorporates:
-   *  Product: '<S9>/Product2'
-   *  Product: '<S9>/Product3'
-   *  Trigonometry: '<S9>/Trigonometric Function2'
-   *  Trigonometry: '<S9>/Trigonometric Function3'
-   */
-  Main_Firmware_B.b = rtb_Product1_b * cos(rtb_Gain4_f) - sin(rtb_Gain4_f) *
-    rtb_Sum1_m;
-
-  /* Bias: '<S9>/Bias1' */
-  rtb_Gain4_f = rtb_Electricalspeed + Main_Firmware_P.Bias1_Bias;
-
-  /* Sum: '<S9>/Add2' incorporates:
-   *  Product: '<S9>/Product4'
-   *  Product: '<S9>/Product5'
-   *  Trigonometry: '<S9>/Trigonometric Function4'
-   *  Trigonometry: '<S9>/Trigonometric Function5'
-   */
-  Main_Firmware_B.c = rtb_Product1_b * cos(rtb_Gain4_f) - sin(rtb_Gain4_f) *
-    rtb_Sum1_m;
-
-  /* SignalConversion generated from: '<S179>/Gain3' */
-  Main_Firmware_B.TmpSignalConversionAtGain3Inpor[0] = Main_Firmware_B.a;
-  Main_Firmware_B.TmpSignalConversionAtGain3Inpor[1] = Main_Firmware_B.b;
-  Main_Firmware_B.TmpSignalConversionAtGain3Inpor[2] = Main_Firmware_B.c;
-
-  /* Trigonometry: '<Root>/Trigonometric Function' */
-  Main_Firmware_B.Sine = sin(Main_Firmware_B.RotorAngle);
-
-  /* Trigonometry: '<Root>/Trigonometric Function1' */
-  Main_Firmware_B.Cos = cos(Main_Firmware_B.RotorAngle);
-
-  /* SignalConversion generated from: '<Root>/Mux' */
-  Main_Firmware_B.TmpSignalConversionAtTAQSigLo_i[0] = Main_Firmware_B.Sine;
-  Main_Firmware_B.TmpSignalConversionAtTAQSigLo_i[1] = Main_Firmware_B.Cos;
-
-  /* Gain: '<S1>/Gain5' incorporates:
-   *  Delay: '<S1>/Sampling Delay'
-   */
-  rtb_Product1_b = 100.0 / Main_Firmware_P.Voltage_max;
-  for (rtb_Compare = 0; rtb_Compare < 3; rtb_Compare++) {
-    Main_Firmware_DW.SamplingDelay_DSTATE[rtb_Compare] = rtb_Product1_b *
-      Main_Firmware_B.TmpSignalConversionAtGain3Inpor[rtb_Compare];
-
-    /* Gain: '<S179>/Gain1' incorporates:
-     *  Delay: '<S1>/Sampling Delay'
-     *  Gain: '<S179>/Gain3'
+    /* Sum: '<S3>/Sum7' incorporates:
+     *  Gain: '<S5>/Gain1'
+     *  Product: '<S5>/Product'
+     *  Saturate: '<S52>/Saturation'
      */
-    rtb_Gain3[rtb_Compare] = ((Main_Firmware_P.Gain3_Gain_k3[rtb_Compare + 3] *
-      Main_Firmware_B.TmpSignalConversionAtGain3Inpor[1] +
-      Main_Firmware_P.Gain3_Gain_k3[rtb_Compare] *
-      Main_Firmware_B.TmpSignalConversionAtGain3Inpor[0]) +
-      Main_Firmware_P.Gain3_Gain_k3[rtb_Compare + 6] *
-      Main_Firmware_B.TmpSignalConversionAtGain3Inpor[2]) *
-      Main_Firmware_P.Gain1_Gain_i;
+    rtb_Sum1_j += -Main_Firmware_P.Lq * rtb_Product1_p * Main_Firmware_B.Switch
+      [1];
+
+    /* Saturate: '<S3>/Limiter' */
+    if (rtb_Sum1_j > Main_Firmware_P.Voltage_max) {
+      rtb_Sum1_j = Main_Firmware_P.Voltage_max;
+    } else if (rtb_Sum1_j < Main_Firmware_P.Limiter_LowerSat) {
+      rtb_Sum1_j = Main_Firmware_P.Limiter_LowerSat;
+    }
+
+    /* End of Saturate: '<S3>/Limiter' */
+
+    /* Sum: '<S8>/Add' incorporates:
+     *  Product: '<S8>/Product'
+     *  Product: '<S8>/Product1'
+     *  Trigonometry: '<S8>/Trigonometric Function'
+     *  Trigonometry: '<S8>/Trigonometric Function1'
+     */
+    Main_Firmware_B.a = rtb_Gain4_k * cos(Main_Firmware_B.Electricalspeed) - sin
+      (Main_Firmware_B.Electricalspeed) * rtb_Sum1_j;
+
+    /* Bias: '<S8>/Bias' */
+    rtb_Product1_p = Main_Firmware_B.Electricalspeed + Main_Firmware_P.Bias_Bias;
+
+    /* Sum: '<S8>/Add1' incorporates:
+     *  Product: '<S8>/Product2'
+     *  Product: '<S8>/Product3'
+     *  Trigonometry: '<S8>/Trigonometric Function2'
+     *  Trigonometry: '<S8>/Trigonometric Function3'
+     */
+    Main_Firmware_B.b = rtb_Gain4_k * cos(rtb_Product1_p) - sin(rtb_Product1_p) *
+      rtb_Sum1_j;
+
+    /* Bias: '<S8>/Bias1' */
+    rtb_Product1_p = Main_Firmware_B.Electricalspeed +
+      Main_Firmware_P.Bias1_Bias;
+
+    /* Sum: '<S8>/Add2' incorporates:
+     *  Product: '<S8>/Product4'
+     *  Product: '<S8>/Product5'
+     *  Trigonometry: '<S8>/Trigonometric Function4'
+     *  Trigonometry: '<S8>/Trigonometric Function5'
+     */
+    Main_Firmware_B.c = rtb_Gain4_k * cos(rtb_Product1_p) - sin(rtb_Product1_p) *
+      rtb_Sum1_j;
+
+    /* SignalConversion generated from: '<S178>/Gain3' */
+    Main_Firmware_B.Gain5_k[0] = Main_Firmware_B.a;
+    Main_Firmware_B.Gain5_k[1] = Main_Firmware_B.b;
+    Main_Firmware_B.Gain5_k[2] = Main_Firmware_B.c;
+
+    /* Gain: '<S178>/Gain3' */
+    rtb_Product1_p = Main_Firmware_B.Gain5_k[1];
+    rtb_Gain4_k = Main_Firmware_B.Gain5_k[0];
+    rtb_Sum1_j = Main_Firmware_B.Gain5_k[2];
+    for (i = 0; i < 3; i++) {
+      /* Gain: '<S178>/Gain1' incorporates:
+       *  Gain: '<S178>/Gain3'
+       */
+      rtb_Gain_c[i] = ((Main_Firmware_P.Gain3_Gain_g[i + 3] * rtb_Product1_p +
+                        Main_Firmware_P.Gain3_Gain_g[i] * rtb_Gain4_k) +
+                       Main_Firmware_P.Gain3_Gain_g[i + 6] * rtb_Sum1_j) *
+        Main_Firmware_P.Gain1_Gain_e;
+    }
+
+    /* End of Gain: '<S178>/Gain3' */
+    if (tmp) {
+      /* RelationalOperator: '<S179>/Compare' incorporates:
+       *  Constant: '<S177>/Constant'
+       *  Constant: '<S179>/Constant'
+       */
+      Main_Firmware_B.Compare_g = (uint16_T)
+        (Main_Firmware_P.AlphaBetaZerotodq0_Alignment_n ==
+         Main_Firmware_P.CompareToConstant_const_i);
+    }
+
+    /* Outputs for Enabled SubSystem: '<S177>/Subsystem1' */
+    /* Gain: '<S178>/Gain1' incorporates:
+     *  Integrator: '<S173>/Integrator2'
+     */
+    Main_Firmware_Subsystem1(Main_Firmware_M, Main_Firmware_B.Compare_g,
+      &rtb_Gain_c[0], Main_Firmware_X.Integrator2_CSTATE, &Main_Firmware_B.Fcn_b,
+      &Main_Firmware_B.Fcn1_d, &Main_Firmware_DW.Subsystem1_c);
+
+    /* End of Outputs for SubSystem: '<S177>/Subsystem1' */
+    if (tmp) {
+      /* RelationalOperator: '<S180>/Compare' incorporates:
+       *  Constant: '<S177>/Constant'
+       *  Constant: '<S180>/Constant'
+       */
+      Main_Firmware_B.Compare_b = (uint16_T)
+        (Main_Firmware_P.AlphaBetaZerotodq0_Alignment_n ==
+         Main_Firmware_P.CompareToConstant1_const_m);
+    }
+
+    /* Outputs for Enabled SubSystem: '<S177>/Subsystem - pi//2 delay' */
+    /* Gain: '<S178>/Gain1' incorporates:
+     *  Integrator: '<S173>/Integrator2'
+     */
+    Main_Firmware_Subsystempi2delay(Main_Firmware_M, Main_Firmware_B.Compare_b,
+      &rtb_Gain_c[0], Main_Firmware_X.Integrator2_CSTATE, &Main_Firmware_B.Fcn_j,
+      &Main_Firmware_B.Fcn1_k, &Main_Firmware_DW.Subsystempi2delay_o);
+
+    /* End of Outputs for SubSystem: '<S177>/Subsystem - pi//2 delay' */
+
+    /* Gain: '<S1>/Gain5' */
+    rtb_Product1_p = 1.0 / Main_Firmware_P.Voltage_max;
+
+    /* Gain: '<S1>/Gain5' incorporates:
+     *  SignalConversion generated from: '<S178>/Gain3'
+     */
+    Main_Firmware_B.Gain5_k[0] *= rtb_Product1_p;
+    Main_Firmware_B.Gain5_k[1] *= rtb_Product1_p;
+    Main_Firmware_B.Gain5_k[2] *= rtb_Product1_p;
+
+    /* Trigonometry: '<Root>/Trigonometric Function' */
+    Main_Firmware_B.Sine = sin(Main_Firmware_B.RotorAngle);
+
+    /* Trigonometry: '<Root>/Trigonometric Function1' */
+    Main_Firmware_B.Cos = cos(Main_Firmware_B.RotorAngle);
+    if (tmp) {
+      /* SignalConversion generated from: '<Root>/From4' */
+      Main_Firmware_B.TmpSignalConversionAtTAQSigLo_g[0] = Main_Firmware_B.a;
+      Main_Firmware_B.TmpSignalConversionAtTAQSigLo_g[1] = Main_Firmware_B.b;
+      Main_Firmware_B.TmpSignalConversionAtTAQSigLo_g[2] = Main_Firmware_B.c;
+
+      /* SignalConversion generated from: '<Root>/Mux' */
+      Main_Firmware_B.TmpSignalConversionAtTAQSigLo_i[0] = Main_Firmware_B.Sine;
+      Main_Firmware_B.TmpSignalConversionAtTAQSigLo_i[1] = Main_Firmware_B.Cos;
+    }
+
+    /* Switch: '<S177>/Switch' incorporates:
+     *  RelationalOperator: '<S179>/Compare'
+     */
+    if (Main_Firmware_B.Compare_g != 0U) {
+      rtb_Gain4_k = Main_Firmware_B.Fcn_b;
+      rtb_Product1_p = Main_Firmware_B.Fcn1_d;
+    } else {
+      rtb_Gain4_k = Main_Firmware_B.Fcn_j;
+      rtb_Product1_p = Main_Firmware_B.Fcn1_k;
+    }
+
+    /* End of Switch: '<S177>/Switch' */
+    if (tmp) {
+    }
+
+    /* Gain: '<S173>/Gain' incorporates:
+     *  Constant: '<S173>/Constant'
+     *  Gain: '<S173>/Gain1'
+     *  Integrator: '<S173>/Integrator'
+     *  Integrator: '<S173>/Integrator1'
+     *  Product: '<S173>/Product'
+     *  Sum: '<S173>/Sum'
+     */
+    Main_Firmware_B.Gain = (Main_Firmware_P.Lq * Main_Firmware_P.ppair *
+      Main_Firmware_B.TransferFcn * Main_Firmware_X.Integrator1_CSTATE +
+      (rtb_Gain4_k - Main_Firmware_P.Rs * Main_Firmware_X.Integrator_CSTATE)) *
+      (1.0 / Main_Firmware_P.Ld);
+
+    /* Gain: '<S173>/Gain2' incorporates:
+     *  Constant: '<S173>/Constant1'
+     *  Gain: '<S173>/Gain3'
+     *  Gain: '<S173>/Gain4'
+     *  Integrator: '<S173>/Integrator'
+     *  Integrator: '<S173>/Integrator1'
+     *  Product: '<S173>/Product1'
+     *  Sum: '<S173>/Sum1'
+     */
+    Main_Firmware_B.Gain2 = (((rtb_Product1_p - Main_Firmware_P.Rs *
+      Main_Firmware_X.Integrator1_CSTATE) - Main_Firmware_P.Ld *
+      Main_Firmware_P.ppair * Main_Firmware_B.TransferFcn *
+      Main_Firmware_X.Integrator_CSTATE) - rtb_Sum1_d_tmp *
+      Main_Firmware_B.TransferFcn) * (1.0 / Main_Firmware_P.Lq);
+
+    /* Gain: '<S42>/Integral Gain' */
+    Main_Firmware_B.IntegralGain = Main_Firmware_P.I_dqPID_I * rtb_Iq_error;
+
+    /* Gain: '<S94>/Integral Gain' */
+    Main_Firmware_B.IntegralGain_a = Main_Firmware_P.I_dqPID3_I * rtb_Id_err;
+
+    /* Signum: '<S174>/Sign' */
+    if (rtIsNaN(Main_Firmware_B.TransferFcn)) {
+      rtb_Product1_p = (rtNaN);
+    } else if (Main_Firmware_B.TransferFcn < 0.0) {
+      rtb_Product1_p = -1.0;
+    } else {
+      rtb_Product1_p = (Main_Firmware_B.TransferFcn > 0.0);
+    }
+
+    /* Sum: '<S174>/Subtract' incorporates:
+     *  Constant: '<S174>/Constant1'
+     *  Constant: '<S174>/Constant2'
+     *  Gain: '<S174>/Gain'
+     *  Math: '<S174>/Square'
+     *  Product: '<S174>/Product'
+     *  Product: '<S174>/Product2'
+     *  Signum: '<S174>/Sign'
+     *  Sum: '<S174>/Sum1'
+     */
+    Main_Firmware_B.Subtract = Main_Firmware_B.Gain5 - (0.5 *
+      Main_Firmware_P.rho * Main_Firmware_P.C_d * Main_Firmware_P.A_f *
+      0.04129024 * (Main_Firmware_B.TransferFcn * Main_Firmware_B.TransferFcn) *
+      Main_Firmware_P.Gain_Gain_m + Main_Firmware_P.m * Main_Firmware_P.g *
+      Main_Firmware_P.C_rr * rtb_Product1_p);
+
+    /* Gain: '<S173>/Gain6' */
+    Main_Firmware_B.Gain6 = Main_Firmware_P.ppair * Main_Firmware_B.TransferFcn;
   }
 
-  /* End of Gain: '<S1>/Gain5' */
-  /* RelationalOperator: '<S180>/Compare' incorporates:
-   *  Constant: '<S178>/Constant'
-   *  Constant: '<S180>/Constant'
-   */
-  rtb_Compare = (Main_Firmware_P.AlphaBetaZerotodq0_Alignment_e ==
-                 Main_Firmware_P.CompareToConstant_const_n);
+  if (rtmIsMajorTimeStep(Main_Firmware_M)) {
+    real_T *lastU;
+    if (rtmIsMajorTimeStep(Main_Firmware_M)) {
+      /* Update for Delay: '<S1>/Sampling Delay' */
+      Main_Firmware_DW.SamplingDelay_DSTATE[0] = Main_Firmware_B.Gain5_k[0];
+      Main_Firmware_DW.SamplingDelay_DSTATE[1] = Main_Firmware_B.Gain5_k[1];
+      Main_Firmware_DW.SamplingDelay_DSTATE[2] = Main_Firmware_B.Gain5_k[2];
+    }
 
-  /* Outputs for Enabled SubSystem: '<S178>/Subsystem1' */
-  /* DiscreteIntegrator: '<S174>/Discrete-Time Integrator2' */
-  Main_Firmware_Subsystem1((uint16_T)rtb_Compare, &rtb_Gain3[0],
-    Main_Firmware_DW.DiscreteTimeIntegrator2_DSTATE, &Main_Firmware_B.Fcn_f,
-    &Main_Firmware_B.Fcn1_j, &Main_Firmware_DW.Subsystem1_k);
+    /* Update for Derivative: '<S3>/Derivative' */
+    if (Main_Firmware_DW.TimeStampA == (rtInf)) {
+      Main_Firmware_DW.TimeStampA = Main_Firmware_M->Timing.t[0];
+      lastU = &Main_Firmware_DW.LastUAtTimeA;
+    } else if (Main_Firmware_DW.TimeStampB == (rtInf)) {
+      Main_Firmware_DW.TimeStampB = Main_Firmware_M->Timing.t[0];
+      lastU = &Main_Firmware_DW.LastUAtTimeB;
+    } else if (Main_Firmware_DW.TimeStampA < Main_Firmware_DW.TimeStampB) {
+      Main_Firmware_DW.TimeStampA = Main_Firmware_M->Timing.t[0];
+      lastU = &Main_Firmware_DW.LastUAtTimeA;
+    } else {
+      Main_Firmware_DW.TimeStampB = Main_Firmware_M->Timing.t[0];
+      lastU = &Main_Firmware_DW.LastUAtTimeB;
+    }
 
-  /* End of Outputs for SubSystem: '<S178>/Subsystem1' */
+    *lastU = Main_Firmware_B.Electricalspeed;
 
-  /* Outputs for Enabled SubSystem: '<S178>/Subsystem - pi//2 delay' */
-  /* RelationalOperator: '<S181>/Compare' incorporates:
-   *  Constant: '<S178>/Constant'
-   *  Constant: '<S181>/Constant'
-   *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator2'
-   */
-  Main_Firmware_Subsystempi2delay((uint16_T)
-    (Main_Firmware_P.AlphaBetaZerotodq0_Alignment_e ==
-     Main_Firmware_P.CompareToConstant1_const_n), &rtb_Gain3[0],
-    Main_Firmware_DW.DiscreteTimeIntegrator2_DSTATE, &Main_Firmware_B.Fcn_m,
-    &Main_Firmware_B.Fcn1_i, &Main_Firmware_DW.Subsystempi2delay_o);
+    /* End of Update for Derivative: '<S3>/Derivative' */
+    if (rtmIsMajorTimeStep(Main_Firmware_M)) {/* Sample time: [2.0E-5s, 0.0s] */
+      extmodeErrorCode_T errorCode = EXTMODE_SUCCESS;
+      extmodeSimulationTime_T extmodeTime = (extmodeSimulationTime_T)
+        (((Main_Firmware_M->Timing.clockTick1+
+           Main_Firmware_M->Timing.clockTickH1* 4294967296.0) * 1) + 0);
 
-  /* End of Outputs for SubSystem: '<S178>/Subsystem - pi//2 delay' */
+      /* Trigger External Mode event */
+      errorCode = extmodeEvent(1, extmodeTime);
+      if (errorCode != EXTMODE_SUCCESS) {
+        /* Code to handle External Mode event errors
+           may be added here */
+      }
+    }
+  }                                    /* end MajorTimeStep */
 
-  /* Switch: '<S178>/Switch' incorporates:
-   *  RelationalOperator: '<S180>/Compare'
-   */
-  if (rtb_Compare != 0) {
-    rtb_Electricalspeed = Main_Firmware_B.Fcn_f;
-    rtb_Gain4_f = Main_Firmware_B.Fcn1_j;
+  if (rtmIsMajorTimeStep(Main_Firmware_M)) {
+    rt_ertODEUpdateContinuousStates(&Main_Firmware_M->solverInfo);
+
+    /* Update absolute time for base rate */
+    /* The "clockTick0" counts the number of times the code of this task has
+     * been executed. The absolute time is the multiplication of "clockTick0"
+     * and "Timing.stepSize0". Size of "clockTick0" ensures timer will not
+     * overflow during the application lifespan selected.
+     * Timer of this task consists of two 32 bit unsigned integers.
+     * The two integers represent the low bits Timing.clockTick0 and the high bits
+     * Timing.clockTickH0. When the low bit overflows to 0, the high bits increment.
+     */
+    if (!(++Main_Firmware_M->Timing.clockTick0)) {
+      ++Main_Firmware_M->Timing.clockTickH0;
+    }
+
+    Main_Firmware_M->Timing.t[0] = rtsiGetSolverStopTime
+      (&Main_Firmware_M->solverInfo);
+
+    {
+      /* Update absolute timer for sample time: [2.0E-5s, 0.0s] */
+      /* The "clockTick1" counts the number of times the code of this task has
+       * been executed. The resolution of this integer timer is 2.0E-5, which is the step size
+       * of the task. Size of "clockTick1" ensures timer will not overflow during the
+       * application lifespan selected.
+       * Timer of this task consists of two 32 bit unsigned integers.
+       * The two integers represent the low bits Timing.clockTick1 and the high bits
+       * Timing.clockTickH1. When the low bit overflows to 0, the high bits increment.
+       */
+      Main_Firmware_M->Timing.clockTick1++;
+      if (!Main_Firmware_M->Timing.clockTick1) {
+        Main_Firmware_M->Timing.clockTickH1++;
+      }
+    }
+  }                                    /* end MajorTimeStep */
+}
+
+/* Derivatives for root system: '<Root>' */
+void Main_Firmware_derivatives(void)
+{
+  XDot_Main_Firmware_T *_rtXdot;
+  boolean_T lsat;
+  boolean_T usat;
+  _rtXdot = ((XDot_Main_Firmware_T *) Main_Firmware_M->derivs);
+
+  /* Derivatives for TransferFcn: '<S174>/Transfer Fcn' */
+  _rtXdot->TransferFcn_CSTATE = Main_Firmware_P.TransferFcn_A *
+    Main_Firmware_X.TransferFcn_CSTATE;
+  _rtXdot->TransferFcn_CSTATE += Main_Firmware_B.Subtract;
+
+  /* Derivatives for Integrator: '<S173>/Integrator2' */
+  lsat = (Main_Firmware_X.Integrator2_CSTATE <=
+          Main_Firmware_P.Integrator2_LowerSat);
+  usat = (Main_Firmware_X.Integrator2_CSTATE >=
+          Main_Firmware_P.Integrator2_UpperSat);
+  if (((!lsat) && (!usat)) || (lsat && (Main_Firmware_B.Gain6 > 0.0)) || (usat &&
+       (Main_Firmware_B.Gain6 < 0.0))) {
+    _rtXdot->Integrator2_CSTATE = Main_Firmware_B.Gain6;
   } else {
-    rtb_Electricalspeed = Main_Firmware_B.Fcn_m;
-    rtb_Gain4_f = Main_Firmware_B.Fcn1_i;
+    /* in saturation */
+    _rtXdot->Integrator2_CSTATE = 0.0;
   }
 
-  /* End of Switch: '<S178>/Switch' */
-  /* Sum: '<S174>/Sum1' incorporates:
-   *  Constant: '<S174>/Constant1'
-   *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator'
-   *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator1'
-   *  Gain: '<S174>/Gain3'
-   *  Gain: '<S174>/Gain4'
-   *  Product: '<S174>/Product1'
-   */
-  rtb_Sum1_m = ((rtb_Gain4_f - Main_Firmware_P.Rs *
-                 Main_Firmware_DW.DiscreteTimeIntegrator1_DSTATE) -
-                Main_Firmware_P.Ld * Main_Firmware_P.ppair *
-                Main_Firmware_B.DiscreteTransferFcn *
-                Main_Firmware_DW.DiscreteTimeIntegrator_DSTATE) - Iq_tmp *
-    Main_Firmware_B.DiscreteTransferFcn;
+  /* End of Derivatives for Integrator: '<S173>/Integrator2' */
 
-  /* Signum: '<S175>/Sign' */
-  if (rtIsNaN(Main_Firmware_B.DiscreteTransferFcn)) {
-    rtb_Product1_b = (rtNaN);
-  } else if (Main_Firmware_B.DiscreteTransferFcn < 0.0) {
-    rtb_Product1_b = -1.0;
+  /* Derivatives for Integrator: '<S173>/Integrator' */
+  lsat = (Main_Firmware_X.Integrator_CSTATE <=
+          Main_Firmware_P.Integrator_LowerSat);
+  usat = (Main_Firmware_X.Integrator_CSTATE >=
+          Main_Firmware_P.Integrator_UpperSat);
+  if (((!lsat) && (!usat)) || (lsat && (Main_Firmware_B.Gain > 0.0)) || (usat &&
+       (Main_Firmware_B.Gain < 0.0))) {
+    _rtXdot->Integrator_CSTATE = Main_Firmware_B.Gain;
   } else {
-    rtb_Product1_b = (Main_Firmware_B.DiscreteTransferFcn > 0.0);
+    /* in saturation */
+    _rtXdot->Integrator_CSTATE = 0.0;
   }
 
-  /* Sum: '<S175>/Subtract' incorporates:
-   *  Constant: '<S175>/Constant1'
-   *  Constant: '<S175>/Constant2'
-   *  Gain: '<S175>/Gain'
-   *  Math: '<S175>/Square'
-   *  Product: '<S175>/Product'
-   *  Product: '<S175>/Product2'
-   *  Signum: '<S175>/Sign'
-   *  Sum: '<S175>/Sum1'
-   */
-  Main_Firmware_B.Subtract = Main_Firmware_B.Gain5 - (0.5 * Main_Firmware_P.rho *
-    Main_Firmware_P.C_d * Main_Firmware_P.A_f * 0.04129024 *
-    (Main_Firmware_B.DiscreteTransferFcn * Main_Firmware_B.DiscreteTransferFcn) *
-    Main_Firmware_P.Gain_Gain + Main_Firmware_P.m * Main_Firmware_P.g *
-    Main_Firmware_P.C_rr * rtb_Product1_b);
+  /* End of Derivatives for Integrator: '<S173>/Integrator' */
 
-  /* Update for DiscreteTransferFcn: '<S175>/Discrete Transfer Fcn' */
-  Main_Firmware_DW.DiscreteTransferFcn_states = (Main_Firmware_B.Subtract -
-    Main_Firmware_P.DiscreteTransferFcn_DenCoef[1L] *
-    Main_Firmware_DW.DiscreteTransferFcn_states) /
-    Main_Firmware_P.DiscreteTransferFcn_DenCoef[0];
-
-  /* Update for DiscreteIntegrator: '<S174>/Discrete-Time Integrator2' incorporates:
-   *  Gain: '<S174>/Gain6'
-   */
-  Main_Firmware_DW.DiscreteTimeIntegrator2_DSTATE += Main_Firmware_P.ppair *
-    Main_Firmware_B.DiscreteTransferFcn *
-    Main_Firmware_P.DiscreteTimeIntegrator2_gainval;
-
-  /* Update for DiscreteIntegrator: '<S174>/Discrete-Time Integrator' incorporates:
-   *  Constant: '<S174>/Constant'
-   *  DiscreteIntegrator: '<S174>/Discrete-Time Integrator1'
-   *  Gain: '<S174>/Gain'
-   *  Gain: '<S174>/Gain1'
-   *  Product: '<S174>/Product'
-   *  Sum: '<S174>/Sum'
-   */
-  Main_Firmware_DW.DiscreteTimeIntegrator_DSTATE += (Main_Firmware_P.Lq *
-    Main_Firmware_P.ppair * Main_Firmware_B.DiscreteTransferFcn *
-    Main_Firmware_DW.DiscreteTimeIntegrator1_DSTATE + (rtb_Electricalspeed -
-    Main_Firmware_P.Rs * Main_Firmware_DW.DiscreteTimeIntegrator_DSTATE)) * (1.0
-    / Main_Firmware_P.Ld) * Main_Firmware_P.DiscreteTimeIntegrator_gainval;
-
-  /* Update for DiscreteIntegrator: '<S174>/Discrete-Time Integrator1' incorporates:
-   *  Gain: '<S174>/Gain2'
-   */
-  Main_Firmware_DW.DiscreteTimeIntegrator1_DSTATE += 1.0 / Main_Firmware_P.Lq *
-    rtb_Sum1_m * Main_Firmware_P.DiscreteTimeIntegrator1_gainval;
-
-  /* Update for UnitDelay: '<S6>/UD'
-   *
-   * Block description for '<S6>/UD':
-   *
-   *  Store in Global RAM
-   */
-  Main_Firmware_DW.UD_DSTATE = rtb_TSamp;
-
-  /* Update for DiscreteIntegrator: '<S151>/Filter' */
-  Main_Firmware_DW.Filter_DSTATE += Main_Firmware_P.Filter_gainval *
-    rtb_FilterCoefficient;
-
-  /* Update for DiscreteIntegrator: '<S46>/Integrator' incorporates:
-   *  Gain: '<S43>/Integral Gain'
-   */
-  Main_Firmware_DW.Integrator_DSTATE += Main_Firmware_P.I_dqPID1_I * rtb_Filter *
-    Main_Firmware_P.Integrator_gainval;
-  if (Main_Firmware_DW.Integrator_DSTATE > Main_Firmware_P.Voltage_max) {
-    Main_Firmware_DW.Integrator_DSTATE = Main_Firmware_P.Voltage_max;
-  } else if (Main_Firmware_DW.Integrator_DSTATE < -Main_Firmware_P.Voltage_max)
-  {
-    Main_Firmware_DW.Integrator_DSTATE = -Main_Firmware_P.Voltage_max;
+  /* Derivatives for Integrator: '<S173>/Integrator1' */
+  lsat = (Main_Firmware_X.Integrator1_CSTATE <=
+          Main_Firmware_P.Integrator1_LowerSat);
+  usat = (Main_Firmware_X.Integrator1_CSTATE >=
+          Main_Firmware_P.Integrator1_UpperSat);
+  if (((!lsat) && (!usat)) || (lsat && (Main_Firmware_B.Gain2 > 0.0)) || (usat &&
+       (Main_Firmware_B.Gain2 < 0.0))) {
+    _rtXdot->Integrator1_CSTATE = Main_Firmware_B.Gain2;
+  } else {
+    /* in saturation */
+    _rtXdot->Integrator1_CSTATE = 0.0;
   }
 
-  /* End of Update for DiscreteIntegrator: '<S46>/Integrator' */
+  /* End of Derivatives for Integrator: '<S173>/Integrator1' */
 
-  /* Update for DiscreteIntegrator: '<S98>/Integrator' incorporates:
-   *  Gain: '<S95>/Integral Gain'
-   */
-  Main_Firmware_DW.Integrator_DSTATE_o += Main_Firmware_P.I_dqPID2_I *
-    rtb_Iq_error * Main_Firmware_P.Integrator_gainval_i;
-  if (Main_Firmware_DW.Integrator_DSTATE_o > Main_Firmware_P.Voltage_max) {
-    Main_Firmware_DW.Integrator_DSTATE_o = Main_Firmware_P.Voltage_max;
-  } else if (Main_Firmware_DW.Integrator_DSTATE_o < -Main_Firmware_P.Voltage_max)
-  {
-    Main_Firmware_DW.Integrator_DSTATE_o = -Main_Firmware_P.Voltage_max;
+  /* Derivatives for Integrator: '<S150>/Filter' */
+  _rtXdot->Filter_CSTATE = Main_Firmware_B.FilterCoefficient;
+
+  /* Derivatives for Integrator: '<S97>/Integrator' */
+  lsat = (Main_Firmware_X.Integrator_CSTATE_h <= -Main_Firmware_P.Voltage_max);
+  usat = (Main_Firmware_X.Integrator_CSTATE_h >= Main_Firmware_P.Voltage_max);
+  if (((!lsat) && (!usat)) || (lsat && (Main_Firmware_B.IntegralGain_a > 0.0)) ||
+      (usat && (Main_Firmware_B.IntegralGain_a < 0.0))) {
+    _rtXdot->Integrator_CSTATE_h = Main_Firmware_B.IntegralGain_a;
+  } else {
+    /* in saturation */
+    _rtXdot->Integrator_CSTATE_h = 0.0;
   }
 
-  /* End of Update for DiscreteIntegrator: '<S98>/Integrator' */
+  /* End of Derivatives for Integrator: '<S97>/Integrator' */
 
-  /* Update absolute time for base rate */
-  /* The "clockTick0" counts the number of times the code of this task has
-   * been executed. The absolute time is the multiplication of "clockTick0"
-   * and "Timing.stepSize0". Size of "clockTick0" ensures timer will not
-   * overflow during the application lifespan selected.
-   * Timer of this task consists of two 32 bit unsigned integers.
-   * The two integers represent the low bits Timing.clockTick0 and the high bits
-   * Timing.clockTickH0. When the low bit overflows to 0, the high bits increment.
-   */
-  if (!(++Main_Firmware_M->Timing.clockTick0)) {
-    ++Main_Firmware_M->Timing.clockTickH0;
+  /* Derivatives for Integrator: '<S45>/Integrator' */
+  lsat = (Main_Firmware_X.Integrator_CSTATE_hk <= -Main_Firmware_P.Voltage_max);
+  usat = (Main_Firmware_X.Integrator_CSTATE_hk >= Main_Firmware_P.Voltage_max);
+  if (((!lsat) && (!usat)) || (lsat && (Main_Firmware_B.IntegralGain > 0.0)) ||
+      (usat && (Main_Firmware_B.IntegralGain < 0.0))) {
+    _rtXdot->Integrator_CSTATE_hk = Main_Firmware_B.IntegralGain;
+  } else {
+    /* in saturation */
+    _rtXdot->Integrator_CSTATE_hk = 0.0;
   }
 
-  Main_Firmware_M->Timing.taskTime0 = Main_Firmware_M->Timing.clockTick0 *
-    Main_Firmware_M->Timing.stepSize0 + Main_Firmware_M->Timing.clockTickH0 *
-    Main_Firmware_M->Timing.stepSize0 * 4294967296.0;
+  /* End of Derivatives for Integrator: '<S45>/Integrator' */
 }
 
 /* Model initialize function */
@@ -893,19 +1253,60 @@ void Main_Firmware_initialize(void)
   /* initialize real-time model */
   (void) memset((void *)Main_Firmware_M, 0,
                 sizeof(RT_MODEL_Main_Firmware_T));
+
+  {
+    /* Setup solver object */
+    rtsiSetSimTimeStepPtr(&Main_Firmware_M->solverInfo,
+                          &Main_Firmware_M->Timing.simTimeStep);
+    rtsiSetTPtr(&Main_Firmware_M->solverInfo, &rtmGetTPtr(Main_Firmware_M));
+    rtsiSetStepSizePtr(&Main_Firmware_M->solverInfo,
+                       &Main_Firmware_M->Timing.stepSize0);
+    rtsiSetdXPtr(&Main_Firmware_M->solverInfo, &Main_Firmware_M->derivs);
+    rtsiSetContStatesPtr(&Main_Firmware_M->solverInfo, (real_T **)
+                         &Main_Firmware_M->contStates);
+    rtsiSetNumContStatesPtr(&Main_Firmware_M->solverInfo,
+      &Main_Firmware_M->Sizes.numContStates);
+    rtsiSetNumPeriodicContStatesPtr(&Main_Firmware_M->solverInfo,
+      &Main_Firmware_M->Sizes.numPeriodicContStates);
+    rtsiSetPeriodicContStateIndicesPtr(&Main_Firmware_M->solverInfo,
+      &Main_Firmware_M->periodicContStateIndices);
+    rtsiSetPeriodicContStateRangesPtr(&Main_Firmware_M->solverInfo,
+      &Main_Firmware_M->periodicContStateRanges);
+    rtsiSetContStateDisabledPtr(&Main_Firmware_M->solverInfo, (boolean_T**)
+      &Main_Firmware_M->contStateDisabled);
+    rtsiSetErrorStatusPtr(&Main_Firmware_M->solverInfo, (&rtmGetErrorStatus
+      (Main_Firmware_M)));
+    rtsiSetRTModelPtr(&Main_Firmware_M->solverInfo, Main_Firmware_M);
+  }
+
+  rtsiSetSimTimeStep(&Main_Firmware_M->solverInfo, MAJOR_TIME_STEP);
+  rtsiSetIsMinorTimeStepWithModeChange(&Main_Firmware_M->solverInfo, false);
+  rtsiSetIsContModeFrozen(&Main_Firmware_M->solverInfo, false);
+  Main_Firmware_M->intgData.y = Main_Firmware_M->odeY;
+  Main_Firmware_M->intgData.f[0] = Main_Firmware_M->odeF[0];
+  Main_Firmware_M->intgData.f[1] = Main_Firmware_M->odeF[1];
+  Main_Firmware_M->intgData.f[2] = Main_Firmware_M->odeF[2];
+  Main_Firmware_M->contStates = ((X_Main_Firmware_T *) &Main_Firmware_X);
+  Main_Firmware_M->contStateDisabled = ((XDis_Main_Firmware_T *)
+    &Main_Firmware_XDis);
+  Main_Firmware_M->Timing.tStart = (0.0);
+  rtsiSetSolverData(&Main_Firmware_M->solverInfo, (void *)
+                    &Main_Firmware_M->intgData);
+  rtsiSetSolverName(&Main_Firmware_M->solverInfo,"ode3");
+  rtmSetTPtr(Main_Firmware_M, &Main_Firmware_M->Timing.tArray[0]);
   rtmSetTFinal(Main_Firmware_M, -1);
-  Main_Firmware_M->Timing.stepSize0 = 5.0E-6;
+  Main_Firmware_M->Timing.stepSize0 = 2.0E-5;
 
   /* External mode info */
-  Main_Firmware_M->Sizes.checksums[0] = (1722349003U);
-  Main_Firmware_M->Sizes.checksums[1] = (2168810494U);
-  Main_Firmware_M->Sizes.checksums[2] = (825006227U);
-  Main_Firmware_M->Sizes.checksums[3] = (3833089829U);
+  Main_Firmware_M->Sizes.checksums[0] = (1887059552U);
+  Main_Firmware_M->Sizes.checksums[1] = (2392219314U);
+  Main_Firmware_M->Sizes.checksums[2] = (2474872685U);
+  Main_Firmware_M->Sizes.checksums[3] = (1430349666U);
 
   {
     static const sysRanDType rtAlwaysEnabled = SUBSYS_RAN_BC_ENABLE;
     static RTWExtModeInfo rt_ExtModeInfo;
-    static const sysRanDType *systemRan[8];
+    static const sysRanDType *systemRan[7];
     Main_Firmware_M->extModeInfo = (&rt_ExtModeInfo);
     rteiSetSubSystemActiveVectorAddresses(&rt_ExtModeInfo, systemRan);
     systemRan[0] = &rtAlwaysEnabled;
@@ -913,14 +1314,13 @@ void Main_Firmware_initialize(void)
       &Main_Firmware_DW.Subsystempi2delay.Subsystempi2delay_SubsysRanBC;
     systemRan[2] = (sysRanDType *)
       &Main_Firmware_DW.Subsystem1.Subsystem1_SubsysRanBC;
-    systemRan[3] = &rtAlwaysEnabled;
-    systemRan[4] = (sysRanDType *)
+    systemRan[3] = (sysRanDType *)
       &Main_Firmware_DW.Subsystempi2delay_o.Subsystempi2delay_SubsysRanBC;
+    systemRan[4] = (sysRanDType *)
+      &Main_Firmware_DW.Subsystem1_c.Subsystem1_SubsysRanBC;
     systemRan[5] = (sysRanDType *)
-      &Main_Firmware_DW.Subsystem1_k.Subsystem1_SubsysRanBC;
-    systemRan[6] = (sysRanDType *)
       &Main_Firmware_DW.Subsystempi2delay_SubsysRanBC;
-    systemRan[7] = (sysRanDType *)&Main_Firmware_DW.Subsystem1_SubsysRanBC;
+    systemRan[6] = (sysRanDType *)&Main_Firmware_DW.Subsystem1_SubsysRanBC;
     rteiSetModelMappingInfoPtr(Main_Firmware_M->extModeInfo,
       &Main_Firmware_M->SpecialInfo.mappingInfo);
     rteiSetChecksumsPtr(Main_Firmware_M->extModeInfo,
@@ -931,6 +1331,18 @@ void Main_Firmware_initialize(void)
   /* block I/O */
   (void) memset(((void *) &Main_Firmware_B), 0,
                 sizeof(B_Main_Firmware_T));
+
+  /* states (continuous) */
+  {
+    (void) memset((void *)&Main_Firmware_X, 0,
+                  sizeof(X_Main_Firmware_T));
+  }
+
+  /* disabled states */
+  {
+    (void) memset((void *)&Main_Firmware_XDis, 0,
+                  sizeof(XDis_Main_Firmware_T));
+  }
 
   /* states (dwork) */
   (void) memset((void *)&Main_Firmware_DW, 0,
@@ -1625,91 +2037,83 @@ void Main_Firmware_initialize(void)
   Main_Firmware_DW.SamplingDelay_DSTATE[2] =
     Main_Firmware_P.SamplingDelay_InitialCondition;
 
-  /* InitializeConditions for DiscreteTransferFcn: '<S175>/Discrete Transfer Fcn' */
-  Main_Firmware_DW.DiscreteTransferFcn_states =
-    Main_Firmware_P.DiscreteTransferFcn_InitialStat;
+  /* InitializeConditions for TransferFcn: '<S174>/Transfer Fcn' */
+  Main_Firmware_X.TransferFcn_CSTATE = 0.0;
 
-  /* InitializeConditions for DiscreteIntegrator: '<S174>/Discrete-Time Integrator2' */
-  Main_Firmware_DW.DiscreteTimeIntegrator2_DSTATE =
-    Main_Firmware_P.DiscreteTimeIntegrator2_IC;
+  /* InitializeConditions for Integrator: '<S173>/Integrator2' */
+  Main_Firmware_X.Integrator2_CSTATE = Main_Firmware_P.Integrator2_IC;
 
-  /* InitializeConditions for DiscreteIntegrator: '<S174>/Discrete-Time Integrator' */
-  Main_Firmware_DW.DiscreteTimeIntegrator_DSTATE =
-    Main_Firmware_P.DiscreteTimeIntegrator_IC;
+  /* InitializeConditions for Integrator: '<S173>/Integrator' */
+  Main_Firmware_X.Integrator_CSTATE = Main_Firmware_P.Integrator_IC;
 
-  /* InitializeConditions for DiscreteIntegrator: '<S174>/Discrete-Time Integrator1' */
-  Main_Firmware_DW.DiscreteTimeIntegrator1_DSTATE =
-    Main_Firmware_P.DiscreteTimeIntegrator1_IC;
+  /* InitializeConditions for Integrator: '<S173>/Integrator1' */
+  Main_Firmware_X.Integrator1_CSTATE = Main_Firmware_P.Integrator1_IC;
 
-  /* InitializeConditions for UnitDelay: '<S6>/UD'
-   *
-   * Block description for '<S6>/UD':
-   *
-   *  Store in Global RAM
-   */
-  Main_Firmware_DW.UD_DSTATE = Main_Firmware_P.DiscreteDerivativecalc_ICPrevSc;
+  /* InitializeConditions for Derivative: '<S3>/Derivative' */
+  Main_Firmware_DW.TimeStampA = (rtInf);
+  Main_Firmware_DW.TimeStampB = (rtInf);
 
-  /* InitializeConditions for DiscreteIntegrator: '<S151>/Filter' */
-  Main_Firmware_DW.Filter_DSTATE =
-    Main_Firmware_P.SpeedPID1_InitialConditionForFi;
+  /* InitializeConditions for Integrator: '<S150>/Filter' */
+  Main_Firmware_X.Filter_CSTATE =
+    Main_Firmware_P.SpeedPD_InitialConditionForFilt;
 
-  /* InitializeConditions for DiscreteIntegrator: '<S46>/Integrator' */
-  Main_Firmware_DW.Integrator_DSTATE =
-    Main_Firmware_P.I_dqPID1_InitialConditionForInt;
+  /* InitializeConditions for Integrator: '<S97>/Integrator' */
+  Main_Firmware_X.Integrator_CSTATE_h =
+    Main_Firmware_P.I_dqPID3_InitialConditionForInt;
 
-  /* InitializeConditions for DiscreteIntegrator: '<S98>/Integrator' */
-  Main_Firmware_DW.Integrator_DSTATE_o =
-    Main_Firmware_P.I_dqPID2_InitialConditionForInt;
+  /* InitializeConditions for Integrator: '<S45>/Integrator' */
+  Main_Firmware_X.Integrator_CSTATE_hk =
+    Main_Firmware_P.I_dqPID_InitialConditionForInte;
 
-  /* SystemInitialize for Enabled SubSystem: '<S185>/Subsystem1' */
-  /* SystemInitialize for Fcn: '<S189>/Fcn' incorporates:
-   *  Outport: '<S189>/alpha_beta'
-   */
-  Main_Firmware_B.Fcn = Main_Firmware_P.alpha_beta_Y0_l[0];
-
-  /* SystemInitialize for Fcn: '<S189>/Fcn1' incorporates:
-   *  Outport: '<S189>/alpha_beta'
-   */
-  Main_Firmware_B.Fcn1 = Main_Firmware_P.alpha_beta_Y0_l[1];
-
-  /* End of SystemInitialize for SubSystem: '<S185>/Subsystem1' */
-
-  /* SystemInitialize for Enabled SubSystem: '<S185>/Subsystem - pi//2 delay' */
+  /* SystemInitialize for Enabled SubSystem: '<S184>/Subsystem1' */
   /* SystemInitialize for Fcn: '<S188>/Fcn' incorporates:
    *  Outport: '<S188>/alpha_beta'
    */
-  Main_Firmware_B.Fcn_l = Main_Firmware_P.alpha_beta_Y0[0];
+  Main_Firmware_B.Fcn = Main_Firmware_P.alpha_beta_Y0_i[0];
 
   /* SystemInitialize for Fcn: '<S188>/Fcn1' incorporates:
    *  Outport: '<S188>/alpha_beta'
    */
-  Main_Firmware_B.Fcn1_a = Main_Firmware_P.alpha_beta_Y0[1];
+  Main_Firmware_B.Fcn1 = Main_Firmware_P.alpha_beta_Y0_i[1];
 
-  /* End of SystemInitialize for SubSystem: '<S185>/Subsystem - pi//2 delay' */
+  /* End of SystemInitialize for SubSystem: '<S184>/Subsystem1' */
 
-  /* SystemInitialize for Enabled SubSystem: '<S116>/Subsystem1' */
+  /* SystemInitialize for Enabled SubSystem: '<S184>/Subsystem - pi//2 delay' */
+  /* SystemInitialize for Fcn: '<S187>/Fcn' incorporates:
+   *  Outport: '<S187>/alpha_beta'
+   */
+  Main_Firmware_B.Fcn_g = Main_Firmware_P.alpha_beta_Y0[0];
+
+  /* SystemInitialize for Fcn: '<S187>/Fcn1' incorporates:
+   *  Outport: '<S187>/alpha_beta'
+   */
+  Main_Firmware_B.Fcn1_l = Main_Firmware_P.alpha_beta_Y0[1];
+
+  /* End of SystemInitialize for SubSystem: '<S184>/Subsystem - pi//2 delay' */
+
+  /* SystemInitialize for Enabled SubSystem: '<S115>/Subsystem1' */
   Main_Firmware_Subsystem1_Init(&Main_Firmware_B.Fcn_k, &Main_Firmware_B.Fcn1_n,
     &Main_Firmware_P.Subsystem1);
 
-  /* End of SystemInitialize for SubSystem: '<S116>/Subsystem1' */
+  /* End of SystemInitialize for SubSystem: '<S115>/Subsystem1' */
 
-  /* SystemInitialize for Enabled SubSystem: '<S116>/Subsystem - pi//2 delay' */
-  Main_Fir_Subsystempi2delay_Init(&Main_Firmware_B.Fcn_j,
+  /* SystemInitialize for Enabled SubSystem: '<S115>/Subsystem - pi//2 delay' */
+  Main_Fir_Subsystempi2delay_Init(&Main_Firmware_B.Fcn_jc,
     &Main_Firmware_B.Fcn1_e, &Main_Firmware_P.Subsystempi2delay);
 
-  /* End of SystemInitialize for SubSystem: '<S116>/Subsystem - pi//2 delay' */
+  /* End of SystemInitialize for SubSystem: '<S115>/Subsystem - pi//2 delay' */
 
-  /* SystemInitialize for Enabled SubSystem: '<S178>/Subsystem1' */
-  Main_Firmware_Subsystem1_Init(&Main_Firmware_B.Fcn_f, &Main_Firmware_B.Fcn1_j,
-    &Main_Firmware_P.Subsystem1_k);
+  /* SystemInitialize for Enabled SubSystem: '<S177>/Subsystem1' */
+  Main_Firmware_Subsystem1_Init(&Main_Firmware_B.Fcn_b, &Main_Firmware_B.Fcn1_d,
+    &Main_Firmware_P.Subsystem1_c);
 
-  /* End of SystemInitialize for SubSystem: '<S178>/Subsystem1' */
+  /* End of SystemInitialize for SubSystem: '<S177>/Subsystem1' */
 
-  /* SystemInitialize for Enabled SubSystem: '<S178>/Subsystem - pi//2 delay' */
-  Main_Fir_Subsystempi2delay_Init(&Main_Firmware_B.Fcn_m,
-    &Main_Firmware_B.Fcn1_i, &Main_Firmware_P.Subsystempi2delay_o);
+  /* SystemInitialize for Enabled SubSystem: '<S177>/Subsystem - pi//2 delay' */
+  Main_Fir_Subsystempi2delay_Init(&Main_Firmware_B.Fcn_j,
+    &Main_Firmware_B.Fcn1_k, &Main_Firmware_P.Subsystempi2delay_o);
 
-  /* End of SystemInitialize for SubSystem: '<S178>/Subsystem - pi//2 delay' */
+  /* End of SystemInitialize for SubSystem: '<S177>/Subsystem - pi//2 delay' */
 }
 
 /* Model terminate function */

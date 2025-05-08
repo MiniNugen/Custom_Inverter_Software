@@ -3,7 +3,7 @@
 #ifndef __MW_TARGET_HARDWARE_RESOURCES_H__
 #define __MW_TARGET_HARDWARE_RESOURCES_H__
 
-#define MW_MULTI_TASKING_MODE 0
+#define MW_MULTI_TASKING_MODE 1
 #include "c2000BoardSupport.h"
 #include "MW_f28004x_includes.h"
 #include "c2000SchedulerTimer.h"

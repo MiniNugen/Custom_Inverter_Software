@@ -14,9 +14,7 @@ Lq = Ld;            % [H] Quadrature-axis inductance (SPMSM assumption)
 lambda = 0.0375;    % [Wb] Permanent magnet flux linkage
 rpm_max = 5000;                             % [RPM] Max rate rotor RPM
 speed_max=rpm_max*2*pi/60;                  % [Rad/s] Max rated speed for the motor
-PhaseA_offset = -17.5;                      % [Deg] Offset angle between phase A and the encoder's 0 degree (theta-PhaseA)
-Encoder_Offset = (-47.5)*pi/180;            % Tra
-
+Encoder_Offset = (180/ppair)*pi/180;            % [Deg] Offset angle between phase A and the encoder's 0 degree (theta-PhaseA)
 %% Car parameters
 m = 1;              % [kg] Vehicle mass
 r = 0.4064/2;       % [m] Wheel radius (diameter/2)
@@ -38,7 +36,7 @@ Voltage_max = min(V_bat,mVolt);     % [V] max allowable voltage output
 
 Torque_max = Current_max*3*lambda*ppair/2;  %max torque current can generate [Nm]
 EPWM_F = 200000;                            % [Hz] EPWM switching frequency
-
+sample_time = 1/10000;
 C_d = 0.7041;     % [-] Aerodynamic drag coefficient
 A_f = 1.24;       % [m^2] Frontal area
 C_rr = 0.02;      % [-] Rolling resistance coefficient
