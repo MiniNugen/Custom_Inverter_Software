@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 2.12
+ * Model version                  : 2.17
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Wed May  7 18:27:31 2025
+ * C/C++ source code generated on : Wed May  7 22:01:33 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -27,6 +27,8 @@ volatile int IsrOverrun = 0;
 static boolean_T OverrunFlag = 0;
 void rt_OneStep(void)
 {
+  extmodeSimulationTime_T currentTime = (extmodeSimulationTime_T) 0;
+
   /* Check for overrun. Protect OverrunFlag against preemption */
   if (OverrunFlag++) {
     IsrOverrun = 1;
@@ -36,9 +38,13 @@ void rt_OneStep(void)
   }
 
   enableTimer0Interrupt();
+  currentTime = (extmodeSimulationTime_T) Main_Firmware_M->Timing.clockTick0;
   Main_Firmware_step();
 
   /* Get model outputs here */
+
+  /* Trigger External Mode event */
+  extmodeEvent(0, currentTime);
   disableTimer0Interrupt();
   OverrunFlag--;
 }
@@ -47,7 +53,7 @@ volatile boolean_T stopRequested;
 volatile boolean_T runModel;
 int main(void)
 {
-  float modelBaseRate = 2.0E-5;
+  float modelBaseRate = 0.0001;
   float systemClock = 100;
   extmodeErrorCode_T errorCode = EXTMODE_SUCCESS;
 

@@ -37,7 +37,7 @@ Voltage_max = min(V_bat,mVolt);     % [V] max allowable voltage output
 
 Torque_max = Current_max*3*lambda*ppair/2;  %max torque current can generate [Nm]
 EPWM_F = 200000;                            % [Hz] EPWM switching frequency
-sample_time = 1/50000;
+sample_time = 1/10000;
 C_d = 0.7041;     % [-] Aerodynamic drag coefficient
 A_f = 1.24;       % [m^2] Frontal area
 C_rr = 0.02;      % [-] Rolling resistance coefficient

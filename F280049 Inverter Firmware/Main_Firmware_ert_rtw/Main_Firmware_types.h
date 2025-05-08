@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 2.12
+ * Model version                  : 2.17
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Wed May  7 18:27:31 2025
+ * C/C++ source code generated on : Wed May  7 22:01:33 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -20,10 +20,10 @@
 #ifndef Main_Firmware_types_h_
 #define Main_Firmware_types_h_
 
-/* Parameters for system: '<S115>/Subsystem - pi//2 delay' */
+/* Parameters for system: '<S116>/Subsystem - pi//2 delay' */
 typedef struct P_Subsystempi2delay_Main_Firm_T_ P_Subsystempi2delay_Main_Firm_T;
 
-/* Parameters for system: '<S115>/Subsystem1' */
+/* Parameters for system: '<S116>/Subsystem1' */
 typedef struct P_Subsystem1_Main_Firmware_T_ P_Subsystem1_Main_Firmware_T;
 
 /* Parameters (default storage) */
