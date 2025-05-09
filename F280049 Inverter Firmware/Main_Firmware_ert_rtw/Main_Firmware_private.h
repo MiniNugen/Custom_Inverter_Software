@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 2.17
+ * Model version                  : 2.21
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Wed May  7 22:01:33 2025
+ * C/C++ source code generated on : Thu May  8 18:41:37 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -31,15 +31,15 @@
 #define rtmSetTFinal(rtm, val)         ((rtm)->Timing.tFinal = (val))
 #endif
 
-extern void Main_Fir_Subsystempi2delay_Init(real_T *rty_dq, real_T *rty_dq_f,
+extern void Main_Fir_Subsystempi2delay_Init(real32_T *rty_dq, real32_T *rty_dq_f,
   P_Subsystempi2delay_Main_Firm_T *localP);
-extern void Main_Firmware_Subsystempi2delay(uint16_T rtu_Enable, const real_T
-  rtu_alpha_beta[2], real_T rtu_wt, real_T *rty_dq, real_T *rty_dq_f,
+extern void Main_Firmware_Subsystempi2delay(uint16_T rtu_Enable, const real32_T
+  rtu_alpha_beta[2], real32_T rtu_wt, real32_T *rty_dq, real32_T *rty_dq_f,
   DW_Subsystempi2delay_Main_Fir_T *localDW);
-extern void Main_Firmware_Subsystem1_Init(real_T *rty_dq, real_T *rty_dq_e,
+extern void Main_Firmware_Subsystem1_Init(real32_T *rty_dq, real32_T *rty_dq_e,
   P_Subsystem1_Main_Firmware_T *localP);
-extern void Main_Firmware_Subsystem1(uint16_T rtu_Enable, const real_T
-  rtu_alpha_beta[2], real_T rtu_wt, real_T *rty_dq, real_T *rty_dq_e,
+extern void Main_Firmware_Subsystem1(uint16_T rtu_Enable, const real32_T
+  rtu_alpha_beta[2], real32_T rtu_wt, real32_T *rty_dq, real32_T *rty_dq_e,
   DW_Subsystem1_Main_Firmware_T *localDW);
 
 #endif                                 /* Main_Firmware_private_h_ */

@@ -31,7 +31,7 @@ f = 3.03448e-4;     %viscous friction coefficient
 
 %% inverter parameters
 V_bat = 24 * 3.6;                   % [V] Battery voltage (24 cells * 3.6V nominal per cell);
-InvCurr=30;                         % [A] Max inverter power Draw
+InvCurr=150;                        % [A] Max inverter power Draw
 Current_max =min(InvCurr,mCurr);    % [A] Max Allowable current draw.
 Voltage_max = min(V_bat,mVolt);     % [V] max allowable voltage output
 
@@ -41,6 +41,10 @@ sample_time = 1/10000;
 C_d = 0.7041;     % [-] Aerodynamic drag coefficient
 A_f = 1.24;       % [m^2] Frontal area
 C_rr = 0.02;      % [-] Rolling resistance coefficient
+
+%% Calculating Torque to Speed Transfer Function
+Inertia_s = tf([1], [J 0]);
+Inertia_z = c2d(Inertia_s, sample_time, 'zoh');
 
 %% PI and PD Tuning (Test)
 Kpq=(Lq*2*pi*EPWM_F)/10;

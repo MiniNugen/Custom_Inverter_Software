@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 2.17
+ * Model version                  : 2.21
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Wed May  7 22:01:33 2025
+ * C/C++ source code generated on : Thu May  8 18:41:37 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -99,55 +99,38 @@ typedef struct {
 
 /* Block signals (default storage) */
 typedef struct {
-  real_T TransferFcn;                  /* '<S175>/Transfer Fcn' */
-  real_T Saturation;                   /* '<S3>/Saturation' */
-  real_T RotorAngle;                   /* '<S4>/Sum' */
-  real_T TmpSignalConversionAtTAQSigLogg[3];
+  real_T LEDHeartbeat;                 /* '<S2>/LED Heartbeat' */
+  real32_T TransferFcn;                /* '<S175>/Transfer Fcn' */
+  real32_T Saturation;                 /* '<S3>/Saturation' */
+  real32_T RotorAngle;                 /* '<S4>/Sum' */
+  real32_T TmpSignalConversionAtTAQSigLogg[3];
   /* '<Root>/TmpSignal ConversionAtTAQSigLogging_InsertedFor_Mux5_at_outport_0Inport1' */
-  real_T Gain3[3];                     /* '<S184>/Gain3' */
-  real_T Te;                           /* '<S3>/Switch' */
-  real_T Gain5;                        /* '<S174>/Gain5' */
-  real_T TmpSignalConversionAtTAQSigLo_m[2];
+  real32_T Gain3[3];                   /* '<S184>/Gain3' */
+  real32_T Saturation1;                /* '<S3>/Saturation1' */
+  real32_T Gain5;                      /* '<S174>/Gain5' */
+  real32_T TmpSignalConversionAtTAQSigLo_m[2];
   /* '<Root>/TmpSignal ConversionAtTAQSigLogging_InsertedFor_Mux4_at_outport_0Inport1' */
-  real_T Gain1[3];                     /* '<S117>/Gain1' */
-  real_T Switch[2];                    /* '<S116>/Switch' */
-  real_T TmpSignalConversionAtTAQSigLo_j[3];
+  real32_T Gain1[3];                   /* '<S117>/Gain1' */
+  real32_T Switch[2];                  /* '<S116>/Switch' */
+  real32_T TmpSignalConversionAtTAQSigLo_j[3];
   /* '<S3>/TmpSignal ConversionAtTAQSigLogging_InsertedFor_Park Transform_at_outport_0Inport1' */
-  real_T a;                            /* '<S9>/Add' */
-  real_T b;                            /* '<S9>/Add1' */
-  real_T c;                            /* '<S9>/Add2' */
-  real_T TmpSignalConversionAtGain3Inpor[3];
-                               /* '<S179>/TmpSignal ConversionAtGain3Inport1' */
-  real_T Sine;                         /* '<Root>/Trigonometric Function' */
-  real_T Cos;                          /* '<Root>/Trigonometric Function1' */
-  real_T TmpSignalConversionAtTAQSigLo_i[2];
-  /* '<Root>/TmpSignal ConversionAtTAQSigLogging_InsertedFor_Mux_at_outport_0Inport1' */
-  real_T Fcn;                          /* '<S189>/Fcn' */
-  real_T Fcn1;                         /* '<S189>/Fcn1' */
-  real_T Fcn_g;                        /* '<S188>/Fcn' */
-  real_T Fcn1_l;                       /* '<S188>/Fcn1' */
-  real_T Fcn_b;                        /* '<S183>/Fcn' */
-  real_T Fcn1_d;                       /* '<S183>/Fcn1' */
-  real_T Fcn_j;                        /* '<S182>/Fcn' */
-  real_T Fcn1_k;                       /* '<S182>/Fcn1' */
-  real_T Fcn_k;                        /* '<S121>/Fcn' */
-  real_T Fcn1_n;                       /* '<S121>/Fcn1' */
-  real_T Fcn_jc;                       /* '<S120>/Fcn' */
-  real_T Fcn1_e;                       /* '<S120>/Fcn1' */
-  real_T Subtract;                     /* '<S175>/Subtract' */
+  real32_T Atan;                       /* '<Root>/Atan' */
+  real32_T Fcn;                        /* '<S189>/Fcn' */
+  real32_T Fcn1;                       /* '<S189>/Fcn1' */
+  real32_T Fcn_g;                      /* '<S188>/Fcn' */
+  real32_T Fcn1_l;                     /* '<S188>/Fcn1' */
+  real32_T Fcn_b;                      /* '<S183>/Fcn' */
+  real32_T Fcn1_d;                     /* '<S183>/Fcn1' */
+  real32_T Fcn_j;                      /* '<S182>/Fcn' */
+  real32_T Fcn1_k;                     /* '<S182>/Fcn1' */
+  real32_T Fcn_k;                      /* '<S121>/Fcn' */
+  real32_T Fcn1_n;                     /* '<S121>/Fcn1' */
+  real32_T Fcn_jc;                     /* '<S120>/Fcn' */
+  real32_T Fcn1_e;                     /* '<S120>/Fcn1' */
 } B_Main_Firmware_T;
 
 /* Block states (default storage) for system '<Root>' */
 typedef struct {
-  real_T SamplingDelay_DSTATE[3];      /* '<S1>/Sampling Delay' */
-  real_T TransferFcn_states;           /* '<S175>/Transfer Fcn' */
-  real_T Integrator2_DSTATE;           /* '<S174>/Integrator2' */
-  real_T Integrator_DSTATE;            /* '<S174>/Integrator' */
-  real_T Integrator1_DSTATE;           /* '<S174>/Integrator1' */
-  real_T UD_DSTATE;                    /* '<S6>/UD' */
-  real_T Filter_DSTATE;                /* '<S151>/Filter' */
-  real_T Integrator_DSTATE_g;          /* '<S46>/Integrator' */
-  real_T Integrator_DSTATE_p;          /* '<S98>/Integrator' */
   struct {
     void *LoggedData[3];
   } MainScope1_PWORK;                  /* '<Root>/Main Scope1' */
@@ -156,6 +139,15 @@ typedef struct {
     void *LoggedData[2];
   } MainScope2_PWORK;                  /* '<Root>/Main Scope2' */
 
+  real32_T SamplingDelay_DSTATE[3];    /* '<S1>/Sampling Delay' */
+  real32_T TransferFcn_states;         /* '<S175>/Transfer Fcn' */
+  real32_T Integrator2_DSTATE;         /* '<S174>/Integrator2' */
+  real32_T Integrator_DSTATE;          /* '<S174>/Integrator' */
+  real32_T Integrator1_DSTATE;         /* '<S174>/Integrator1' */
+  real32_T UD_DSTATE;                  /* '<S6>/UD' */
+  real32_T Filter_DSTATE;              /* '<S151>/Filter' */
+  real32_T Integrator_DSTATE_g;        /* '<S46>/Integrator' */
+  real32_T Integrator_DSTATE_m;        /* '<S98>/Integrator' */
   int32_T DigitalOutput1_FRAC_LEN;     /* '<S2>/Digital Output1' */
   int32_T clockTickCounter;            /* '<S2>/LED Heartbeat' */
   int32_T DigitalOutput_FRAC_LEN;      /* '<S2>/Digital Output' */
@@ -169,60 +161,47 @@ typedef struct {
 
 /* Parameters for system: '<S116>/Subsystem - pi//2 delay' */
 struct P_Subsystempi2delay_Main_Firm_T_ {
-  real_T dq_Y0[2];                     /* Expression: [0,0]
+  real32_T dq_Y0[2];                   /* Computed Parameter: dq_Y0
                                         * Referenced by: '<S120>/dq'
                                         */
 };
 
 /* Parameters for system: '<S116>/Subsystem1' */
 struct P_Subsystem1_Main_Firmware_T_ {
-  real_T dq_Y0[2];                     /* Expression: [0,0]
+  real32_T dq_Y0[2];                   /* Computed Parameter: dq_Y0
                                         * Referenced by: '<S121>/dq'
                                         */
 };
 
 /* Parameters (default storage) */
 struct P_Main_Firmware_T_ {
-  real_T A_f;                          /* Variable: A_f
-                                        * Referenced by: '<S175>/Constant1'
-                                        */
-  real_T C_d;                          /* Variable: C_d
-                                        * Referenced by: '<S175>/Constant1'
-                                        */
   real_T C_rr;                         /* Variable: C_rr
                                         * Referenced by: '<S175>/Constant2'
                                         */
-  real_T Current_max;                  /* Variable: Current_max
+  real_T g;                            /* Variable: g
+                                        * Referenced by: '<S175>/Constant2'
+                                        */
+  real_T m;                            /* Variable: m
+                                        * Referenced by: '<S175>/Constant2'
+                                        */
+  real32_T Current_max;                /* Variable: Current_max
                                         * Referenced by: '<S3>/Limiter1'
                                         */
-  real_T Encoder_Offset;               /* Variable: Encoder_Offset
-                                        * Referenced by:
-                                        *   '<S3>/Const'
-                                        *   '<S4>/Constant'
+  real32_T Ld;                         /* Variable: Ld
+                                        * Referenced by: '<S5>/Gain3'
                                         */
-  real_T Ld;                           /* Variable: Ld
-                                        * Referenced by:
-                                        *   '<S5>/Gain3'
-                                        *   '<S174>/Constant1'
-                                        *   '<S174>/Gain'
-                                        */
-  real_T Lq;                           /* Variable: Lq
-                                        * Referenced by:
-                                        *   '<S5>/Gain1'
-                                        *   '<S174>/Constant'
-                                        *   '<S174>/Gain2'
-                                        */
-  real_T Rs;                           /* Variable: Rs
+  real32_T Rs;                         /* Variable: Rs
                                         * Referenced by:
                                         *   '<S174>/Gain1'
                                         *   '<S174>/Gain3'
                                         */
-  real_T Torque_max;                   /* Variable: Torque_max
-                                        * Referenced by: '<S163>/Saturation'
-                                        */
-  real_T Voltage_max;                  /* Variable: Voltage_max
+  real32_T Torque_max;                 /* Variable: Torque_max
                                         * Referenced by:
-                                        *   '<S1>/Gain5'
+                                        *   '<S3>/Saturation1'
+                                        *   '<S163>/Saturation'
+                                        */
+  real32_T Voltage_max;                /* Variable: Voltage_max
+                                        * Referenced by:
                                         *   '<S3>/Limiter'
                                         *   '<S3>/Limiter 1'
                                         *   '<S46>/Integrator'
@@ -230,35 +209,16 @@ struct P_Main_Firmware_T_ {
                                         *   '<S98>/Integrator'
                                         *   '<S105>/Saturation'
                                         */
-  real_T g;                            /* Variable: g
-                                        * Referenced by: '<S175>/Constant2'
+  real32_T lambda;                     /* Variable: lambda
+                                        * Referenced by: '<S5>/Gain4'
                                         */
-  real_T lambda;                       /* Variable: lambda
-                                        * Referenced by:
-                                        *   '<S3>/Gain6'
-                                        *   '<S5>/Gain4'
-                                        *   '<S174>/Gain4'
-                                        *   '<S174>/Gain5'
-                                        */
-  real_T m;                            /* Variable: m
-                                        * Referenced by: '<S175>/Constant2'
-                                        */
-  real_T ppair;                        /* Variable: ppair
+  real32_T ppair;                      /* Variable: ppair
                                         * Referenced by:
                                         *   '<S3>/Gain2'
-                                        *   '<S3>/Gain6'
                                         *   '<S3>/Gain7'
-                                        *   '<S4>/Gain6'
-                                        *   '<S174>/Constant'
-                                        *   '<S174>/Constant1'
-                                        *   '<S174>/Gain4'
-                                        *   '<S174>/Gain5'
                                         *   '<S174>/Gain6'
                                         */
-  real_T rho;                          /* Variable: rho
-                                        * Referenced by: '<S175>/Constant1'
-                                        */
-  real_T speed_max;                    /* Variable: speed_max
+  real32_T speed_max;                  /* Variable: speed_max
                                         * Referenced by: '<S3>/Saturation'
                                         */
   real_T dq0toAlphaBetaZero_Alignment;
@@ -273,42 +233,11 @@ struct P_Main_Firmware_T_ {
                                /* Mask Parameter: AlphaBetaZerotodq0_Alignment_n
                                 * Referenced by: '<S178>/Constant'
                                 */
-  real_T SpeedPID1_D;                  /* Mask Parameter: SpeedPID1_D
-                                        * Referenced by: '<S149>/Derivative Gain'
-                                        */
-  real_T I_dqPID2_I;                   /* Mask Parameter: I_dqPID2_I
-                                        * Referenced by: '<S95>/Integral Gain'
-                                        */
   real_T I_dqPID1_I;                   /* Mask Parameter: I_dqPID1_I
                                         * Referenced by: '<S43>/Integral Gain'
                                         */
-  real_T DiscreteDerivativecalc_ICPrevSc;
-                              /* Mask Parameter: DiscreteDerivativecalc_ICPrevSc
-                               * Referenced by: '<S6>/UD'
-                               */
-  real_T SpeedPID1_InitialConditionForFi;
-                              /* Mask Parameter: SpeedPID1_InitialConditionForFi
-                               * Referenced by: '<S151>/Filter'
-                               */
-  real_T I_dqPID1_InitialConditionForInt;
-                              /* Mask Parameter: I_dqPID1_InitialConditionForInt
-                               * Referenced by: '<S46>/Integrator'
-                               */
-  real_T I_dqPID2_InitialConditionForInt;
-                              /* Mask Parameter: I_dqPID2_InitialConditionForInt
-                               * Referenced by: '<S98>/Integrator'
-                               */
-  real_T SpeedPID1_N;                  /* Mask Parameter: SpeedPID1_N
-                                        * Referenced by: '<S159>/Filter Coefficient'
-                                        */
-  real_T SpeedPID1_P;                  /* Mask Parameter: SpeedPID1_P
-                                        * Referenced by: '<S161>/Proportional Gain'
-                                        */
   real_T I_dqPID1_P;                   /* Mask Parameter: I_dqPID1_P
                                         * Referenced by: '<S51>/Proportional Gain'
-                                        */
-  real_T I_dqPID2_P;                   /* Mask Parameter: I_dqPID2_P
-                                        * Referenced by: '<S103>/Proportional Gain'
                                         */
   real_T CompareToConstant_const;     /* Mask Parameter: CompareToConstant_const
                                        * Referenced by: '<S186>/Constant'
@@ -330,26 +259,56 @@ struct P_Main_Firmware_T_ {
                                    /* Mask Parameter: CompareToConstant1_const_m
                                     * Referenced by: '<S181>/Constant'
                                     */
-  real_T Constant3_Value;              /* Expression: 7
-                                        * Referenced by: '<Root>/Constant3'
+  real32_T SpeedPID1_D;                /* Mask Parameter: SpeedPID1_D
+                                        * Referenced by: '<S149>/Derivative Gain'
                                         */
-  real_T alpha_beta_Y0[2];             /* Expression: [0,0]
-                                        * Referenced by: '<S188>/alpha_beta'
+  real32_T I_dqPID2_I;                 /* Mask Parameter: I_dqPID2_I
+                                        * Referenced by: '<S95>/Integral Gain'
                                         */
-  real_T alpha_beta_Y0_i[2];           /* Expression: [0,0]
-                                        * Referenced by: '<S189>/alpha_beta'
+  real32_T DiscreteDerivativecalc_ICPrevSc;
+                              /* Mask Parameter: DiscreteDerivativecalc_ICPrevSc
+                               * Referenced by: '<S6>/UD'
+                               */
+  real32_T SpeedPID1_InitialConditionForFi;
+                              /* Mask Parameter: SpeedPID1_InitialConditionForFi
+                               * Referenced by: '<S151>/Filter'
+                               */
+  real32_T I_dqPID1_InitialConditionForInt;
+                              /* Mask Parameter: I_dqPID1_InitialConditionForInt
+                               * Referenced by: '<S46>/Integrator'
+                               */
+  real32_T I_dqPID2_InitialConditionForInt;
+                              /* Mask Parameter: I_dqPID2_InitialConditionForInt
+                               * Referenced by: '<S98>/Integrator'
+                               */
+  real32_T I_dqPID1_LowerIntegratorSaturat;
+                              /* Mask Parameter: I_dqPID1_LowerIntegratorSaturat
+                               * Referenced by: '<S46>/Integrator'
+                               */
+  real32_T I_dqPID2_LowerIntegratorSaturat;
+                              /* Mask Parameter: I_dqPID2_LowerIntegratorSaturat
+                               * Referenced by: '<S98>/Integrator'
+                               */
+  real32_T SpeedPID1_LowerSaturationLimit;
+                               /* Mask Parameter: SpeedPID1_LowerSaturationLimit
+                                * Referenced by: '<S163>/Saturation'
+                                */
+  real32_T I_dqPID1_LowerSaturationLimit;
+                                /* Mask Parameter: I_dqPID1_LowerSaturationLimit
+                                 * Referenced by: '<S53>/Saturation'
+                                 */
+  real32_T I_dqPID2_LowerSaturationLimit;
+                                /* Mask Parameter: I_dqPID2_LowerSaturationLimit
+                                 * Referenced by: '<S105>/Saturation'
+                                 */
+  real32_T SpeedPID1_N;                /* Mask Parameter: SpeedPID1_N
+                                        * Referenced by: '<S159>/Filter Coefficient'
                                         */
-  real_T SamplingDelay_InitialCondition;/* Expression: 0.0
-                                         * Referenced by: '<S1>/Sampling Delay'
-                                         */
-  real_T Saturation_UpperSat;          /* Expression: 100
-                                        * Referenced by: '<S1>/Saturation'
+  real32_T SpeedPID1_P;                /* Mask Parameter: SpeedPID1_P
+                                        * Referenced by: '<S161>/Proportional Gain'
                                         */
-  real_T Saturation_LowerSat;          /* Expression: 0
-                                        * Referenced by: '<S1>/Saturation'
-                                        */
-  real_T Gain_Gain;                    /* Expression: 100
-                                        * Referenced by: '<S2>/Gain'
+  real32_T I_dqPID2_P;                 /* Mask Parameter: I_dqPID2_P
+                                        * Referenced by: '<S103>/Proportional Gain'
                                         */
   real_T Constant_Value;               /* Expression: 0
                                         * Referenced by: '<S2>/Constant'
@@ -366,111 +325,177 @@ struct P_Main_Firmware_T_ {
   real_T LEDHeartbeat_PhaseDelay;      /* Expression: 0
                                         * Referenced by: '<S2>/LED Heartbeat'
                                         */
-  real_T TransferFcn_NumCoef[2];
-                           /* Expression: [0.000000000000000 0.000120437699505 ]
-                            * Referenced by: '<S175>/Transfer Fcn'
-                            */
-  real_T TransferFcn_DenCoef[2];
-                          /* Expression: [1.000000000000000 -1.000000000000000 ]
-                           * Referenced by: '<S175>/Transfer Fcn'
-                           */
-  real_T TransferFcn_InitialStates;    /* Expression: 0
-                                        * Referenced by: '<S175>/Transfer Fcn'
-                                        */
-  real_T Constant1_Value;              /* Expression: 3
-                                        * Referenced by: '<Root>/Constant1'
-                                        */
-  real_T Integrator2_gainval;         /* Computed Parameter: Integrator2_gainval
-                                       * Referenced by: '<S174>/Integrator2'
-                                       */
-  real_T Integrator2_IC;               /* Expression: 0
-                                        * Referenced by: '<S174>/Integrator2'
-                                        */
-  real_T Integrator2_UpperSat;         /* Expression: 3.40282347E+38
-                                        * Referenced by: '<S174>/Integrator2'
-                                        */
-  real_T Integrator2_LowerSat;         /* Expression: -3.40282347E+38
-                                        * Referenced by: '<S174>/Integrator2'
-                                        */
-  real_T Integrator_gainval;           /* Computed Parameter: Integrator_gainval
-                                        * Referenced by: '<S174>/Integrator'
-                                        */
-  real_T Integrator_IC;                /* Expression: 0
-                                        * Referenced by: '<S174>/Integrator'
-                                        */
-  real_T Integrator_UpperSat;          /* Expression: 3.40282347E+38
-                                        * Referenced by: '<S174>/Integrator'
-                                        */
-  real_T Integrator_LowerSat;          /* Expression: -3.40282347E+38
-                                        * Referenced by: '<S174>/Integrator'
-                                        */
-  real_T Integrator1_gainval;         /* Computed Parameter: Integrator1_gainval
-                                       * Referenced by: '<S174>/Integrator1'
-                                       */
-  real_T Integrator1_IC;               /* Expression: 0
-                                        * Referenced by: '<S174>/Integrator1'
-                                        */
-  real_T Integrator1_UpperSat;         /* Expression: 3.40282347E+38
-                                        * Referenced by: '<S174>/Integrator1'
-                                        */
-  real_T Integrator1_LowerSat;         /* Expression: -3.40282347E+38
-                                        * Referenced by: '<S174>/Integrator1'
-                                        */
-  real_T Constant3_Value_a;            /* Expression: 0
-                                        * Referenced by: '<S4>/Constant3'
-                                        */
-  real_T Gain3_Gain[9];
-          /* Expression: [ 1   0   1; -1/2  sqrt(3)/2   1; -1/2  -sqrt(3)/2  1 ]
-           * Referenced by: '<S184>/Gain3'
-           */
   real_T Constant2_Value;              /* Expression: 0
                                         * Referenced by: '<Root>/Constant2'
                                         */
-  real_T TSamp_WtEt;                   /* Computed Parameter: TSamp_WtEt
-                                        * Referenced by: '<S6>/TSamp'
-                                        */
-  real_T Filter_gainval;               /* Computed Parameter: Filter_gainval
-                                        * Referenced by: '<S151>/Filter'
+  real_T Const_Value;                  /* Expression: Encoder_Offset
+                                        * Referenced by: '<S3>/Const'
                                         */
   real_T Switch_Threshold;             /* Expression: 0
                                         * Referenced by: '<S3>/Switch'
                                         */
-  real_T Gain3_Gain_k[9];
-  /* Expression: [ 1   -1/2   -1/2; 0   sqrt(3)/2   -sqrt(3)/2; 1/2  1/2  1/2 ]
-   * Referenced by: '<S117>/Gain3'
-   */
-  real_T Gain1_Gain;                   /* Expression: 2/3
-                                        * Referenced by: '<S117>/Gain1'
-                                        */
-  real_T Constant1_Value_n;            /* Expression: 0
+  real_T Constant1_Value;              /* Expression: 0
                                         * Referenced by: '<S3>/Constant1'
                                         */
-  real_T Integrator_gainval_l;       /* Computed Parameter: Integrator_gainval_l
+  real32_T Constant3_Value;            /* Computed Parameter: Constant3_Value
+                                        * Referenced by: '<Root>/Constant3'
+                                        */
+  real32_T alpha_beta_Y0[2];           /* Computed Parameter: alpha_beta_Y0
+                                        * Referenced by: '<S188>/alpha_beta'
+                                        */
+  real32_T alpha_beta_Y0_i[2];         /* Computed Parameter: alpha_beta_Y0_i
+                                        * Referenced by: '<S189>/alpha_beta'
+                                        */
+  real32_T SamplingDelay_InitialCondition;
+                           /* Computed Parameter: SamplingDelay_InitialCondition
+                            * Referenced by: '<S1>/Sampling Delay'
+                            */
+  real32_T Saturation_UpperSat;       /* Computed Parameter: Saturation_UpperSat
+                                       * Referenced by: '<S1>/Saturation'
+                                       */
+  real32_T Saturation_LowerSat;       /* Computed Parameter: Saturation_LowerSat
+                                       * Referenced by: '<S1>/Saturation'
+                                       */
+  real32_T Gain_Gain;                  /* Computed Parameter: Gain_Gain
+                                        * Referenced by: '<S2>/Gain'
+                                        */
+  real32_T TransferFcn_NumCoef[2];    /* Computed Parameter: TransferFcn_NumCoef
+                                       * Referenced by: '<S175>/Transfer Fcn'
+                                       */
+  real32_T TransferFcn_DenCoef[2];    /* Computed Parameter: TransferFcn_DenCoef
+                                       * Referenced by: '<S175>/Transfer Fcn'
+                                       */
+  real32_T TransferFcn_InitialStates;
+                                /* Computed Parameter: TransferFcn_InitialStates
+                                 * Referenced by: '<S175>/Transfer Fcn'
+                                 */
+  real32_T Constant1_Value_n;          /* Computed Parameter: Constant1_Value_n
+                                        * Referenced by: '<Root>/Constant1'
+                                        */
+  real32_T Saturation_LowerSat_a;   /* Computed Parameter: Saturation_LowerSat_a
+                                     * Referenced by: '<S3>/Saturation'
+                                     */
+  real32_T Integrator2_gainval;       /* Computed Parameter: Integrator2_gainval
+                                       * Referenced by: '<S174>/Integrator2'
+                                       */
+  real32_T Integrator2_IC;             /* Computed Parameter: Integrator2_IC
+                                        * Referenced by: '<S174>/Integrator2'
+                                        */
+  real32_T Integrator2_UpperSat;     /* Computed Parameter: Integrator2_UpperSat
+                                      * Referenced by: '<S174>/Integrator2'
+                                      */
+  real32_T Integrator2_LowerSat;     /* Computed Parameter: Integrator2_LowerSat
+                                      * Referenced by: '<S174>/Integrator2'
+                                      */
+  real32_T Gain6_Gain;                 /* Computed Parameter: Gain6_Gain
+                                        * Referenced by: '<S4>/Gain6'
+                                        */
+  real32_T Constant_Value_f;           /* Expression: Encoder_Offset
+                                        * Referenced by: '<S4>/Constant'
+                                        */
+  real32_T Integrator_gainval;         /* Computed Parameter: Integrator_gainval
+                                        * Referenced by: '<S174>/Integrator'
+                                        */
+  real32_T Integrator_IC;              /* Computed Parameter: Integrator_IC
+                                        * Referenced by: '<S174>/Integrator'
+                                        */
+  real32_T Integrator_UpperSat;       /* Computed Parameter: Integrator_UpperSat
+                                       * Referenced by: '<S174>/Integrator'
+                                       */
+  real32_T Integrator_LowerSat;       /* Computed Parameter: Integrator_LowerSat
+                                       * Referenced by: '<S174>/Integrator'
+                                       */
+  real32_T Integrator1_gainval;       /* Computed Parameter: Integrator1_gainval
+                                       * Referenced by: '<S174>/Integrator1'
+                                       */
+  real32_T Integrator1_IC;             /* Computed Parameter: Integrator1_IC
+                                        * Referenced by: '<S174>/Integrator1'
+                                        */
+  real32_T Integrator1_UpperSat;     /* Computed Parameter: Integrator1_UpperSat
+                                      * Referenced by: '<S174>/Integrator1'
+                                      */
+  real32_T Integrator1_LowerSat;     /* Computed Parameter: Integrator1_LowerSat
+                                      * Referenced by: '<S174>/Integrator1'
+                                      */
+  real32_T Constant3_Value_a;          /* Computed Parameter: Constant3_Value_a
+                                        * Referenced by: '<S4>/Constant3'
+                                        */
+  real32_T Gain3_Gain[9];              /* Computed Parameter: Gain3_Gain
+                                        * Referenced by: '<S184>/Gain3'
+                                        */
+  real32_T TSamp_WtEt;                 /* Computed Parameter: TSamp_WtEt
+                                        * Referenced by: '<S6>/TSamp'
+                                        */
+  real32_T Filter_gainval;             /* Computed Parameter: Filter_gainval
+                                        * Referenced by: '<S151>/Filter'
+                                        */
+  real32_T Saturation1_LowerSat;     /* Computed Parameter: Saturation1_LowerSat
+                                      * Referenced by: '<S3>/Saturation1'
+                                      */
+  real32_T Gain5_Gain;                 /* Computed Parameter: Gain5_Gain
+                                        * Referenced by: '<S174>/Gain5'
+                                        */
+  real32_T Gain3_Gain_k[9];            /* Computed Parameter: Gain3_Gain_k
+                                        * Referenced by: '<S117>/Gain3'
+                                        */
+  real32_T Gain1_Gain;                 /* Computed Parameter: Gain1_Gain
+                                        * Referenced by: '<S117>/Gain1'
+                                        */
+  real32_T Integrator_gainval_l;     /* Computed Parameter: Integrator_gainval_l
                                       * Referenced by: '<S46>/Integrator'
                                       */
-  real_T Limiter1_LowerSat;            /* Expression: 0
+  real32_T Limiter1_LowerSat;          /* Computed Parameter: Limiter1_LowerSat
                                         * Referenced by: '<S3>/Limiter 1'
                                         */
-  real_T Integrator_gainval_e;       /* Computed Parameter: Integrator_gainval_e
+  real32_T Gain6_Gain_p;               /* Computed Parameter: Gain6_Gain_p
+                                        * Referenced by: '<S3>/Gain6'
+                                        */
+  real32_T Limiter1_LowerSat_j;       /* Computed Parameter: Limiter1_LowerSat_j
+                                       * Referenced by: '<S3>/Limiter1'
+                                       */
+  real32_T Integrator_gainval_n;     /* Computed Parameter: Integrator_gainval_n
                                       * Referenced by: '<S98>/Integrator'
                                       */
-  real_T Limiter_LowerSat;             /* Expression: 0
+  real32_T Gain1_Gain_n;               /* Computed Parameter: Gain1_Gain_n
+                                        * Referenced by: '<S5>/Gain1'
+                                        */
+  real32_T Limiter_LowerSat;           /* Computed Parameter: Limiter_LowerSat
                                         * Referenced by: '<S3>/Limiter'
                                         */
-  real_T Bias_Bias;                    /* Expression: -2*pi/3
+  real32_T Bias_Bias;                  /* Computed Parameter: Bias_Bias
                                         * Referenced by: '<S9>/Bias'
                                         */
-  real_T Bias1_Bias;                   /* Expression: 2*pi/3
+  real32_T Bias1_Bias;                 /* Computed Parameter: Bias1_Bias
                                         * Referenced by: '<S9>/Bias1'
                                         */
-  real_T Gain3_Gain_g[9];
-  /* Expression: [ 1   -1/2   -1/2; 0   sqrt(3)/2   -sqrt(3)/2; 1/2  1/2  1/2 ]
-   * Referenced by: '<S179>/Gain3'
-   */
-  real_T Gain1_Gain_e;                 /* Expression: 2/3
+  real32_T Gain5_Gain_i;               /* Computed Parameter: Gain5_Gain_i
+                                        * Referenced by: '<S1>/Gain5'
+                                        */
+  real32_T Gain3_Gain_g[9];            /* Computed Parameter: Gain3_Gain_g
+                                        * Referenced by: '<S179>/Gain3'
+                                        */
+  real32_T Gain1_Gain_e;               /* Computed Parameter: Gain1_Gain_e
                                         * Referenced by: '<S179>/Gain1'
                                         */
-  real_T Gain_Gain_m;                  /* Expression: 1/k^2
+  real32_T Constant_Value_i;           /* Computed Parameter: Constant_Value_i
+                                        * Referenced by: '<S174>/Constant'
+                                        */
+  real32_T Gain_Gain_k;                /* Computed Parameter: Gain_Gain_k
+                                        * Referenced by: '<S174>/Gain'
+                                        */
+  real32_T Constant1_Value_p;          /* Computed Parameter: Constant1_Value_p
+                                        * Referenced by: '<S174>/Constant1'
+                                        */
+  real32_T Gain4_Gain;                 /* Computed Parameter: Gain4_Gain
+                                        * Referenced by: '<S174>/Gain4'
+                                        */
+  real32_T Gain2_Gain;                 /* Computed Parameter: Gain2_Gain
+                                        * Referenced by: '<S174>/Gain2'
+                                        */
+  real32_T Constant1_Value_no;         /* Computed Parameter: Constant1_Value_no
+                                        * Referenced by: '<S175>/Constant1'
+                                        */
+  real32_T Gain_Gain_m;                /* Computed Parameter: Gain_Gain_m
                                         * Referenced by: '<S175>/Gain'
                                         */
   P_Subsystem1_Main_Firmware_T Subsystem1_c;/* '<S178>/Subsystem1' */
