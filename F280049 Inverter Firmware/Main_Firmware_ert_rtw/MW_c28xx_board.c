@@ -61,6 +61,7 @@ void init_board (void)
   CpuSysRegs.PCLKCR0.bit.TBCLKSYNC = 0U;
   EDIS;
   config_ePWMSyncSource();
+  MW_SetVREF();
 
   /* initial GPIO qualification settings.... */
   EALLOW;

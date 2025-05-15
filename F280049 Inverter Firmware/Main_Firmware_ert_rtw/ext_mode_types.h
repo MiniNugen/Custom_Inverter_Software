@@ -7,9 +7,9 @@
  *
  * Code generation for model "Main_Firmware".
  *
- * Model version              : 2.21
+ * Model version              : 2.26
  * Simulink Coder version : 24.2 (R2024b) 21-Jun-2024
- * C source code generated on : Thu May  8 18:41:37 2025
+ * C source code generated on : Wed May 14 13:11:55 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000

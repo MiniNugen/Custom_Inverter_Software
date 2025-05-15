@@ -134,11 +134,11 @@
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_MEM_BLOCK_2_NUMBER=1">
 </listOptionValue>
-<listOptionValue builtIn="false" value="XCP_MEM_BLOCK_3_SIZE=48">
+<listOptionValue builtIn="false" value="XCP_MEM_BLOCK_3_SIZE=24">
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_MEM_BLOCK_3_NUMBER=1">
 </listOptionValue>
-<listOptionValue builtIn="false" value="XCP_MEM_RESERVED_POOLS_TOTAL_SIZE=1477">
+<listOptionValue builtIn="false" value="XCP_MEM_RESERVED_POOLS_TOTAL_SIZE=613">
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_MEM_RESERVED_POOLS_NUMBER=2">
 </listOptionValue>
@@ -418,11 +418,11 @@
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_MEM_BLOCK_2_NUMBER=1">
 </listOptionValue>
-<listOptionValue builtIn="false" value="XCP_MEM_BLOCK_3_SIZE=48">
+<listOptionValue builtIn="false" value="XCP_MEM_BLOCK_3_SIZE=24">
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_MEM_BLOCK_3_NUMBER=1">
 </listOptionValue>
-<listOptionValue builtIn="false" value="XCP_MEM_RESERVED_POOLS_TOTAL_SIZE=1477">
+<listOptionValue builtIn="false" value="XCP_MEM_RESERVED_POOLS_TOTAL_SIZE=613">
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_MEM_RESERVED_POOLS_NUMBER=2">
 </listOptionValue>
