@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 2.26
+ * Model version                  : 2.28
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Wed May 14 13:11:55 2025
+ * C/C++ source code generated on : Wed May 28 13:38:04 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -29,14 +29,6 @@
 #ifndef rtmSetTFinal
 #define rtmSetTFinal(rtm, val)         ((rtm)->Timing.tFinal = (val))
 #endif
-
-void InitAdcB (void);
-void config_ADCB_SOC0 (void);
-void InitAdcA (void);
-void config_ADCA_SOC8 (void);
-extern uint16_T MW_adcBInitFlag;
-extern uint16_T MW_adcAInitFlag;
-
 #endif                                 /* Main_Firmware_private_h_ */
 
 /*

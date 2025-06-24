@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 2.26
+ * Model version                  : 2.28
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Wed May 14 13:11:55 2025
+ * C/C++ source code generated on : Wed May 28 13:38:04 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -41,25 +41,15 @@ P_Main_Firmware_T Main_Firmware_P = {
    */
   0.0,
 
-  /* Expression: 28
+  /* Expression: 27
    * Referenced by: '<S1>/Constant1'
    */
-  28.0,
+  27.0,
 
   /* Expression: 0
    * Referenced by: '<S1>/Constant'
    */
-  0.0,
-
-  /* Computed Parameter: Gain1_Gain
-   * Referenced by: '<S2>/Gain1'
-   */
-  0.000805664051F,
-
-  /* Computed Parameter: Bias_Bias
-   * Referenced by: '<S3>/Bias'
-   */
-  -1.5F
+  0.0
 };
 
 /*

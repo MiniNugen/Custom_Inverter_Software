@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 2.26
+ * Model version                  : 2.28
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Wed May 14 13:11:55 2025
+ * C/C++ source code generated on : Wed May 28 13:38:04 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -31,7 +31,6 @@
 #include "IQmathLib.h"
 #endif                                 /* Main_Firmware_COMMON_INCLUDES_ */
 
-#include "MW_c28xAnalogSubsystem.h"
 #include <stddef.h>
 #include "Main_Firmware_types.h"
 #include <string.h>
@@ -89,18 +88,10 @@ extern void config_ePWM_XBAR(void);
 /* Block signals (default storage) */
 typedef struct {
   real_T LEDHeartbeat;                 /* '<Root>/LED Heartbeat' */
-  real32_T Gain1[2];                   /* '<S2>/Gain1' */
-  real32_T RotrAngleRad;               /* '<S3>/Atan' */
-  uint16_T VCos;                       /* '<S2>/ADC' */
-  uint16_T VSine;                      /* '<S2>/ADC1' */
 } B_Main_Firmware_T;
 
 /* Block states (default storage) for system '<Root>' */
 typedef struct {
-  struct {
-    void *LoggedData[3];
-  } MainScope2_PWORK;                  /* '<Root>/Main Scope2' */
-
   int32_T clockTickCounter;            /* '<Root>/LED Heartbeat' */
   int32_T DigitalOutput_FRAC_LEN;      /* '<Root>/Digital Output' */
   int32_T DigitalOutput1_FRAC_LEN;     /* '<S1>/Digital Output1' */
@@ -120,17 +111,11 @@ struct P_Main_Firmware_T_ {
   real_T LEDHeartbeat_PhaseDelay;      /* Expression: 0
                                         * Referenced by: '<Root>/LED Heartbeat'
                                         */
-  real_T Constant1_Value;              /* Expression: 28
+  real_T Constant1_Value;              /* Expression: 27
                                         * Referenced by: '<S1>/Constant1'
                                         */
   real_T Constant_Value;               /* Expression: 0
                                         * Referenced by: '<S1>/Constant'
-                                        */
-  real32_T Gain1_Gain;                 /* Computed Parameter: Gain1_Gain
-                                        * Referenced by: '<S2>/Gain1'
-                                        */
-  real32_T Bias_Bias;                  /* Computed Parameter: Bias_Bias
-                                        * Referenced by: '<S3>/Bias'
                                         */
 };
 
@@ -207,8 +192,6 @@ extern volatile boolean_T runModel;
  *
  * '<Root>' : 'Main_Firmware'
  * '<S1>'   : 'Main_Firmware/EPWM'
- * '<S2>'   : 'Main_Firmware/Resolver Voltage Reading'
- * '<S3>'   : 'Main_Firmware/Sine_Cos decoder'
  */
 #endif                                 /* Main_Firmware_h_ */
 

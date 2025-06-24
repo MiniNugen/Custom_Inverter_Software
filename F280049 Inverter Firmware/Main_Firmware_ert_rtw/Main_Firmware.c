@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 2.26
+ * Model version                  : 2.28
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Wed May 14 13:11:55 2025
+ * C/C++ source code generated on : Wed May 28 13:38:04 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -18,7 +18,6 @@
  */
 
 #include "Main_Firmware.h"
-#include <math.h>
 #include "rtwtypes.h"
 #include "Main_Firmware_private.h"
 #include <string.h>
@@ -32,18 +31,6 @@ DW_Main_Firmware_T Main_Firmware_DW;
 /* Real-time model */
 static RT_MODEL_Main_Firmware_T Main_Firmware_M_;
 RT_MODEL_Main_Firmware_T *const Main_Firmware_M = &Main_Firmware_M_;
-
-#ifndef __TMS320C28XX_CLA__
-
-uint16_T MW_adcBInitFlag = 0;
-
-#endif
-
-#ifndef __TMS320C28XX_CLA__
-
-uint16_T MW_adcAInitFlag = 0;
-
-#endif
 
 /* Model step function */
 void Main_Firmware_step(void)
@@ -69,70 +56,6 @@ void Main_Firmware_step(void)
       GpioDataRegs.GPACLEAR.bit.GPIO23 = 1U;
     }
   }
-
-  /* S-Function (c2802xadc): '<S2>/ADC' */
-  {
-    /*  Internal Reference Voltage : Fixed scale 0 to 3.3 V range.  */
-    /*  External Reference Voltage : Allowable ranges of VREFHI(ADCINA0) = 3.3 and VREFLO(tied to ground) = 0  */
-    AdcbRegs.ADCSOCFRC1.bit.SOC0 = 1U;
-
-    /* Wait for the period of Sampling window and EOC result to be latched after trigger */
-#ifndef __TMS320C28XX_CLA__
-
-    asm(" RPT #32|| NOP");
-
-#endif
-
-#ifdef __TMS320C28XX_CLA__
-
-    real32_T wait_index;
-    for (wait_index= 5; wait_index > 0; wait_index--)
-      __mnop();
-
-#endif
-
-    Main_Firmware_B.VCos = (AdcbResultRegs.ADCRESULT0);
-  }
-
-  /* S-Function (c2802xadc): '<S2>/ADC1' */
-  {
-    /*  Internal Reference Voltage : Fixed scale 0 to 3.3 V range.  */
-    /*  External Reference Voltage : Allowable ranges of VREFHI(ADCINA0) = 3.3 and VREFLO(tied to ground) = 0  */
-    AdcaRegs.ADCSOCFRC1.bit.SOC8 = 1U;
-
-    /* Wait for the period of Sampling window and EOC result to be latched after trigger */
-#ifndef __TMS320C28XX_CLA__
-
-    asm(" RPT #32|| NOP");
-
-#endif
-
-#ifdef __TMS320C28XX_CLA__
-
-    real32_T wait_index;
-    for (wait_index= 5; wait_index > 0; wait_index--)
-      __mnop();
-
-#endif
-
-    Main_Firmware_B.VSine = (AdcaResultRegs.ADCRESULT8);
-  }
-
-  /* Gain: '<S2>/Gain1' incorporates:
-   *  SignalConversion generated from: '<S2>/Gain1'
-   */
-  Main_Firmware_B.Gain1[0] = Main_Firmware_P.Gain1_Gain * (real32_T)
-    Main_Firmware_B.VCos;
-  Main_Firmware_B.Gain1[1] = Main_Firmware_P.Gain1_Gain * (real32_T)
-    Main_Firmware_B.VSine;
-
-  /* Trigonometry: '<S3>/Atan' incorporates:
-   *  Bias: '<S3>/Bias'
-   *  Product: '<S3>/Divide'
-   */
-  Main_Firmware_B.RotrAngleRad = (real32_T)atan((Main_Firmware_B.Gain1[0] +
-    Main_Firmware_P.Bias_Bias) / (Main_Firmware_B.Gain1[1] +
-    Main_Firmware_P.Bias_Bias));
 
   /* S-Function (c2802xpwm): '<S1>/A1' incorporates:
    *  Constant: '<S1>/Constant1'
@@ -201,10 +124,10 @@ void Main_Firmware_initialize(void)
   Main_Firmware_M->Timing.stepSize0 = 0.0001;
 
   /* External mode info */
-  Main_Firmware_M->Sizes.checksums[0] = (736914951U);
-  Main_Firmware_M->Sizes.checksums[1] = (2962447231U);
-  Main_Firmware_M->Sizes.checksums[2] = (3721049695U);
-  Main_Firmware_M->Sizes.checksums[3] = (2316048434U);
+  Main_Firmware_M->Sizes.checksums[0] = (1251363050U);
+  Main_Firmware_M->Sizes.checksums[1] = (3499490827U);
+  Main_Firmware_M->Sizes.checksums[2] = (740311736U);
+  Main_Firmware_M->Sizes.checksums[3] = (3719417978U);
 
   {
     static const sysRanDType rtAlwaysEnabled = SUBSYS_RAN_BC_ENABLE;
@@ -236,22 +159,6 @@ void Main_Firmware_initialize(void)
   GpioCtrlRegs.GPAMUX2.all &= 0xFFFF3FFFU;
   GpioCtrlRegs.GPADIR.all |= 0x800000U;
   EDIS;
-
-  /* Start for S-Function (c2802xadc): '<S2>/ADC' */
-  if (MW_adcBInitFlag == 0U) {
-    InitAdcB();
-    MW_adcBInitFlag = 1U;
-  }
-
-  config_ADCB_SOC0 ();
-
-  /* Start for S-Function (c2802xadc): '<S2>/ADC1' */
-  if (MW_adcAInitFlag == 0U) {
-    InitAdcA();
-    MW_adcAInitFlag = 1U;
-  }
-
-  config_ADCA_SOC8 ();
 
   /* Start for S-Function (c2802xpwm): '<S1>/A1' incorporates:
    *  Constant: '<S1>/Constant1'

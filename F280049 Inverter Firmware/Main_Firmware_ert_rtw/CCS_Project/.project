@@ -38,11 +38,6 @@
 <location>C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/F280049 Inverter Firmware/Main_Firmware_ert_rtw/MW_c28xx_board.c</location>
 </link>
 <link>
-<name>MW_c28xx_adc.c</name>
-<type>1</type>
-<location>C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/F280049 Inverter Firmware/Main_Firmware_ert_rtw/MW_c28xx_adc.c</location>
-</link>
-<link>
 <name>MW_c28xx_overrun.c</name>
 <type>1</type>
 <location>C:/Users/minhp/OneDrive - University of Windsor/Documents/GitHub/Custom_Inverter_Software/F280049 Inverter Firmware/Main_Firmware_ert_rtw/MW_c28xx_overrun.c</location>
