@@ -3,7 +3,7 @@ clear
 
 
 %% ------ Enter Motor Parameters here ----------
-mVolt_RMS = 95;         % [V] Max RMS voltage
+mVolt_RMS = 96/sqrt(2);         % [V] Max RMS voltage
 mCurr_RMS = 150;        % [A] Max RMS Current
 mrot = 20;          % [kg] Rotor mass
 ppair= 4;           % [-] Pole pair
@@ -33,7 +33,7 @@ f = 3.03448e-4;     %viscous friction coefficient
 
 
 %% -------Enter inverter parameters here ---------
-V_dd = 120;                             % [V] High voltage DC supply voltage;
+V_dd = 100;                             % [V] High voltage DC supply voltage;
 InvCurr_RMS=150;                        % [A] Max RMS current output
 
 %% ---- Peak current and Voltage calc-----
