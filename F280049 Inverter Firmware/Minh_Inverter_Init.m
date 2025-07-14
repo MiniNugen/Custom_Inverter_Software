@@ -36,7 +36,10 @@ f = 3.03448e-4;     %viscous friction coefficient
 
 V_dd = 120;                             % [V] High voltage DC supply voltage;
 InvCurr_RMS= 30;                        % [A] Max RMS current output
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 
 %% ---- Peak current and Voltage calc-----
 Current_max =min(InvCurr_RMS,mCurr_RMS)*sqrt(2);% [A] Max Allowable peak phase curent output
