@@ -9,7 +9,11 @@
  *
  * Model version                  : 2.32
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
+<<<<<<< Updated upstream
  * C/C++ source code generated on : Sat Jul 12 16:27:19 2025
+=======
+ * C/C++ source code generated on : Fri Jul 11 14:41:25 2025
+>>>>>>> Stashed changes
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -18,6 +22,10 @@
  */
 
 #include "Main_Firmware.h"
+<<<<<<< Updated upstream
+=======
+#include <math.h>
+>>>>>>> Stashed changes
 #include "rt_nonfinite.h"
 #include "rtwtypes.h"
 #include "Main_Firmware_private.h"
@@ -54,6 +62,11 @@ uint16_T MW_adcBInitFlag = 0;
 /* Model step function */
 void Main_Firmware_step(void)
 {
+<<<<<<< Updated upstream
+=======
+  real_T rtb_DCycleB;
+  real_T rtb_DCycleC;
+>>>>>>> Stashed changes
   real32_T maxV;
 
   /* S-Function (c2802xadc): '<S4>/ADC2' */
@@ -143,9 +156,27 @@ void Main_Firmware_step(void)
   Main_Firmware_B.I_ABC[2] = (Main_Firmware_B.Gain2[2] +
     Main_Firmware_P.Bias1_Bias) * Main_Firmware_P.Gain_Gain;
 
+<<<<<<< Updated upstream
   /* S-Function (c2802xpwm): '<S2>/AHI' incorporates:
    *  Constant: '<S2>/Constant1'
    *  Constant: '<S2>/Constant2'
+=======
+  /* Sin: '<S2>/Sine Wave1' incorporates:
+   *  Sin: '<S2>/Sine Wave2'
+   */
+  rtb_DCycleB = Main_Firmware_M->Timing.t[0];
+  rtb_DCycleC = sin(Main_Firmware_P.SineWave1_Freq * rtb_DCycleB +
+                    Main_Firmware_P.SineWave1_Phase) *
+    Main_Firmware_P.SineWave1_Amp + Main_Firmware_P.SineWave1_Bias;
+
+  /* Sin: '<S2>/Sine Wave2' */
+  rtb_DCycleB = sin(Main_Firmware_P.SineWave2_Freq * rtb_DCycleB +
+                    Main_Firmware_P.SineWave2_Phase) *
+    Main_Firmware_P.SineWave2_Amp + Main_Firmware_P.SineWave2_Bias;
+
+  /* S-Function (c2802xpwm): '<S2>/A1' incorporates:
+   *  Constant: '<S2>/Constant1'
+>>>>>>> Stashed changes
    */
   uint16_T tbprdValue1Outputs = (EPwm1Regs.TBPRD + 1);
 
@@ -155,7 +186,27 @@ void Main_Firmware_step(void)
       Main_Firmware_P.Constant1_Value * 0.01);
   }
 
+<<<<<<< Updated upstream
   EPwm1Regs.AQCSFRC.bit.CSFA = (uint16_T)Main_Firmware_P.Constant2_Value;
+=======
+  /* S-Function (c2802xpwm): '<S2>/B1' */
+  uint16_T tbprdValue4Outputs = (EPwm4Regs.TBPRD + 1);
+
+  /*-- Update CMPA value for ePWM4 --*/
+  {
+    EPwm4Regs.CMPA.bit.CMPA = (uint16_T)((uint32_T)(EPwm4Regs.TBPRD + 1) *
+      rtb_DCycleB * 0.01);
+  }
+
+  /* S-Function (c2802xpwm): '<S2>/C1' */
+  uint16_T tbprdValue2Outputs = (EPwm2Regs.TBPRD + 1);
+
+  /*-- Update CMPA value for ePWM2 --*/
+  {
+    EPwm2Regs.CMPA.bit.CMPA = (uint16_T)((uint32_T)(EPwm2Regs.TBPRD + 1) *
+      rtb_DCycleC * 0.01);
+  }
+>>>>>>> Stashed changes
 
   /* S-Function (c2802xadc): '<S4>/ADC' */
   {
@@ -263,6 +314,22 @@ void Main_Firmware_step(void)
     (Main_Firmware_P.CompareToConstant2_const >= 0.0F) &&
     (Main_Firmware_P.CompareToConstant3_const >= 0.0F) &&
     Main_Firmware_P.Constant_Value);
+<<<<<<< Updated upstream
+=======
+
+  {                                    /* Sample time: [0.0001s, 0.0s] */
+    extmodeErrorCode_T errorCode = EXTMODE_SUCCESS;
+    extmodeSimulationTime_T extmodeTime = (extmodeSimulationTime_T)
+      ((Main_Firmware_M->Timing.clockTick1 * 1) + 0);
+
+    /* Trigger External Mode event */
+    errorCode = extmodeEvent(1, extmodeTime);
+    if (errorCode != EXTMODE_SUCCESS) {
+      /* Code to handle External Mode event errors
+         may be added here */
+    }
+  }
+>>>>>>> Stashed changes
 
   /* Update absolute time for base rate */
   /* The "clockTick0" counts the number of times the code of this task has
@@ -270,9 +337,19 @@ void Main_Firmware_step(void)
    * and "Timing.stepSize0". Size of "clockTick0" ensures timer will not
    * overflow during the application lifespan selected.
    */
-  Main_Firmware_M->Timing.taskTime0 =
+  Main_Firmware_M->Timing.t[0] =
     ((time_T)(++Main_Firmware_M->Timing.clockTick0)) *
     Main_Firmware_M->Timing.stepSize0;
+
+  {
+    /* Update absolute timer for sample time: [0.0001s, 0.0s] */
+    /* The "clockTick1" counts the number of times the code of this task has
+     * been executed. The resolution of this integer timer is 0.0001, which is the step size
+     * of the task. Size of "clockTick1" ensures timer will not overflow during the
+     * application lifespan selected.
+     */
+    Main_Firmware_M->Timing.clockTick1++;
+  }
 }
 
 /* Model initialize function */
@@ -286,14 +363,39 @@ void Main_Firmware_initialize(void)
   /* initialize real-time model */
   (void) memset((void *)Main_Firmware_M, 0,
                 sizeof(RT_MODEL_Main_Firmware_T));
+
+  {
+    /* Setup solver object */
+    rtsiSetSimTimeStepPtr(&Main_Firmware_M->solverInfo,
+                          &Main_Firmware_M->Timing.simTimeStep);
+    rtsiSetTPtr(&Main_Firmware_M->solverInfo, &rtmGetTPtr(Main_Firmware_M));
+    rtsiSetStepSizePtr(&Main_Firmware_M->solverInfo,
+                       &Main_Firmware_M->Timing.stepSize0);
+    rtsiSetErrorStatusPtr(&Main_Firmware_M->solverInfo, (&rtmGetErrorStatus
+      (Main_Firmware_M)));
+    rtsiSetRTModelPtr(&Main_Firmware_M->solverInfo, Main_Firmware_M);
+  }
+
+  rtsiSetSimTimeStep(&Main_Firmware_M->solverInfo, MAJOR_TIME_STEP);
+  rtsiSetIsMinorTimeStepWithModeChange(&Main_Firmware_M->solverInfo, false);
+  rtsiSetIsContModeFrozen(&Main_Firmware_M->solverInfo, false);
+  rtsiSetSolverName(&Main_Firmware_M->solverInfo,"FixedStepDiscrete");
+  rtmSetTPtr(Main_Firmware_M, &Main_Firmware_M->Timing.tArray[0]);
   rtmSetTFinal(Main_Firmware_M, -1);
   Main_Firmware_M->Timing.stepSize0 = 0.0001;
 
   /* External mode info */
+<<<<<<< Updated upstream
   Main_Firmware_M->Sizes.checksums[0] = (521920562U);
   Main_Firmware_M->Sizes.checksums[1] = (1565920920U);
   Main_Firmware_M->Sizes.checksums[2] = (2996462942U);
   Main_Firmware_M->Sizes.checksums[3] = (2232810687U);
+=======
+  Main_Firmware_M->Sizes.checksums[0] = (965087358U);
+  Main_Firmware_M->Sizes.checksums[1] = (4132334593U);
+  Main_Firmware_M->Sizes.checksums[2] = (4182433122U);
+  Main_Firmware_M->Sizes.checksums[3] = (22837157U);
+>>>>>>> Stashed changes
 
   {
     static const sysRanDType rtAlwaysEnabled = SUBSYS_RAN_BC_ENABLE;
@@ -341,9 +443,14 @@ void Main_Firmware_initialize(void)
 
   config_ADCA_SOC3 ();
 
+<<<<<<< Updated upstream
   /* Start for S-Function (c2802xpwm): '<S2>/AHI' incorporates:
    *  Constant: '<S2>/Constant1'
    *  Constant: '<S2>/Constant2'
+=======
+  /* Start for S-Function (c2802xpwm): '<S2>/A1' incorporates:
+   *  Constant: '<S2>/Constant1'
+>>>>>>> Stashed changes
    */
   real32_T tbprdValue1 = (real32_T)(EPwm1Regs.TBPRD + 1);
 
@@ -566,6 +673,249 @@ void Main_Firmware_initialize(void)
     EDIS;
   }
 
+<<<<<<< Updated upstream
+  /* Start for S-Function (c2802xadc): '<S4>/ADC' */
+  if (MW_adcBInitFlag == 0U) {
+    InitAdcB();
+    MW_adcBInitFlag = 1U;
+  }
+
+  config_ADCB_SOC0 ();
+=======
+  /* Start for S-Function (c2802xpwm): '<S2>/B1' */
+  real32_T tbprdValue4 = (real32_T)(EPwm4Regs.TBPRD + 1);
+
+  /*** Initialize ePWM4 modules ***/
+  {
+    /*  -- Time Base Control Register
+       EPwm4Regs.TBCTL.bit.CTRMODE              = 0U;          -- Counter Mode
+       EPwm4Regs.TBCTL.bit.SYNCOSEL             = 3U;          -- Sync Output Select
+       EPwm4Regs.TBCTL2.bit.SYNCOSELX           = 0U;          -- Sync Output Select - additional options
+
+       EPwm4Regs.TBCTL.bit.PRDLD                = 0U;          -- Shadow select
+
+       EPwm4Regs.TBCTL2.bit.PRDLDSYNC           = 0U;          -- Shadow select
+
+       EPwm4Regs.TBCTL.bit.PHSEN                = 0U;          -- Phase Load Enable
+       EPwm4Regs.TBCTL.bit.PHSDIR               = 0U;          -- Phase Direction Bit
+       EPwm4Regs.TBCTL.bit.HSPCLKDIV            = 0U;          -- High Speed TBCLK Pre-scaler
+       EPwm4Regs.TBCTL.bit.CLKDIV               = 0U;          -- Time Base Clock Pre-scaler
+     */
+    EPwm4Regs.TBCTL.all = (EPwm4Regs.TBCTL.all & ~0x3FFFU) | 0x30U;
+    EPwm4Regs.TBCTL2.all = (EPwm4Regs.TBCTL2.all & ~0xF000U) | 0x0U;
+
+    /*-- Setup Time-Base (TB) Submodule --*/
+    EPwm4Regs.TBPRD = 499U;            // Time Base Period Register
+
+    /* -- Time-Base Phase Register
+       EPwm4Regs.TBPHS.bit.TBPHS               = 0U;          -- Phase offset register
+     */
+    EPwm4Regs.TBPHS.all = (EPwm4Regs.TBPHS.all & ~0xFFFF0000U) | 0x0U;
+
+    // Time Base Counter Register
+    EPwm4Regs.TBCTR = 0x0000U;         /* Clear counter*/
+
+    /*-- Setup Counter_Compare (CC) Submodule --*/
+    /*	-- Counter Compare Control Register
+
+       EPwm4Regs.CMPCTL.bit.LOADASYNC           = 0U;          -- Active Compare A Load SYNC Option
+       EPwm4Regs.CMPCTL.bit.LOADBSYNC           = 0U;          -- Active Compare B Load SYNC Option
+       EPwm4Regs.CMPCTL.bit.LOADAMODE           = 0U;          -- Active Compare A Load
+       EPwm4Regs.CMPCTL.bit.LOADBMODE           = 0U;          -- Active Compare B Load
+       EPwm4Regs.CMPCTL.bit.SHDWAMODE           = 0U;          -- Compare A Register Block Operating Mode
+       EPwm4Regs.CMPCTL.bit.SHDWBMODE           = 0U;          -- Compare B Register Block Operating Mode
+     */
+    EPwm4Regs.CMPCTL.all = (EPwm4Regs.CMPCTL.all & ~0x3C5FU) | 0x0U;
+
+    /* EPwm4Regs.CMPCTL2.bit.SHDWCMODE           = 0U;          -- Compare C Register Block Operating Mode
+       EPwm4Regs.CMPCTL2.bit.SHDWDMODE           = 0U;          -- Compare D Register Block Operating Mode
+       EPwm4Regs.CMPCTL2.bit.LOADCSYNC           = 0U;          -- Active Compare C Load SYNC Option
+       EPwm4Regs.CMPCTL2.bit.LOADDSYNC           = 0U;          -- Active Compare D Load SYNC Option
+       EPwm4Regs.CMPCTL2.bit.LOADCMODE           = 0U;          -- Active Compare C Load
+       EPwm4Regs.CMPCTL2.bit.LOADDMODE           = 0U;          -- Active Compare D Load
+     */
+    EPwm4Regs.CMPCTL2.all = (EPwm4Regs.CMPCTL2.all & ~0x3C5FU) | 0x0U;
+    EPwm4Regs.CMPA.bit.CMPA = 0U;      // Counter Compare A Register
+    EPwm4Regs.CMPB.bit.CMPB = 32000U;  // Counter Compare B Register
+    EPwm4Regs.CMPC = 300U;             // Counter Compare C Register
+    EPwm4Regs.CMPD = 32000U;           // Counter Compare D Register
+
+    /*-- Setup Action-Qualifier (AQ) Submodule --*/
+    EPwm4Regs.AQCTLA.all = 150U;
+                               // Action Qualifier Control Register For Output A
+    EPwm4Regs.AQCTLB.all = 2070U;
+                               // Action Qualifier Control Register For Output B
+
+    /*	-- Action Qualifier Software Force Register
+       EPwm4Regs.AQSFRC.bit.RLDCSF              = 0U;          -- Reload from Shadow Options
+     */
+    EPwm4Regs.AQSFRC.all = (EPwm4Regs.AQSFRC.all & ~0xC0U) | 0x0U;
+
+    /*	-- Action Qualifier Continuous S/W Force Register
+       EPwm4Regs.AQCSFRC.bit.CSFA               = 0U;          -- Continuous Software Force on output A
+       EPwm4Regs.AQCSFRC.bit.CSFB               = 0U;          -- Continuous Software Force on output B
+     */
+    EPwm4Regs.AQCSFRC.all = (EPwm4Regs.AQCSFRC.all & ~0xFU) | 0x0U;
+
+    /*-- Setup Dead-Band Generator (DB) Submodule --*/
+    /*	-- Dead-Band Generator Control Register
+       EPwm4Regs.DBCTL.bit.OUT_MODE             = 0U;          -- Dead Band Output Mode Control
+       EPwm4Regs.DBCTL.bit.IN_MODE              = 0U;          -- Dead Band Input Select Mode Control
+       EPwm4Regs.DBCTL.bit.POLSEL               = 0;          -- Polarity Select Control
+       EPwm4Regs.DBCTL.bit.HALFCYCLE            = 0U;          -- Half Cycle Clocking Enable
+       EPwm4Regs.DBCTL.bit.SHDWDBREDMODE        = 0U;          -- DBRED shadow mode
+       EPwm4Regs.DBCTL.bit.SHDWDBFEDMODE        = 0U;          -- DBFED shadow mode
+       EPwm4Regs.DBCTL.bit.LOADREDMODE          = 4U;        -- DBRED load
+       EPwm4Regs.DBCTL.bit.LOADFEDMODE          = 4U;        -- DBFED load
+     */
+    EPwm4Regs.DBCTL.all = (EPwm4Regs.DBCTL.all & ~0x8FFFU) | 0x0U;
+    EPwm4Regs.DBRED.bit.DBRED = (uint16_T)(0);
+                         // Dead-Band Generator Rising Edge Delay Count Register
+    EPwm4Regs.DBFED.bit.DBFED = (uint16_T)(0);
+                        // Dead-Band Generator Falling Edge Delay Count Register
+
+    /*-- Setup Event-Trigger (ET) Submodule --*/
+    /*	-- Event Trigger Selection and Pre-Scale Register
+       EPwm4Regs.ETSEL.bit.SOCAEN               = 0U;          -- Start of Conversion A Enable
+       EPwm4Regs.ETSEL.bit.SOCASELCMP           = 0U;
+       EPwm4Regs.ETSEL.bit.SOCASEL              = 1U;          -- Start of Conversion A Select
+       EPwm4Regs.ETPS.bit.SOCPSSEL              = 1U;          -- EPWM4SOC Period Select
+       EPwm4Regs.ETSOCPS.bit.SOCAPRD2           = 1U;
+       EPwm4Regs.ETSEL.bit.SOCBEN               = 0U;          -- Start of Conversion B Enable
+       EPwm4Regs.ETSEL.bit.SOCBSELCMP           = 0U;
+       EPwm4Regs.ETSEL.bit.SOCBSEL              = 1U;          -- Start of Conversion A Select
+       EPwm4Regs.ETPS.bit.SOCPSSEL              = 1;          -- EPWM4SOCB Period Select
+       EPwm4Regs.ETSOCPS.bit.SOCBPRD2           = 1U;
+       EPwm4Regs.ETSEL.bit.INTEN                = 0U;          -- EPWM4INTn Enable
+       EPwm4Regs.ETSEL.bit.INTSELCMP            = 0U;
+       EPwm4Regs.ETSEL.bit.INTSEL               = 1U;          -- Start of Conversion A Select
+       EPwm4Regs.ETPS.bit.INTPSSEL              = 1U;          // EPWM4INTn Period Select
+       EPwm4Regs.ETINTPS.bit.INTPRD2            = 1U;
+     */
+    EPwm4Regs.ETSEL.all = (EPwm4Regs.ETSEL.all & ~0xFF7FU) | 0x1101U;
+    EPwm4Regs.ETPS.all = (EPwm4Regs.ETPS.all & ~0x30U) | 0x30U;
+    EPwm4Regs.ETSOCPS.all = (EPwm4Regs.ETSOCPS.all & ~0xF0FU) | 0x101U;
+    EPwm4Regs.ETINTPS.all = (EPwm4Regs.ETINTPS.all & ~0xFU) | 0x1U;
+
+    /*-- Setup PWM-Chopper (PC) Submodule --*/
+    /*	-- PWM Chopper Control Register
+       EPwm4Regs.PCCTL.bit.CHPEN                = 0U;          -- PWM chopping enable
+       EPwm4Regs.PCCTL.bit.CHPFREQ              = 0U;          -- Chopping clock frequency
+       EPwm4Regs.PCCTL.bit.OSHTWTH              = 0U;          -- One-shot pulse width
+       EPwm4Regs.PCCTL.bit.CHPDUTY              = 0U;          -- Chopping clock Duty cycle
+     */
+    EPwm4Regs.PCCTL.all = (EPwm4Regs.PCCTL.all & ~0x7FFU) | 0x0U;
+
+    /*-- Set up Trip-Zone (TZ) Submodule --*/
+    EALLOW;
+    EPwm4Regs.TZSEL.all = 0U;          // Trip Zone Select Register
+
+    /*	-- Trip Zone Control Register
+       EPwm4Regs.TZCTL.bit.TZA                  = 3U;          -- TZ1 to TZ6 Trip Action On EPWM4A
+       EPwm4Regs.TZCTL.bit.TZB                  = 3U;          -- TZ1 to TZ6 Trip Action On EPWM4B
+       EPwm4Regs.TZCTL.bit.DCAEVT1              = 3U;          -- EPWM4A action on DCAEVT1
+       EPwm4Regs.TZCTL.bit.DCAEVT2              = 3U;          -- EPWM4A action on DCAEVT2
+       EPwm4Regs.TZCTL.bit.DCBEVT1              = 3U;          -- EPWM4B action on DCBEVT1
+       EPwm4Regs.TZCTL.bit.DCBEVT2              = 3U;          -- EPWM4B action on DCBEVT2
+     */
+    EPwm4Regs.TZCTL.all = (EPwm4Regs.TZCTL.all & ~0xFFFU) | 0xFFFU;
+
+    /*	-- Trip Zone Enable Interrupt Register
+       EPwm4Regs.TZEINT.bit.OST                 = 0U;          -- Trip Zones One Shot Int Enable
+       EPwm4Regs.TZEINT.bit.CBC                 = 0U;          -- Trip Zones Cycle By Cycle Int Enable
+       EPwm4Regs.TZEINT.bit.DCAEVT1             = 0U;          -- Digital Compare A Event 1 Int Enable
+       EPwm4Regs.TZEINT.bit.DCAEVT2             = 0U;          -- Digital Compare A Event 2 Int Enable
+       EPwm4Regs.TZEINT.bit.DCBEVT1             = 0U;          -- Digital Compare B Event 1 Int Enable
+       EPwm4Regs.TZEINT.bit.DCBEVT2             = 0U;          -- Digital Compare B Event 2 Int Enable
+     */
+    EPwm4Regs.TZEINT.all = (EPwm4Regs.TZEINT.all & ~0x7EU) | 0x0U;
+
+    /*	-- Digital Compare A Control Register
+       EPwm4Regs.DCACTL.bit.EVT1SYNCE           = 0U;          -- DCAEVT1 SYNC Enable
+       EPwm4Regs.DCACTL.bit.EVT1SOCE            = 1U;          -- DCAEVT1 SOC Enable
+       EPwm4Regs.DCACTL.bit.EVT1FRCSYNCSEL      = 0U;          -- DCAEVT1 Force Sync Signal
+       EPwm4Regs.DCACTL.bit.EVT1SRCSEL          = 0U;          -- DCAEVT1 Source Signal
+       EPwm4Regs.DCACTL.bit.EVT2FRCSYNCSEL      = 0U;          -- DCAEVT2 Force Sync Signal
+       EPwm4Regs.DCACTL.bit.EVT2SRCSEL          = 0U;          -- DCAEVT2 Source Signal
+     */
+    EPwm4Regs.DCACTL.all = (EPwm4Regs.DCACTL.all & ~0x30FU) | 0x4U;
+
+    /*	-- Digital Compare B Control Register
+       EPwm4Regs.DCBCTL.bit.EVT1SYNCE           = 0U;          -- DCBEVT1 SYNC Enable
+       EPwm4Regs.DCBCTL.bit.EVT1SOCE            = 0U;          -- DCBEVT1 SOC Enable
+       EPwm4Regs.DCBCTL.bit.EVT1FRCSYNCSEL      = 0U;          -- DCBEVT1 Force Sync Signal
+       EPwm4Regs.DCBCTL.bit.EVT1SRCSEL          = 0U;          -- DCBEVT1 Source Signal
+       EPwm4Regs.DCBCTL.bit.EVT2FRCSYNCSEL      = 0U;          -- DCBEVT2 Force Sync Signal
+       EPwm4Regs.DCBCTL.bit.EVT2SRCSEL          = 0U;          -- DCBEVT2 Source Signal
+     */
+    EPwm4Regs.DCBCTL.all = (EPwm4Regs.DCBCTL.all & ~0x30FU) | 0x0U;
+
+    /*	-- Digital Compare Trip Select Register
+       EPwm4Regs.DCTRIPSEL.bit.DCAHCOMPSEL      = 0U;          -- Digital Compare A High COMP Input Select
+
+       EPwm4Regs.DCTRIPSEL.bit.DCALCOMPSEL      = 0U;          -- Digital Compare A Low COMP Input Select
+       EPwm4Regs.DCTRIPSEL.bit.DCBHCOMPSEL      = 0U;          -- Digital Compare B High COMP Input Select
+       EPwm4Regs.DCTRIPSEL.bit.DCBLCOMPSEL      = 0U;          -- Digital Compare B Low COMP Input Select
+     */
+    EPwm4Regs.DCTRIPSEL.all = (EPwm4Regs.DCTRIPSEL.all & ~ 0xFFFFU) | 0x0U;
+
+    /*	-- Trip Zone Digital Comparator Select Register
+       EPwm4Regs.TZDCSEL.bit.DCAEVT1            = 0U;          -- Digital Compare Output A Event 1
+       EPwm4Regs.TZDCSEL.bit.DCAEVT2            = 0U;          -- Digital Compare Output A Event 2
+       EPwm4Regs.TZDCSEL.bit.DCBEVT1            = 0U;          -- Digital Compare Output B Event 1
+       EPwm4Regs.TZDCSEL.bit.DCBEVT2            = 0U;          -- Digital Compare Output B Event 2
+     */
+    EPwm4Regs.TZDCSEL.all = (EPwm4Regs.TZDCSEL.all & ~0xFFFU) | 0x0U;
+
+    /*	-- Digital Compare Filter Control Register
+       EPwm4Regs.DCFCTL.bit.BLANKE              = 0U;          -- Blanking Enable/Disable
+       EPwm4Regs.DCFCTL.bit.PULSESEL            = 1U;          -- Pulse Select for Blanking & Capture Alignment
+       EPwm4Regs.DCFCTL.bit.BLANKINV            = 0U;          -- Blanking Window Inversion
+       EPwm4Regs.DCFCTL.bit.SRCSEL              = 0U;          -- Filter Block Signal Source Select
+     */
+    EPwm4Regs.DCFCTL.all = (EPwm4Regs.DCFCTL.all & ~0x3FU) | 0x10U;
+    EPwm4Regs.DCFOFFSET = 0U;          // Digital Compare Filter Offset Register
+    EPwm4Regs.DCFWINDOW = 0U;          // Digital Compare Filter Window Register
+
+    /*	-- Digital Compare Capture Control Register
+       EPwm4Regs.DCCAPCTL.bit.CAPE              = 0U;          -- Counter Capture Enable
+     */
+    EPwm4Regs.DCCAPCTL.all = (EPwm4Regs.DCCAPCTL.all & ~0x1U) | 0x0U;
+
+    /*	-- HRPWM Configuration Register
+       EPwm4Regs.HRCNFG.bit.SWAPAB              = 0U;          -- Swap EPWMA and EPWMB Outputs Bit
+       EPwm4Regs.HRCNFG.bit.SELOUTB             = 0U;          -- EPWMB Output Selection Bit
+     */
+    EPwm4Regs.HRCNFG.all = (EPwm4Regs.HRCNFG.all & ~0xA0U) | 0x0U;
+
+    /* Update the Link Registers with the link value for all the Compare values and TBPRD */
+    /* No error is thrown if the ePWM register exists in the model or not */
+    EPwm4Regs.EPWMXLINK.bit.TBPRDLINK = 0U;
+    EPwm4Regs.EPWMXLINK.bit.CMPALINK = 3U;
+    EPwm4Regs.EPWMXLINK.bit.CMPBLINK = 3U;
+    EPwm4Regs.EPWMXLINK.bit.CMPCLINK = 3U;
+    EPwm4Regs.EPWMXLINK.bit.CMPDLINK = 3U;
+
+    /* SYNCPER - Peripheral synchronization output event
+       EPwm4Regs.HRPCTL.bit.PWMSYNCSEL            = 0U;          -- EPWMSYNCPER selection
+       EPwm4Regs.HRPCTL.bit.PWMSYNCSELX           = 0U;          --  EPWMSYNCPER selection
+     */
+    EPwm4Regs.HRPCTL.all = (EPwm4Regs.HRPCTL.all & ~0x72U) | 0x0U;
+    EDIS;
+  }
+
+  /* Start for S-Function (c2802xpwm): '<S2>/C1' */
+  real32_T tbprdValue2 = (real32_T)(EPwm2Regs.TBPRD + 1);
+>>>>>>> Stashed changes
+
+  /* Start for S-Function (c2802xadc): '<S4>/ADC1' */
+  if (MW_adcAInitFlag == 0U) {
+    InitAdcA();
+    MW_adcAInitFlag = 1U;
+  }
+
+<<<<<<< Updated upstream
+=======
   /* Start for S-Function (c2802xadc): '<S4>/ADC' */
   if (MW_adcBInitFlag == 0U) {
     InitAdcB();
@@ -580,6 +930,7 @@ void Main_Firmware_initialize(void)
     MW_adcAInitFlag = 1U;
   }
 
+>>>>>>> Stashed changes
   config_ADCA_SOC8 ();
 
   /* Start for DiscretePulseGenerator: '<Root>/LED Heartbeat' */

@@ -33,9 +33,14 @@ f = 3.03448e-4;     %viscous friction coefficient
 
 
 %% -------Enter inverter parameters here ---------
+<<<<<<< Updated upstream
 
 V_dd = 100;                             % [V] High voltage DC supply voltage;
 InvCurr_RMS=150;                        % [A] Max RMS current output
+=======
+V_dd = 120;                             % [V] High voltage DC supply voltage;
+InvCurr_RMS= 30;                        % [A] Max RMS current output
+>>>>>>> Stashed changes
 
 
 %% ---- Peak current and Voltage calc-----

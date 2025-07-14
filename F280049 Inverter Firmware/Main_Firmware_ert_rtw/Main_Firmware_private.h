@@ -9,7 +9,11 @@
  *
  * Model version                  : 2.32
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
+<<<<<<< Updated upstream
  * C/C++ source code generated on : Sat Jul 12 16:27:19 2025
+=======
+ * C/C++ source code generated on : Fri Jul 11 14:41:25 2025
+>>>>>>> Stashed changes
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -26,10 +30,25 @@
 #include "rtw_solver.h"
 
 /* Private macros used by the generated code to access rtModel */
+#ifndef rtmIsMajorTimeStep
+#define rtmIsMajorTimeStep(rtm)        (((rtm)->Timing.simTimeStep) == MAJOR_TIME_STEP)
+#endif
+
+#ifndef rtmIsMinorTimeStep
+#define rtmIsMinorTimeStep(rtm)        (((rtm)->Timing.simTimeStep) == MINOR_TIME_STEP)
+#endif
+
 #ifndef rtmSetTFinal
 #define rtmSetTFinal(rtm, val)         ((rtm)->Timing.tFinal = (val))
 #endif
 
+<<<<<<< Updated upstream
+=======
+#ifndef rtmSetTPtr
+#define rtmSetTPtr(rtm, val)           ((rtm)->Timing.t = (val))
+#endif
+
+>>>>>>> Stashed changes
 void InitAdcC (void);
 void config_ADCC_SOC1 (void);
 void config_ADCC_SOC2 (void);

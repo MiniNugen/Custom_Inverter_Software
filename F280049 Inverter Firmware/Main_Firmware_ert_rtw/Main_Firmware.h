@@ -9,7 +9,11 @@
  *
  * Model version                  : 2.32
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
+<<<<<<< Updated upstream
  * C/C++ source code generated on : Sat Jul 12 16:27:19 2025
+=======
+ * C/C++ source code generated on : Fri Jul 11 14:41:25 2025
+>>>>>>> Stashed changes
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -26,6 +30,7 @@
 #include "sysran_types.h"
 #include "rtw_continuous.h"
 #include "rtw_solver.h"
+#include "ext_mode.h"
 #include "c2000BoardSupport.h"
 #include "MW_f28004x_includes.h"
 #include "IQmathLib.h"
@@ -68,7 +73,7 @@
 #endif
 
 #ifndef rtmGetT
-#define rtmGetT(rtm)                   ((rtm)->Timing.taskTime0)
+#define rtmGetT(rtm)                   (rtmGetTPtr((rtm))[0])
 #endif
 
 #ifndef rtmGetTFinal
@@ -76,7 +81,7 @@
 #endif
 
 #ifndef rtmGetTPtr
-#define rtmGetTPtr(rtm)                (&(rtm)->Timing.taskTime0)
+#define rtmGetTPtr(rtm)                ((rtm)->Timing.t)
 #endif
 
 void MW_InitSysPll(uint16_T clock_source, uint16_T imult, uint16_T fmult,
@@ -125,12 +130,42 @@ struct P_Main_Firmware_T_ {
   real32_T CompareToConstant3_const; /* Mask Parameter: CompareToConstant3_const
                                       * Referenced by: '<S9>/Constant'
                                       */
+<<<<<<< Updated upstream
   real_T Constant1_Value;              /* Expression: 1
                                         * Referenced by: '<S2>/Constant1'
                                         */
   real_T Constant2_Value;              /* Expression: 0
                                         * Referenced by: '<S2>/Constant2'
                                         */
+=======
+  real_T SineWave1_Amp;                /* Expression: 50
+                                        * Referenced by: '<S2>/Sine Wave1'
+                                        */
+  real_T SineWave1_Bias;               /* Expression: 50
+                                        * Referenced by: '<S2>/Sine Wave1'
+                                        */
+  real_T SineWave1_Freq;               /* Expression: 0.1*2*pi
+                                        * Referenced by: '<S2>/Sine Wave1'
+                                        */
+  real_T SineWave1_Phase;              /* Expression: -2*pi/3
+                                        * Referenced by: '<S2>/Sine Wave1'
+                                        */
+  real_T SineWave2_Amp;                /* Expression: 50
+                                        * Referenced by: '<S2>/Sine Wave2'
+                                        */
+  real_T SineWave2_Bias;               /* Expression: 50
+                                        * Referenced by: '<S2>/Sine Wave2'
+                                        */
+  real_T SineWave2_Freq;               /* Expression: 0.1*2*pi
+                                        * Referenced by: '<S2>/Sine Wave2'
+                                        */
+  real_T SineWave2_Phase;              /* Expression: 2*pi/3
+                                        * Referenced by: '<S2>/Sine Wave2'
+                                        */
+  real_T Constant1_Value;              /* Expression: 80
+                                        * Referenced by: '<S2>/Constant1'
+                                        */
+>>>>>>> Stashed changes
   real_T LEDHeartbeat_Amp;             /* Expression: 1
                                         * Referenced by: '<Root>/LED Heartbeat'
                                         */
@@ -164,6 +199,7 @@ struct P_Main_Firmware_T_ {
 struct tag_RTM_Main_Firmware_T {
   const char_T *errorStatus;
   RTWExtModeInfo *extModeInfo;
+  RTWSolverInfo solverInfo;
 
   /*
    * Sizes:
@@ -190,11 +226,14 @@ struct tag_RTM_Main_Firmware_T {
    * the timing information for the model.
    */
   struct {
-    time_T taskTime0;
     uint32_T clockTick0;
     time_T stepSize0;
+    uint32_T clockTick1;
     time_T tFinal;
+    SimTimeStep simTimeStep;
     boolean_T stopRequestedFlag;
+    time_T *t;
+    time_T tArray[2];
   } Timing;
 };
 
@@ -220,11 +259,17 @@ extern volatile boolean_T runModel;
 /*-
  * These blocks were eliminated from the model due to optimizations:
  *
+<<<<<<< Updated upstream
  * Block '<S1>/Constant7' : Unused code path elimination
  * Block '<S1>/Gain5' : Unused code path elimination
  * Block '<S1>/Sampling Delay' : Unused code path elimination
  * Block '<S1>/Saturation' : Unused code path elimination
  * Block '<S1>/Sum' : Unused code path elimination
+=======
+ * Block '<S1>/Gain5' : Unused code path elimination
+ * Block '<S1>/Sampling Delay' : Unused code path elimination
+ * Block '<S1>/Saturation' : Unused code path elimination
+>>>>>>> Stashed changes
  * Block '<S5>/Atan' : Unused code path elimination
  * Block '<S5>/Bias' : Unused code path elimination
  * Block '<S5>/Divide' : Unused code path elimination
