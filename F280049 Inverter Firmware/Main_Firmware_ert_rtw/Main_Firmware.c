@@ -10,7 +10,11 @@
  * Model version                  : 2.32
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
  * C/C++ source code generated on : Sat Jul 12 16:27:19 2025
+=======
+ * C/C++ source code generated on : Fri Jul 11 14:41:25 2025
+>>>>>>> Stashed changes
 =======
  * C/C++ source code generated on : Fri Jul 11 14:41:25 2025
 >>>>>>> Stashed changes
@@ -23,6 +27,10 @@
 
 #include "Main_Firmware.h"
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+#include <math.h>
+>>>>>>> Stashed changes
 =======
 #include <math.h>
 >>>>>>> Stashed changes
@@ -63,6 +71,11 @@ uint16_T MW_adcBInitFlag = 0;
 void Main_Firmware_step(void)
 {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+  real_T rtb_DCycleB;
+  real_T rtb_DCycleC;
+>>>>>>> Stashed changes
 =======
   real_T rtb_DCycleB;
   real_T rtb_DCycleC;
@@ -157,10 +170,13 @@ void Main_Firmware_step(void)
     Main_Firmware_P.Bias1_Bias) * Main_Firmware_P.Gain_Gain;
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   /* S-Function (c2802xpwm): '<S2>/AHI' incorporates:
    *  Constant: '<S2>/Constant1'
    *  Constant: '<S2>/Constant2'
 =======
+=======
+>>>>>>> Stashed changes
   /* Sin: '<S2>/Sine Wave1' incorporates:
    *  Sin: '<S2>/Sine Wave2'
    */
@@ -176,6 +192,9 @@ void Main_Firmware_step(void)
 
   /* S-Function (c2802xpwm): '<S2>/A1' incorporates:
    *  Constant: '<S2>/Constant1'
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
    */
   uint16_T tbprdValue1Outputs = (EPwm1Regs.TBPRD + 1);
@@ -187,8 +206,11 @@ void Main_Firmware_step(void)
   }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   EPwm1Regs.AQCSFRC.bit.CSFA = (uint16_T)Main_Firmware_P.Constant2_Value;
 =======
+=======
+>>>>>>> Stashed changes
   /* S-Function (c2802xpwm): '<S2>/B1' */
   uint16_T tbprdValue4Outputs = (EPwm4Regs.TBPRD + 1);
 
@@ -206,6 +228,9 @@ void Main_Firmware_step(void)
     EPwm2Regs.CMPA.bit.CMPA = (uint16_T)((uint32_T)(EPwm2Regs.TBPRD + 1) *
       rtb_DCycleC * 0.01);
   }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
   /* S-Function (c2802xadc): '<S4>/ADC' */
@@ -315,7 +340,10 @@ void Main_Firmware_step(void)
     (Main_Firmware_P.CompareToConstant3_const >= 0.0F) &&
     Main_Firmware_P.Constant_Value);
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 
   {                                    /* Sample time: [0.0001s, 0.0s] */
     extmodeErrorCode_T errorCode = EXTMODE_SUCCESS;
@@ -386,15 +414,21 @@ void Main_Firmware_initialize(void)
 
   /* External mode info */
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   Main_Firmware_M->Sizes.checksums[0] = (521920562U);
   Main_Firmware_M->Sizes.checksums[1] = (1565920920U);
   Main_Firmware_M->Sizes.checksums[2] = (2996462942U);
   Main_Firmware_M->Sizes.checksums[3] = (2232810687U);
 =======
+=======
+>>>>>>> Stashed changes
   Main_Firmware_M->Sizes.checksums[0] = (965087358U);
   Main_Firmware_M->Sizes.checksums[1] = (4132334593U);
   Main_Firmware_M->Sizes.checksums[2] = (4182433122U);
   Main_Firmware_M->Sizes.checksums[3] = (22837157U);
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
   {
@@ -444,9 +478,14 @@ void Main_Firmware_initialize(void)
   config_ADCA_SOC3 ();
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   /* Start for S-Function (c2802xpwm): '<S2>/AHI' incorporates:
    *  Constant: '<S2>/Constant1'
    *  Constant: '<S2>/Constant2'
+=======
+  /* Start for S-Function (c2802xpwm): '<S2>/A1' incorporates:
+   *  Constant: '<S2>/Constant1'
+>>>>>>> Stashed changes
 =======
   /* Start for S-Function (c2802xpwm): '<S2>/A1' incorporates:
    *  Constant: '<S2>/Constant1'
@@ -674,6 +713,7 @@ void Main_Firmware_initialize(void)
   }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   /* Start for S-Function (c2802xadc): '<S4>/ADC' */
   if (MW_adcBInitFlag == 0U) {
     InitAdcB();
@@ -682,6 +722,8 @@ void Main_Firmware_initialize(void)
 
   config_ADCB_SOC0 ();
 =======
+=======
+>>>>>>> Stashed changes
   /* Start for S-Function (c2802xpwm): '<S2>/B1' */
   real32_T tbprdValue4 = (real32_T)(EPwm4Regs.TBPRD + 1);
 
@@ -915,7 +957,10 @@ void Main_Firmware_initialize(void)
   }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
   /* Start for S-Function (c2802xadc): '<S4>/ADC' */
   if (MW_adcBInitFlag == 0U) {
     InitAdcB();
@@ -930,6 +975,9 @@ void Main_Firmware_initialize(void)
     MW_adcAInitFlag = 1U;
   }
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   config_ADCA_SOC8 ();
 

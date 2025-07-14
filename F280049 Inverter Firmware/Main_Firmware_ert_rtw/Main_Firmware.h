@@ -10,7 +10,11 @@
  * Model version                  : 2.32
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
  * C/C++ source code generated on : Sat Jul 12 16:27:19 2025
+=======
+ * C/C++ source code generated on : Fri Jul 11 14:41:25 2025
+>>>>>>> Stashed changes
 =======
  * C/C++ source code generated on : Fri Jul 11 14:41:25 2025
 >>>>>>> Stashed changes
@@ -131,6 +135,7 @@ struct P_Main_Firmware_T_ {
                                       * Referenced by: '<S9>/Constant'
                                       */
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   real_T Constant1_Value;              /* Expression: 1
                                         * Referenced by: '<S2>/Constant1'
                                         */
@@ -138,6 +143,8 @@ struct P_Main_Firmware_T_ {
                                         * Referenced by: '<S2>/Constant2'
                                         */
 =======
+=======
+>>>>>>> Stashed changes
   real_T SineWave1_Amp;                /* Expression: 50
                                         * Referenced by: '<S2>/Sine Wave1'
                                         */
@@ -165,6 +172,9 @@ struct P_Main_Firmware_T_ {
   real_T Constant1_Value;              /* Expression: 80
                                         * Referenced by: '<S2>/Constant1'
                                         */
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   real_T LEDHeartbeat_Amp;             /* Expression: 1
                                         * Referenced by: '<Root>/LED Heartbeat'
@@ -260,11 +270,17 @@ extern volatile boolean_T runModel;
  * These blocks were eliminated from the model due to optimizations:
  *
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
  * Block '<S1>/Constant7' : Unused code path elimination
  * Block '<S1>/Gain5' : Unused code path elimination
  * Block '<S1>/Sampling Delay' : Unused code path elimination
  * Block '<S1>/Saturation' : Unused code path elimination
  * Block '<S1>/Sum' : Unused code path elimination
+=======
+ * Block '<S1>/Gain5' : Unused code path elimination
+ * Block '<S1>/Sampling Delay' : Unused code path elimination
+ * Block '<S1>/Saturation' : Unused code path elimination
+>>>>>>> Stashed changes
 =======
  * Block '<S1>/Gain5' : Unused code path elimination
  * Block '<S1>/Sampling Delay' : Unused code path elimination
