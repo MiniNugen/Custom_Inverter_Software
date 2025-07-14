@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 2.28
+ * Model version                  : 2.32
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Wed May 28 13:38:04 2025
+ * C/C++ source code generated on : Sat Jul 12 16:27:19 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -21,6 +21,36 @@
 
 /* Block parameters (default storage) */
 P_Main_Firmware_T Main_Firmware_P = {
+  /* Mask Parameter: CompareToConstant_const
+   * Referenced by: '<S6>/Constant'
+   */
+  46.6690483F,
+
+  /* Mask Parameter: CompareToConstant1_const
+   * Referenced by: '<S7>/Constant'
+   */
+  575.958679F,
+
+  /* Mask Parameter: CompareToConstant2_const
+   * Referenced by: '<S8>/Constant'
+   */
+  10.500536F,
+
+  /* Mask Parameter: CompareToConstant3_const
+   * Referenced by: '<S9>/Constant'
+   */
+  132.0F,
+
+  /* Expression: 1
+   * Referenced by: '<S2>/Constant1'
+   */
+  1.0,
+
+  /* Expression: 0
+   * Referenced by: '<S2>/Constant2'
+   */
+  0.0,
+
   /* Expression: 1
    * Referenced by: '<Root>/LED Heartbeat'
    */
@@ -41,15 +71,30 @@ P_Main_Firmware_T Main_Firmware_P = {
    */
   0.0,
 
-  /* Expression: 27
-   * Referenced by: '<S1>/Constant1'
+  /* Computed Parameter: Gain2_Gain
+   * Referenced by: '<S4>/Gain2'
    */
-  27.0,
+  0.000805664051F,
 
-  /* Expression: 0
-   * Referenced by: '<S1>/Constant'
+  /* Computed Parameter: Bias1_Bias
+   * Referenced by: '<S5>/Bias1'
    */
-  0.0
+  -1.65F,
+
+  /* Computed Parameter: Gain_Gain
+   * Referenced by: '<S5>/Gain'
+   */
+  41.6666679F,
+
+  /* Computed Parameter: Gain1_Gain
+   * Referenced by: '<S4>/Gain1'
+   */
+  0.000805664051F,
+
+  /* Computed Parameter: Constant_Value
+   * Referenced by: '<Root>/Constant'
+   */
+  false
 };
 
 /*

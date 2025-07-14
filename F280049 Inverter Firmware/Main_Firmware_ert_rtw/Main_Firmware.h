@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 2.28
+ * Model version                  : 2.32
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Wed May 28 13:38:04 2025
+ * C/C++ source code generated on : Sat Jul 12 16:27:19 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -31,9 +31,11 @@
 #include "IQmathLib.h"
 #endif                                 /* Main_Firmware_COMMON_INCLUDES_ */
 
+#include "MW_c28xAnalogSubsystem.h"
 #include <stddef.h>
 #include "Main_Firmware_types.h"
 #include <string.h>
+#include "rt_nonfinite.h"
 #include "MW_target_hardware_resources.h"
 
 /* Macros for accessing real-time model data structure */
@@ -88,17 +90,47 @@ extern void config_ePWM_XBAR(void);
 /* Block signals (default storage) */
 typedef struct {
   real_T LEDHeartbeat;                 /* '<Root>/LED Heartbeat' */
+  real32_T ADC2;                       /* '<S4>/ADC2' */
+  real32_T ADC3;                       /* '<S4>/ADC3' */
+  real32_T ADC4;                       /* '<S4>/ADC4' */
+  real32_T Gain2[3];                   /* '<S4>/Gain2' */
+  real32_T I_ABC[3];                   /* '<S5>/Gain' */
+  real32_T VCos;                       /* '<S4>/ADC' */
+  real32_T VSine;                      /* '<S4>/ADC1' */
+  real32_T Gain1[2];                   /* '<S4>/Gain1' */
+  boolean_T AND;                       /* '<S3>/AND' */
 } B_Main_Firmware_T;
 
 /* Block states (default storage) for system '<Root>' */
 typedef struct {
+  struct {
+    void *LoggedData[3];
+  } MainScope2_PWORK;                  /* '<Root>/Main Scope2' */
+
   int32_T clockTickCounter;            /* '<Root>/LED Heartbeat' */
   int32_T DigitalOutput_FRAC_LEN;      /* '<Root>/Digital Output' */
-  int32_T DigitalOutput1_FRAC_LEN;     /* '<S1>/Digital Output1' */
 } DW_Main_Firmware_T;
 
 /* Parameters (default storage) */
 struct P_Main_Firmware_T_ {
+  real32_T CompareToConstant_const;   /* Mask Parameter: CompareToConstant_const
+                                       * Referenced by: '<S6>/Constant'
+                                       */
+  real32_T CompareToConstant1_const; /* Mask Parameter: CompareToConstant1_const
+                                      * Referenced by: '<S7>/Constant'
+                                      */
+  real32_T CompareToConstant2_const; /* Mask Parameter: CompareToConstant2_const
+                                      * Referenced by: '<S8>/Constant'
+                                      */
+  real32_T CompareToConstant3_const; /* Mask Parameter: CompareToConstant3_const
+                                      * Referenced by: '<S9>/Constant'
+                                      */
+  real_T Constant1_Value;              /* Expression: 1
+                                        * Referenced by: '<S2>/Constant1'
+                                        */
+  real_T Constant2_Value;              /* Expression: 0
+                                        * Referenced by: '<S2>/Constant2'
+                                        */
   real_T LEDHeartbeat_Amp;             /* Expression: 1
                                         * Referenced by: '<Root>/LED Heartbeat'
                                         */
@@ -111,11 +143,20 @@ struct P_Main_Firmware_T_ {
   real_T LEDHeartbeat_PhaseDelay;      /* Expression: 0
                                         * Referenced by: '<Root>/LED Heartbeat'
                                         */
-  real_T Constant1_Value;              /* Expression: 27
-                                        * Referenced by: '<S1>/Constant1'
+  real32_T Gain2_Gain;                 /* Computed Parameter: Gain2_Gain
+                                        * Referenced by: '<S4>/Gain2'
                                         */
-  real_T Constant_Value;               /* Expression: 0
-                                        * Referenced by: '<S1>/Constant'
+  real32_T Bias1_Bias;                 /* Computed Parameter: Bias1_Bias
+                                        * Referenced by: '<S5>/Bias1'
+                                        */
+  real32_T Gain_Gain;                  /* Computed Parameter: Gain_Gain
+                                        * Referenced by: '<S5>/Gain'
+                                        */
+  real32_T Gain1_Gain;                 /* Computed Parameter: Gain1_Gain
+                                        * Referenced by: '<S4>/Gain1'
+                                        */
+  boolean_T Constant_Value;            /* Computed Parameter: Constant_Value
+                                        * Referenced by: '<Root>/Constant'
                                         */
 };
 
@@ -177,6 +218,19 @@ extern volatile boolean_T stopRequested;
 extern volatile boolean_T runModel;
 
 /*-
+ * These blocks were eliminated from the model due to optimizations:
+ *
+ * Block '<S1>/Constant7' : Unused code path elimination
+ * Block '<S1>/Gain5' : Unused code path elimination
+ * Block '<S1>/Sampling Delay' : Unused code path elimination
+ * Block '<S1>/Saturation' : Unused code path elimination
+ * Block '<S1>/Sum' : Unused code path elimination
+ * Block '<S5>/Atan' : Unused code path elimination
+ * Block '<S5>/Bias' : Unused code path elimination
+ * Block '<S5>/Divide' : Unused code path elimination
+ */
+
+/*-
  * The generated code includes comments that allow you to trace directly
  * back to the appropriate location in the model.  The basic format
  * is <system>/block_name, where system is the system number (uniquely
@@ -191,7 +245,15 @@ extern volatile boolean_T runModel;
  * Here is the system hierarchy for this model
  *
  * '<Root>' : 'Main_Firmware'
- * '<S1>'   : 'Main_Firmware/EPWM'
+ * '<S1>'   : 'Main_Firmware/Duty Cycle Gen'
+ * '<S2>'   : 'Main_Firmware/EPWM'
+ * '<S3>'   : 'Main_Firmware/HV Safety shutdown 1'
+ * '<S4>'   : 'Main_Firmware/Resolver Voltage Reading'
+ * '<S5>'   : 'Main_Firmware/Sine_Cos decoder'
+ * '<S6>'   : 'Main_Firmware/HV Safety shutdown 1/Compare To Constant'
+ * '<S7>'   : 'Main_Firmware/HV Safety shutdown 1/Compare To Constant1'
+ * '<S8>'   : 'Main_Firmware/HV Safety shutdown 1/Compare To Constant2'
+ * '<S9>'   : 'Main_Firmware/HV Safety shutdown 1/Compare To Constant3'
  */
 #endif                                 /* Main_Firmware_h_ */
 

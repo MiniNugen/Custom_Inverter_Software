@@ -33,8 +33,10 @@ f = 3.03448e-4;     %viscous friction coefficient
 
 
 %% -------Enter inverter parameters here ---------
+
 V_dd = 100;                             % [V] High voltage DC supply voltage;
 InvCurr_RMS=150;                        % [A] Max RMS current output
+
 
 %% ---- Peak current and Voltage calc-----
 Current_max =min(InvCurr_RMS,mCurr_RMS)*sqrt(2);% [A] Max Allowable peak phase curent output
