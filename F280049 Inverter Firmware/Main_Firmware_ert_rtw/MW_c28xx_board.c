@@ -54,6 +54,8 @@ void init_board (void)
 
   /* Enable clock to ePWM */
   CpuSysRegs.PCLKCR2.bit.EPWM1 = 1U;
+  CpuSysRegs.PCLKCR2.bit.EPWM4 = 1U;
+  CpuSysRegs.PCLKCR2.bit.EPWM2 = 1U;
 
   /* Disable TBCLK within ePWM before module configuration */
   CpuSysRegs.PCLKCR0.bit.TBCLKSYNC = 0U;

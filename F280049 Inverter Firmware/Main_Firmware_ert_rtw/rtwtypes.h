@@ -7,29 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 2.32
+ * Model version                  : 2.37
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
- * C/C++ source code generated on : Sat Jul 12 16:27:19 2025
-=======
- * C/C++ source code generated on : Fri Jul 11 14:41:25 2025
->>>>>>> Stashed changes
-=======
- * C/C++ source code generated on : Fri Jul 11 14:41:25 2025
->>>>>>> Stashed changes
-=======
- * C/C++ source code generated on : Fri Jul 11 14:41:25 2025
->>>>>>> Stashed changes
-=======
- * C/C++ source code generated on : Fri Jul 11 14:41:25 2025
->>>>>>> Stashed changes
-=======
- * C/C++ source code generated on : Fri Jul 11 14:41:25 2025
->>>>>>> Stashed changes
+ * C/C++ source code generated on : Thu Jul 17 17:20:37 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000

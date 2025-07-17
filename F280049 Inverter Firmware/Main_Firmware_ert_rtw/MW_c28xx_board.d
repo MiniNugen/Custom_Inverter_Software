@@ -85,8 +85,6 @@ MW_c28xx_board.obj: C:/PROGRA~1/MATLAB/R2024b/simulink/include/rtw_extmode.h
 MW_c28xx_board.obj: C:/PROGRA~1/MATLAB/R2024b/simulink/include/sysran_types.h
 MW_c28xx_board.obj: C:/PROGRA~1/MATLAB/R2024b/simulink/include/rtw_continuous.h
 MW_c28xx_board.obj: C:/PROGRA~1/MATLAB/R2024b/simulink/include/rtw_solver.h
-MW_c28xx_board.obj: C:/PROGRA~1/MATLAB/R2024b/toolbox/coder/xcp/src/target/ext_mode/include/ext_mode.h
-MW_c28xx_board.obj: C:/Users/minhp/ONEDRI~1/DOCUME~1/GitHub/CUSTOM~1/F28004~1/Main_Firmware_ert_rtw/ext_mode_types.h
 MW_c28xx_board.obj: C:/ti/C2000Ware_MotorControl_SDK_5_03_00_00/c2000ware/libraries/math/IQmath/c28/include/IQmathLib.h
 MW_c28xx_board.obj: C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/limits.h
 MW_c28xx_board.obj: C:/PROGRA~1/MATLAB/R2024b/toolbox/c2b/tic2000_shared/inc/MW_c28xAnalogSubsystem.h
@@ -186,8 +184,6 @@ C:/PROGRA~1/MATLAB/R2024b/simulink/include/rtw_extmode.h:
 C:/PROGRA~1/MATLAB/R2024b/simulink/include/sysran_types.h:
 C:/PROGRA~1/MATLAB/R2024b/simulink/include/rtw_continuous.h:
 C:/PROGRA~1/MATLAB/R2024b/simulink/include/rtw_solver.h:
-C:/PROGRA~1/MATLAB/R2024b/toolbox/coder/xcp/src/target/ext_mode/include/ext_mode.h:
-C:/Users/minhp/ONEDRI~1/DOCUME~1/GitHub/CUSTOM~1/F28004~1/Main_Firmware_ert_rtw/ext_mode_types.h:
 C:/ti/C2000Ware_MotorControl_SDK_5_03_00_00/c2000ware/libraries/math/IQmath/c28/include/IQmathLib.h:
 C:/PROGRA~3/MATLAB/tic2000/3P778C~1.INS/TIC28X~1.INS/TI-CGT~1.LTS/include/limits.h:
 C:/PROGRA~1/MATLAB/R2024b/toolbox/c2b/tic2000_shared/inc/MW_c28xAnalogSubsystem.h:
