@@ -59,14 +59,14 @@ Inertia_s = tf([1], [J 0]);
 Inertia_z = c2d(Inertia_s, sample_time, 'zoh');
 
 %% PI and PD Tuning (Test)
-Kpq=(Lq*2*pi*EPWM_F)/10;
-Kpd=(Ld*2*pi*EPWM_F)/10;
-Kiq=Kpd*(Rs/Lq);
-Kid=Kpd*(Rs/Ld);
+Kpq=100*(Lq*2*pi*EPWM_F)/10;
+Kpd = Kpq;
+%Kpd=(Ld*2*pi*EPWM_F)/10;
+Kiq=100*Kpd*(Rs/Lq);
+Kid = Kiq;
+%Kid=100*Kpd*(Rs/Ld);
 %Kpq = 1;
-%Kpd = Kpq;
 %Kiq = 0;
-%Kid = Kiq;
 Ksq=10;
 Ksd=0.1;			   
 disp('Motor parameters initialized!')
