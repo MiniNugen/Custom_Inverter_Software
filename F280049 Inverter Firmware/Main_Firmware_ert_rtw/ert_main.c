@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 2.37
+ * Model version                  : 2.40
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Thu Jul 17 17:20:37 2025
+ * C/C++ source code generated on : Fri Jul 25 03:10:33 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -24,29 +24,82 @@
 #include "MW_target_hardware_resources.h"
 
 volatile int IsrOverrun = 0;
-static boolean_T OverrunFlag = 0;
+boolean_T isRateRunning[3] = { 0, 0, 0 };
+
+boolean_T need2runFlags[3] = { 0, 0, 0 };
+
 void rt_OneStep(void)
 {
   extmodeSimulationTime_T currentTime = (extmodeSimulationTime_T) 0;
+  boolean_T eventFlags[3];
 
-  /* Check for overrun. Protect OverrunFlag against preemption */
-  if (OverrunFlag++) {
+  /* Check base rate for overrun */
+  if (isRateRunning[0]++) {
     IsrOverrun = 1;
     executeOverrunService();
-    OverrunFlag--;
+    isRateRunning[0]--;                /* allow future iterations to succeed*/
     return;
   }
 
+  /*
+   * For a bare-board target (i.e., no operating system), the rates
+   * that execute this base step are buffered locally to allow for
+   * overlapping preemption.
+   */
+  Main_Firmware_SetEventsForThisBaseStep(eventFlags);
   enableTimer0Interrupt();
-  currentTime = (extmodeSimulationTime_T) Main_Firmware_M->Timing.clockTick0;
-  Main_Firmware_step();
+  currentTime = (extmodeSimulationTime_T) ((Main_Firmware_M->Timing.clockTick0 *
+    1) + 0)
+    ;
+  Main_Firmware_step0();
 
   /* Get model outputs here */
 
   /* Trigger External Mode event */
-  extmodeEvent(0, currentTime);
+  extmodeEvent(1, currentTime);
   disableTimer0Interrupt();
-  OverrunFlag--;
+  isRateRunning[0]--;
+  if (eventFlags[2]) {
+    if (need2runFlags[2]++) {
+      IsrOverrun = 2;
+      executeOverrunService();
+      need2runFlags[2]--;              /* allow future iterations to succeed*/
+      return;
+    }
+  }
+
+  if (need2runFlags[2]) {
+    if (isRateRunning[1]) {
+      /* Yield to higher priority*/
+      return;
+    }
+
+    isRateRunning[2]++;
+    enableTimer0Interrupt();
+
+    /* Step the model for subrate "2" */
+    switch (2)
+    {
+     case 2 :
+      currentTime = (extmodeSimulationTime_T)
+        ((Main_Firmware_M->Timing.clockTick2 * 100) + 0)
+        ;
+      Main_Firmware_step2();
+
+      /* Get model outputs here */
+
+      /* Trigger External Mode event */
+      extmodeEvent(2, currentTime);
+      break;
+
+     default :
+      break;
+    }
+
+    disableTimer0Interrupt();
+    need2runFlags[2]--;
+    isRateRunning[2]--;
+  }
 }
 
 volatile boolean_T stopRequested;

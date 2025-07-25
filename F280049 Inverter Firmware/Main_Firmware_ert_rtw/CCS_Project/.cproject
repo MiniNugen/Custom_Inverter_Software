@@ -100,7 +100,7 @@
 </listOptionValue>
 <listOptionValue builtIn="false" value="MODEL=Main_Firmware">
 </listOptionValue>
-<listOptionValue builtIn="false" value="NUMST=1">
+<listOptionValue builtIn="false" value="NUMST=3">
 </listOptionValue>
 <listOptionValue builtIn="false" value="NCSTATES=0">
 </listOptionValue>
@@ -134,11 +134,11 @@
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_MEM_BLOCK_2_NUMBER=1">
 </listOptionValue>
-<listOptionValue builtIn="false" value="XCP_MEM_BLOCK_3_SIZE=48">
+<listOptionValue builtIn="false" value="XCP_MEM_BLOCK_3_SIZE=184">
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_MEM_BLOCK_3_NUMBER=1">
 </listOptionValue>
-<listOptionValue builtIn="false" value="XCP_MEM_RESERVED_POOLS_TOTAL_SIZE=1621">
+<listOptionValue builtIn="false" value="XCP_MEM_RESERVED_POOLS_TOTAL_SIZE=4357">
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_MEM_RESERVED_POOLS_NUMBER=2">
 </listOptionValue>
@@ -146,7 +146,7 @@
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_MEM_DAQ_RESERVED_POOLS_NUMBER=1">
 </listOptionValue>
-<listOptionValue builtIn="false" value="XCP_MIN_EVENT_NO_RESERVED_POOL=1">
+<listOptionValue builtIn="false" value="XCP_MIN_EVENT_NO_RESERVED_POOL=3">
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_MAX_CTO_SIZE=32">
 </listOptionValue>
@@ -164,7 +164,7 @@
 </listOptionValue>
 <listOptionValue builtIn="false" value="ALLOCATIONFCN=0">
 </listOptionValue>
-<listOptionValue builtIn="false" value="TID01EQ=0">
+<listOptionValue builtIn="false" value="TID01EQ=1">
 </listOptionValue>
 <listOptionValue builtIn="false" value="TERMFCN=1">
 </listOptionValue>
@@ -178,7 +178,7 @@
 </listOptionValue>
 <listOptionValue builtIn="false" value="INTEGER_CODE=0">
 </listOptionValue>
-<listOptionValue builtIn="false" value="MT=0">
+<listOptionValue builtIn="false" value="MT=1">
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_CUSTOM_PLATFORM">
 </listOptionValue>
@@ -384,7 +384,7 @@
 </listOptionValue>
 <listOptionValue builtIn="false" value="MODEL=Main_Firmware">
 </listOptionValue>
-<listOptionValue builtIn="false" value="NUMST=1">
+<listOptionValue builtIn="false" value="NUMST=3">
 </listOptionValue>
 <listOptionValue builtIn="false" value="NCSTATES=0">
 </listOptionValue>
@@ -418,11 +418,11 @@
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_MEM_BLOCK_2_NUMBER=1">
 </listOptionValue>
-<listOptionValue builtIn="false" value="XCP_MEM_BLOCK_3_SIZE=48">
+<listOptionValue builtIn="false" value="XCP_MEM_BLOCK_3_SIZE=184">
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_MEM_BLOCK_3_NUMBER=1">
 </listOptionValue>
-<listOptionValue builtIn="false" value="XCP_MEM_RESERVED_POOLS_TOTAL_SIZE=1621">
+<listOptionValue builtIn="false" value="XCP_MEM_RESERVED_POOLS_TOTAL_SIZE=4357">
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_MEM_RESERVED_POOLS_NUMBER=2">
 </listOptionValue>
@@ -430,7 +430,7 @@
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_MEM_DAQ_RESERVED_POOLS_NUMBER=1">
 </listOptionValue>
-<listOptionValue builtIn="false" value="XCP_MIN_EVENT_NO_RESERVED_POOL=1">
+<listOptionValue builtIn="false" value="XCP_MIN_EVENT_NO_RESERVED_POOL=3">
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_MAX_CTO_SIZE=32">
 </listOptionValue>
@@ -448,7 +448,7 @@
 </listOptionValue>
 <listOptionValue builtIn="false" value="ALLOCATIONFCN=0">
 </listOptionValue>
-<listOptionValue builtIn="false" value="TID01EQ=0">
+<listOptionValue builtIn="false" value="TID01EQ=1">
 </listOptionValue>
 <listOptionValue builtIn="false" value="TERMFCN=1">
 </listOptionValue>
@@ -462,7 +462,7 @@
 </listOptionValue>
 <listOptionValue builtIn="false" value="INTEGER_CODE=0">
 </listOptionValue>
-<listOptionValue builtIn="false" value="MT=0">
+<listOptionValue builtIn="false" value="MT=1">
 </listOptionValue>
 <listOptionValue builtIn="false" value="XCP_CUSTOM_PLATFORM">
 </listOptionValue>

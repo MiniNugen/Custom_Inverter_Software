@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 2.37
+ * Model version                  : 2.40
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Thu Jul 17 17:20:37 2025
+ * C/C++ source code generated on : Fri Jul 25 03:10:33 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -24,38 +24,27 @@ P_Main_Firmware_T Main_Firmware_P = {
   /* Variable: Encoder_Offset
    * Referenced by: '<S3>/Const'
    */
-  -0.78539816339744828,
+  -0.19198621771937624,
 
   /* Variable: Current_max
    * Referenced by: '<S3>/Limiter1'
    */
-  42.4264069F,
+  5.0F,
 
   /* Variable: Ld
-   * Referenced by: '<S7>/Gain3'
+   * Referenced by: '<S11>/Gain3'
    */
   0.0001F,
 
   /* Variable: Torque_max
    * Referenced by:
    *   '<S3>/Saturation1'
-   *   '<S167>/Saturation'
+   *   '<S171>/Saturation'
    */
-  9.54594135F,
-
-  /* Variable: Voltage_max
-   * Referenced by:
-   *   '<S3>/Limiter'
-   *   '<S3>/Limiter 1'
-   *   '<S48>/Integrator'
-   *   '<S55>/Saturation'
-   *   '<S100>/Integrator'
-   *   '<S107>/Saturation'
-   */
-  96.0F,
+  1.125F,
 
   /* Variable: lambda
-   * Referenced by: '<S7>/Gain4'
+   * Referenced by: '<S11>/Gain4'
    */
   0.0375F,
 
@@ -72,122 +61,167 @@ P_Main_Firmware_T Main_Firmware_P = {
   523.598755F,
 
   /* Mask Parameter: AlphaBetaZerotodq0_Alignment
-   * Referenced by: '<S118>/Constant'
+   * Referenced by: '<S122>/Constant'
    */
   1.0,
 
   /* Mask Parameter: I_dqPID1_I
-   * Referenced by: '<S45>/Integral Gain'
+   * Referenced by: '<S49>/Integral Gain'
    */
   8.23559930371868,
 
+  /* Mask Parameter: I_dqPID1_InitialConditionForInt
+   * Referenced by: '<S52>/Integrator'
+   */
+  0.0,
+
   /* Mask Parameter: I_dqPID1_P
-   * Referenced by: '<S53>/Proportional Gain'
+   * Referenced by: '<S57>/Proportional Gain'
    */
   0.216674080570424,
 
   /* Mask Parameter: CompareToConstant_const
-   * Referenced by: '<S120>/Constant'
+   * Referenced by: '<S124>/Constant'
    */
   1.0,
 
   /* Mask Parameter: CompareToConstant1_const
-   * Referenced by: '<S121>/Constant'
+   * Referenced by: '<S125>/Constant'
    */
   2.0,
 
   /* Mask Parameter: SpeedPID1_D
-   * Referenced by: '<S153>/Derivative Gain'
+   * Referenced by: '<S157>/Derivative Gain'
    */
   0.00205517607F,
 
   /* Mask Parameter: I_dqPID2_I
-   * Referenced by: '<S97>/Integral Gain'
+   * Referenced by: '<S101>/Integral Gain'
    */
   8.23559952F,
 
   /* Mask Parameter: DiscreteDerivativecalc2_ICPrevS
-   * Referenced by: '<S124>/UD'
+   * Referenced by: '<S128>/UD'
    */
   0.0F,
 
   /* Mask Parameter: SpeedPID1_InitialConditionForFi
-   * Referenced by: '<S155>/Filter'
-   */
-  0.0F,
-
-  /* Mask Parameter: I_dqPID1_InitialConditionForInt
-   * Referenced by: '<S48>/Integrator'
+   * Referenced by: '<S159>/Filter'
    */
   0.0F,
 
   /* Mask Parameter: I_dqPID2_InitialConditionForInt
-   * Referenced by: '<S100>/Integrator'
+   * Referenced by: '<S104>/Integrator'
    */
   0.0F,
 
-  /* Mask Parameter: I_dqPID1_LowerIntegratorSaturat
-   * Referenced by: '<S48>/Integrator'
-   */
-  -96.0F,
-
   /* Mask Parameter: I_dqPID2_LowerIntegratorSaturat
-   * Referenced by: '<S100>/Integrator'
+   * Referenced by: '<S104>/Integrator'
    */
-  -96.0F,
-
-  /* Mask Parameter: I_dqPID1_LowerSaturationLimit
-   * Referenced by: '<S55>/Saturation'
-   */
-  -96.0F,
+  -60.0F,
 
   /* Mask Parameter: SpeedPID1_LowerSaturationLimit
-   * Referenced by: '<S167>/Saturation'
+   * Referenced by: '<S171>/Saturation'
    */
-  -9.54594135F,
-
-  /* Mask Parameter: I_dqPID2_LowerSaturationLimit
-   * Referenced by: '<S107>/Saturation'
-   */
-  -96.0F,
+  -1.125F,
 
   /* Mask Parameter: SpeedPID1_N
-   * Referenced by: '<S163>/Filter Coefficient'
+   * Referenced by: '<S167>/Filter Coefficient'
    */
   100.498329F,
 
   /* Mask Parameter: SpeedPID1_P
-   * Referenced by: '<S165>/Proportional Gain'
+   * Referenced by: '<S169>/Proportional Gain'
    */
   20.65452F,
 
   /* Mask Parameter: I_dqPID2_P
-   * Referenced by: '<S105>/Proportional Gain'
+   * Referenced by: '<S109>/Proportional Gain'
    */
   0.216674075F,
 
-  /* Mask Parameter: CompareToConstant3_const
-   * Referenced by: '<S180>/Constant'
+  /* Mask Parameter: CompareToConstant_const_k
+   * Referenced by: '<S182>/Constant'
    */
-  105.6F,
+  5.5F,
 
-  /* Mask Parameter: CompareToConstant_const_m
-   * Referenced by: '<S178>/Constant'
-   */
-  46.6690483F,
-
-  /* Mask Parameter: CompareToConstant1_const_j
-   * Referenced by: '<S179>/Constant'
+  /* Mask Parameter: CompareToConstant1_const_h
+   * Referenced by: '<S183>/Constant'
    */
   575.958679F,
 
-  /* Expression: 0.0
-   * Referenced by: '<S1>/Sampling Delay'
+  /* Expression: 0.43
+   * Referenced by: '<S2>/Sine Wave'
+   */
+  0.43,
+
+  /* Expression: 0.43
+   * Referenced by: '<S2>/Sine Wave'
+   */
+  0.43,
+
+  /* Expression: 0.1*2*pi
+   * Referenced by: '<S2>/Sine Wave'
+   */
+  0.62831853071795862,
+
+  /* Expression: 0
+   * Referenced by: '<S2>/Sine Wave'
    */
   0.0,
 
+  /* Expression: 0.43
+   * Referenced by: '<S2>/Sine Wave2'
+   */
+  0.43,
+
+  /* Expression: 0.43
+   * Referenced by: '<S2>/Sine Wave2'
+   */
+  0.43,
+
+  /* Expression: 0.1*2*pi
+   * Referenced by: '<S2>/Sine Wave2'
+   */
+  0.62831853071795862,
+
+  /* Expression: 2*pi/3
+   * Referenced by: '<S2>/Sine Wave2'
+   */
+  2.0943951023931953,
+
+  /* Expression: 0.43
+   * Referenced by: '<S2>/Sine Wave1'
+   */
+  0.43,
+
+  /* Expression: 0.43
+   * Referenced by: '<S2>/Sine Wave1'
+   */
+  0.43,
+
+  /* Expression: 0.1*2*pi
+   * Referenced by: '<S2>/Sine Wave1'
+   */
+  0.62831853071795862,
+
+  /* Expression: -2*pi/3
+   * Referenced by: '<S2>/Sine Wave1'
+   */
+  -2.0943951023931953,
+
+  /* Expression: 100
+   * Referenced by: '<S2>/Gain1'
+   */
+  100.0,
+
+  /* Expression: 1
+   * Referenced by: '<Root>/Constant4'
+   */
+  1.0,
+
   /* Expression: 0
-   * Referenced by: '<S3>/Constant1'
+   * Referenced by: '<Root>/Constant'
    */
   0.0,
 
@@ -201,30 +235,35 @@ P_Main_Firmware_T Main_Firmware_P = {
    */
   0.0,
 
-  /* Expression: 0.5
-   * Referenced by: '<S1>/Constant7'
+  /* Expression: 0
+   * Referenced by: '<S3>/Constant1'
    */
-  0.5,
+  0.0,
 
-  /* Expression: 1
-   * Referenced by: '<Root>/Constant4'
+  /* Computed Parameter: Integrator_gainval
+   * Referenced by: '<S52>/Integrator'
    */
-  1.0,
+  0.0001,
 
-  /* Expression: 50
-   * Referenced by: '<S2>/Constant'
+  /* Expression: UpperIntegratorSaturationLimit
+   * Referenced by: '<S52>/Integrator'
    */
-  50.0,
+  60.0,
 
-  /* Expression: 37
-   * Referenced by: '<S2>/Constant1'
+  /* Expression: LowerIntegratorSaturationLimit
+   * Referenced by: '<S52>/Integrator'
    */
-  37.0,
+  -60.0,
 
-  /* Expression: 72
-   * Referenced by: '<S2>/Constant2'
+  /* Expression: Voltage_max
+   * Referenced by: '<S3>/Limiter 1'
    */
-  72.0,
+  60.0,
+
+  /* Expression: 0
+   * Referenced by: '<S3>/Limiter 1'
+   */
+  0.0,
 
   /* Expression: 1
    * Referenced by: '<Root>/LED Heartbeat'
@@ -247,42 +286,77 @@ P_Main_Firmware_T Main_Firmware_P = {
   0.0,
 
   /* Computed Parameter: Bias_Bias
-   * Referenced by: '<S125>/Bias'
+   * Referenced by: '<S129>/Bias'
    */
   1,
 
-  /* Computed Parameter: dq_Y0
-   * Referenced by: '<S122>/dq'
-   */
-  { 0.0F, 0.0F },
-
-  /* Computed Parameter: dq_Y0_p
-   * Referenced by: '<S123>/dq'
-   */
-  { 0.0F, 0.0F },
-
-  /* Computed Parameter: Constant3_Value
-   * Referenced by: '<Root>/Constant3'
-   */
-  5.0F,
-
-  /* Computed Parameter: Saturation_UpperSat
-   * Referenced by: '<S1>/Saturation'
-   */
-  95.0F,
-
-  /* Computed Parameter: Saturation_LowerSat
-   * Referenced by: '<S1>/Saturation'
+  /* Computed Parameter: Constant1_Value_f
+   * Referenced by: '<S10>/Constant1'
    */
   0.0F,
 
-  /* Computed Parameter: Gain1_Gain
-   * Referenced by: '<S2>/Gain1'
+  /* Computed Parameter: Constant3_Value
+   * Referenced by: '<S10>/Constant3'
+   */
+  0.0F,
+
+  /* Computed Parameter: Constant_Value_c
+   * Referenced by: '<S9>/Constant'
+   */
+  0.0F,
+
+  /* Computed Parameter: Constant2_Value_h
+   * Referenced by: '<S9>/Constant2'
    */
   100.0F,
 
-  /* Computed Parameter: Gain2_Gain
-   * Referenced by: '<S5>/Gain2'
+  /* Computed Parameter: Constant5_Value
+   * Referenced by: '<S9>/Constant5'
+   */
+  1.0F,
+
+  /* Computed Parameter: Constant_Value_l
+   * Referenced by: '<S8>/Constant'
+   */
+  0.0F,
+
+  /* Computed Parameter: Constant1_Value_h
+   * Referenced by: '<S8>/Constant1'
+   */
+  1.0F,
+
+  /* Computed Parameter: Constant3_Value_m
+   * Referenced by: '<S8>/Constant3'
+   */
+  100.0F,
+
+  /* Computed Parameter: Constant4_Value_k
+   * Referenced by: '<S8>/Constant4'
+   */
+  100.0F,
+
+  /* Computed Parameter: Constant5_Value_j
+   * Referenced by: '<S8>/Constant5'
+   */
+  100.0F,
+
+  /* Computed Parameter: dq_Y0
+   * Referenced by: '<S126>/dq'
+   */
+  { 0.0F, 0.0F },
+
+  /* Computed Parameter: dq_Y0_c
+   * Referenced by: '<S127>/dq'
+   */
+  { 0.0F, 0.0F },
+
+  /* Computed Parameter: Constant3_Value_j
+   * Referenced by: '<Root>/Constant3'
+   */
+  0.0F,
+
+  /* Computed Parameter: Gain3_Gain
+   * Referenced by: '<S5>/Gain3'
    */
   0.000805664051F,
 
@@ -296,125 +370,135 @@ P_Main_Firmware_T Main_Firmware_P = {
    */
   41.6666679F,
 
-  /* Computed Parameter: Gain3_Gain
-   * Referenced by: '<S119>/Gain3'
+  /* Computed Parameter: Bias2_Bias
+   * Referenced by: '<S6>/Bias2'
    */
-  { 1.0F, 0.0F, 0.5F, -0.5F, 0.866025388F, 0.5F, -0.5F, -0.866025388F, 0.5F },
+  -0.07F,
 
-  /* Computed Parameter: Gain1_Gain_l
-   * Referenced by: '<S119>/Gain1'
+  /* Computed Parameter: Bias3_Bias
+   * Referenced by: '<S6>/Bias3'
    */
-  0.666666687F,
+  -0.286F,
 
-  /* Computed Parameter: Gain1_Gain_a
+  /* Computed Parameter: Bias4_Bias
+   * Referenced by: '<S6>/Bias4'
+   */
+  -0.39F,
+
+  /* Computed Parameter: Gain1_Gain_n
    * Referenced by: '<S5>/Gain1'
    */
   0.000805664051F,
 
-  /* Computed Parameter: Bias_Bias_g
+  /* Computed Parameter: Bias_Bias_j
    * Referenced by: '<S6>/Bias'
    */
   -1.5F,
 
-  /* Computed Parameter: Integrator_gainval
-   * Referenced by: '<S48>/Integrator'
-   */
-  0.0001F,
-
   /* Computed Parameter: TSamp_WtEt
-   * Referenced by: '<S124>/TSamp'
+   * Referenced by: '<S128>/TSamp'
    */
   10000.0F,
 
   /* Computed Parameter: Delay1_InitialCondition
-   * Referenced by: '<S125>/Delay1'
+   * Referenced by: '<S129>/Delay1'
    */
   0.0F,
 
   /* Computed Parameter: Delay2_InitialCondition
-   * Referenced by: '<S125>/Delay2'
+   * Referenced by: '<S129>/Delay2'
    */
   0.0F,
 
-  /* Computed Parameter: Constant1_Value_i
-   * Referenced by: '<S125>/Constant1'
+  /* Computed Parameter: Constant1_Value_b
+   * Referenced by: '<S129>/Constant1'
    */
   2617.9939F,
 
-  /* Computed Parameter: Constant_Value_f
-   * Referenced by: '<S125>/Constant'
+  /* Computed Parameter: Constant_Value_h
+   * Referenced by: '<S129>/Constant'
    */
   2617.9939F,
 
-  /* Computed Parameter: Limiter1_LowerSat
-   * Referenced by: '<S3>/Limiter 1'
+  /* Computed Parameter: Gain_Gain_n
+   * Referenced by: '<Root>/Gain'
    */
-  0.0F,
+  0.25F,
 
-  /* Computed Parameter: Constant1_Value_n
+  /* Computed Parameter: Constant1_Value_k
    * Referenced by: '<Root>/Constant1'
    */
   0.0F,
 
-  /* Computed Parameter: Saturation_LowerSat_a
+  /* Computed Parameter: Saturation_LowerSat
    * Referenced by: '<S3>/Saturation'
    */
   -523.598755F,
 
   /* Computed Parameter: Filter_gainval
-   * Referenced by: '<S155>/Filter'
+   * Referenced by: '<S159>/Filter'
    */
   0.0001F,
 
   /* Computed Parameter: Saturation1_LowerSat
    * Referenced by: '<S3>/Saturation1'
    */
-  -9.54594135F,
+  -1.125F,
+
+  /* Computed Parameter: Gain3_Gain_m
+   * Referenced by: '<S123>/Gain3'
+   */
+  { 1.0F, 0.0F, 0.5F, -0.5F, 0.866025388F, 0.5F, -0.5F, -0.866025388F, 0.5F },
+
+  /* Computed Parameter: Gain1_Gain_i
+   * Referenced by: '<S123>/Gain1'
+   */
+  0.666666687F,
 
   /* Computed Parameter: Gain6_Gain
    * Referenced by: '<S3>/Gain6'
    */
   4.44444466F,
 
-  /* Computed Parameter: Limiter1_LowerSat_j
+  /* Computed Parameter: Limiter1_LowerSat_m
    * Referenced by: '<S3>/Limiter1'
    */
-  -42.4264069F,
+  -5.0F,
 
-  /* Computed Parameter: Integrator_gainval_n
-   * Referenced by: '<S100>/Integrator'
+  /* Computed Parameter: Integrator_gainval_p
+   * Referenced by: '<S104>/Integrator'
    */
   0.0001F,
 
-  /* Computed Parameter: Gain1_Gain_n
-   * Referenced by: '<S7>/Gain1'
+  /* Expression: UpperIntegratorSaturationLimit
+   * Referenced by: '<S104>/Integrator'
+   */
+  60.0F,
+
+  /* Computed Parameter: Gain1_Gain_k
+   * Referenced by: '<S11>/Gain1'
    */
   -0.0001F,
+
+  /* Expression: Voltage_max
+   * Referenced by: '<S3>/Limiter'
+   */
+  60.0F,
 
   /* Computed Parameter: Limiter_LowerSat
    * Referenced by: '<S3>/Limiter'
    */
-  0.0F,
+  -60.0F,
 
-  /* Computed Parameter: Bias_Bias_e
-   * Referenced by: '<S10>/Bias'
+  /* Computed Parameter: Bias_Bias_o
+   * Referenced by: '<S14>/Bias'
    */
   -2.09439516F,
 
-  /* Computed Parameter: Bias1_Bias_k
-   * Referenced by: '<S10>/Bias1'
+  /* Computed Parameter: Bias1_Bias_c
+   * Referenced by: '<S14>/Bias1'
    */
-  2.09439516F,
-
-  /* Computed Parameter: Gain5_Gain
-   * Referenced by: '<S1>/Gain5'
-   */
-  0.010416667F,
-
-  /* Computed Parameter: Gain_Gain_d
-   * Referenced by: '<Root>/Gain'
-   */
-  0.25F
+  2.09439516F
 };
 
 /*

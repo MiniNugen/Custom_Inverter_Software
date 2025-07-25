@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Main_Firmware'.
  *
- * Model version                  : 2.37
+ * Model version                  : 2.40
  * Simulink Coder version         : 24.2 (R2024b) 21-Jun-2024
- * C/C++ source code generated on : Thu Jul 17 17:20:37 2025
+ * C/C++ source code generated on : Fri Jul 25 03:10:33 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Texas Instruments->C2000
@@ -18,10 +18,11 @@
  */
 
 #include "Main_Firmware.h"
-#include <math.h>
-#include "rt_nonfinite.h"
 #include "rtwtypes.h"
 #include "Main_Firmware_private.h"
+#include "Main_Firmware_types.h"
+#include <math.h>
+#include "rt_nonfinite.h"
 #include <string.h>
 
 /* Block signals (default storage) */
@@ -33,12 +34,7 @@ DW_Main_Firmware_T Main_Firmware_DW;
 /* Real-time model */
 static RT_MODEL_Main_Firmware_T Main_Firmware_M_;
 RT_MODEL_Main_Firmware_T *const Main_Firmware_M = &Main_Firmware_M_;
-
-#ifndef __TMS320C28XX_CLA__
-
-uint16_T MW_adcCInitFlag = 0;
-
-#endif
+static void rate_monotonic_scheduler(void);
 
 #ifndef __TMS320C28XX_CLA__
 
@@ -52,28 +48,317 @@ uint16_T MW_adcBInitFlag = 0;
 
 #endif
 
-/* Model step function */
-void Main_Firmware_step(void)
+#ifndef __TMS320C28XX_CLA__
+
+uint16_T MW_adcCInitFlag = 0;
+
+#endif
+
+/*
+ * Set which subrates need to run this base step (base rate always runs).
+ * This function must be called prior to calling the model step function
+ * in order to remember which rates need to run this base step.  The
+ * buffering of events allows for overlapping preemption.
+ */
+void Main_Firmware_SetEventsForThisBaseStep(boolean_T *eventFlags)
 {
-  real_T rtb_Id_err;
-  int32_T rtb_Bias_i_tmp;
-  real32_T rtb_Bias[2];
-  real32_T rtb_Diff_0[2];
-  real32_T rtb_Abs1_idx_2;
-  real32_T rtb_Abs2;
-  real32_T rtb_Abs_idx_0;
-  real32_T rtb_Abs_idx_1;
-  real32_T rtb_Abs_idx_2;
-  real32_T rtb_Diff;
-  real32_T rtb_Electricalspeed;
-  real32_T rtb_Filter;
-  real32_T rtb_FilterCoefficient;
+  /* Task runs when its counter is zero, computed via rtmStepTask macro */
+  eventFlags[2] = ((boolean_T)rtmStepTask(Main_Firmware_M, 2));
+}
+
+/*
+ *         This function updates active task flag for each subrate
+ *         and rate transition flags for tasks that exchange data.
+ *         The function assumes rate-monotonic multitasking scheduler.
+ *         The function must be called at model base rate so that
+ *         the generated code self-manages all its subrates and rate
+ *         transition flags.
+ */
+static void rate_monotonic_scheduler(void)
+{
+  /* To ensure a deterministic data transfer between two rates,
+   * data is transferred at the priority of a fast task and the frequency
+   * of the slow task.  The following flags indicate when the data transfer
+   * happens.  That is, a rate interaction flag is set true when both rates
+   * will run, and false otherwise.
+   */
+
+  /* tid 1 shares data with slower tid rate: 2 */
+  if (Main_Firmware_M->Timing.TaskCounters.TID[1] == 0) {
+    Main_Firmware_M->Timing.RateInteraction.TID1_2 =
+      (Main_Firmware_M->Timing.TaskCounters.TID[2] == 0);
+  }
+
+  /* Compute which subrates run during the next base time step.  Subrates
+   * are an integer multiple of the base rate counter.  Therefore, the subtask
+   * counter is reset when it reaches its limit (zero means run).
+   */
+  (Main_Firmware_M->Timing.TaskCounters.TID[2])++;
+  if ((Main_Firmware_M->Timing.TaskCounters.TID[2]) > 99) {/* Sample time: [0.01s, 0.0s] */
+    Main_Firmware_M->Timing.TaskCounters.TID[2] = 0;
+  }
+}
+
+/* System initialize for atomic system: */
+void Main_Fi_LowpassFilter1_Init(DW_LowpassFilter1_Main_Firmwa_T *localDW)
+{
+  int16_T i;
+  static const real32_T tmp[11] = { -0.00547596859F, -0.0178087261F,
+    -0.00103627914F, 0.100073069F, 0.257824033F, 0.338187665F, 0.257824033F,
+    0.100073069F, -0.00103627914F, -0.0178087261F, -0.00547596859F };
+
+  /* Start for MATLABSystem: '<S6>/Lowpass Filter1' */
+  localDW->obj.NumChannels = -1L;
+  localDW->obj.matlabCodegenIsDeleted = false;
+  localDW->objisempty = true;
+  localDW->obj.isInitialized = 1L;
+  if (localDW->obj.NumChannels == -1L) {
+    localDW->obj.NumChannels = 1L;
+  }
+
+  localDW->obj._pobj0.isInitialized = 0L;
+
+  /* System object Constructor function: dsp.FIRFilter */
+  localDW->obj._pobj0.cSFunObject.P0_InitialStates = 0.0F;
+  for (i = 0; i < 11; i++) {
+    localDW->obj._pobj0.cSFunObject.P1_Coefficients[i] = tmp[i];
+  }
+
+  localDW->obj.FilterObj = &localDW->obj._pobj0;
+  localDW->obj.isSetupComplete = true;
+
+  /* InitializeConditions for MATLABSystem: '<S6>/Lowpass Filter1' */
+  if (localDW->obj.FilterObj->isInitialized == 1L) {
+    /* System object Initialization function: dsp.FIRFilter */
+    for (i = 0; i < 10; i++) {
+      localDW->obj.FilterObj->cSFunObject.W0_states[i] = localDW->
+        obj.FilterObj->cSFunObject.P0_InitialStates;
+    }
+  }
+
+  /* End of InitializeConditions for MATLABSystem: '<S6>/Lowpass Filter1' */
+}
+
+/* Output and update for atomic system: */
+void Main_Firmwar_LowpassFilter1(real32_T rtu_0, B_LowpassFilter1_Main_Firmwar_T
+  *localB, DW_LowpassFilter1_Main_Firmwa_T *localDW)
+{
+  b_dspcodegen_FIRFilter_Main_F_T *obj;
+  int16_T srcIdx;
+
+  /* MATLABSystem: '<S6>/Lowpass Filter1' */
+  obj = localDW->obj.FilterObj;
+  if (localDW->obj.FilterObj->isInitialized != 1L) {
+    localDW->obj.FilterObj->isSetupComplete = false;
+    localDW->obj.FilterObj->isInitialized = 1L;
+    localDW->obj.FilterObj->isSetupComplete = true;
+
+    /* System object Initialization function: dsp.FIRFilter */
+    for (srcIdx = 0; srcIdx < 10; srcIdx++) {
+      localDW->obj.FilterObj->cSFunObject.W0_states[srcIdx] =
+        localDW->obj.FilterObj->cSFunObject.P0_InitialStates;
+    }
+  }
+
+  /* System object Outputs function: dsp.FIRFilter */
+  /* Reverse the coefficients */
+  for (srcIdx = 0; srcIdx < 11; srcIdx++) {
+    obj->cSFunObject.W2_simRevCoeff[(int32_T)(10 - srcIdx)] =
+      obj->cSFunObject.P1_Coefficients[(int32_T)srcIdx];
+  }
+
+  /* Reverse copy the states from States_Dwork to ContextBuff_Dwork */
+  /* Copy the initial part of input to ContextBuff_Dwork */
+  for (srcIdx = 0; srcIdx < 10; srcIdx++) {
+    obj->cSFunObject.W1_simContextBuf[(int32_T)(9 - srcIdx)] =
+      obj->cSFunObject.W0_states[(int32_T)srcIdx];
+  }
+
+  obj->cSFunObject.W1_simContextBuf[10L] = rtu_0;
+  localB->LowpassFilter1 = 0.0F;
+  for (srcIdx = 0; srcIdx < 11; srcIdx++) {
+    localB->LowpassFilter1 += obj->cSFunObject.W2_simRevCoeff[(int32_T)srcIdx] *
+      obj->cSFunObject.W1_simContextBuf[(int32_T)srcIdx];
+  }
+
+  /* store output sample */
+  /* Shift state buffer when input buffer is shorter than state buffer */
+  for (srcIdx = 8; srcIdx >= 0; srcIdx--) {
+    obj->cSFunObject.W0_states[(int32_T)(srcIdx + 1)] =
+      obj->cSFunObject.W0_states[(int32_T)srcIdx];
+  }
+
+  /* Reverse copy the states from input to States_Dwork */
+  obj->cSFunObject.W0_states[0L] = rtu_0;
+
+  /* End of MATLABSystem: '<S6>/Lowpass Filter1' */
+}
+
+/* Termination for atomic system: */
+void Main_Fi_LowpassFilter1_Term(DW_LowpassFilter1_Main_Firmwa_T *localDW)
+{
+  /* Terminate for MATLABSystem: '<S6>/Lowpass Filter1' */
+  if (!localDW->obj.matlabCodegenIsDeleted) {
+    localDW->obj.matlabCodegenIsDeleted = true;
+    if ((localDW->obj.isInitialized == 1L) && localDW->obj.isSetupComplete) {
+      if (localDW->obj.FilterObj->isInitialized == 1L) {
+        localDW->obj.FilterObj->isInitialized = 2L;
+      }
+
+      localDW->obj.NumChannels = -1L;
+    }
+  }
+
+  /* End of Terminate for MATLABSystem: '<S6>/Lowpass Filter1' */
+}
+
+/* System initialize for atomic system: */
+void Main_Fi_LowpassFilter3_Init(DW_LowpassFilter3_Main_Firmwa_T *localDW)
+{
+  int16_T i;
+  static const real32_T tmp[10] = { 0.00482357386F, 0.0284141693F, 0.0842064545F,
+    0.161975205F, 0.220998511F, 0.220998511F, 0.161975205F, 0.0842064545F,
+    0.0284141693F, 0.00482357386F };
+
+  /* Start for MATLABSystem: '<S6>/Lowpass Filter3' */
+  localDW->obj.NumChannels = -1L;
+  localDW->obj.matlabCodegenIsDeleted = false;
+  localDW->objisempty = true;
+  localDW->obj.isInitialized = 1L;
+  if (localDW->obj.NumChannels == -1L) {
+    localDW->obj.NumChannels = 1L;
+  }
+
+  localDW->obj._pobj0.isInitialized = 0L;
+
+  /* System object Constructor function: dsp.FIRFilter */
+  localDW->obj._pobj0.cSFunObject.P0_InitialStates = 0.0F;
+  for (i = 0; i < 10; i++) {
+    localDW->obj._pobj0.cSFunObject.P1_Coefficients[i] = tmp[i];
+  }
+
+  localDW->obj.FilterObj = &localDW->obj._pobj0;
+  localDW->obj.isSetupComplete = true;
+
+  /* InitializeConditions for MATLABSystem: '<S6>/Lowpass Filter3' */
+  if (localDW->obj.FilterObj->isInitialized == 1L) {
+    /* System object Initialization function: dsp.FIRFilter */
+    for (i = 0; i < 9; i++) {
+      localDW->obj.FilterObj->cSFunObject.W0_states[i] = localDW->
+        obj.FilterObj->cSFunObject.P0_InitialStates;
+    }
+  }
+
+  /* End of InitializeConditions for MATLABSystem: '<S6>/Lowpass Filter3' */
+}
+
+/* Output and update for atomic system: */
+void Main_Firmwar_LowpassFilter3(real32_T rtu_0, B_LowpassFilter3_Main_Firmwar_T
+  *localB, DW_LowpassFilter3_Main_Firmwa_T *localDW)
+{
+  b_dspcodegen_FIRFilter_Main_l_T *obj;
+  int16_T srcIdx;
+
+  /* MATLABSystem: '<S6>/Lowpass Filter3' */
+  obj = localDW->obj.FilterObj;
+  if (localDW->obj.FilterObj->isInitialized != 1L) {
+    localDW->obj.FilterObj->isSetupComplete = false;
+    localDW->obj.FilterObj->isInitialized = 1L;
+    localDW->obj.FilterObj->isSetupComplete = true;
+
+    /* System object Initialization function: dsp.FIRFilter */
+    for (srcIdx = 0; srcIdx < 9; srcIdx++) {
+      localDW->obj.FilterObj->cSFunObject.W0_states[srcIdx] =
+        localDW->obj.FilterObj->cSFunObject.P0_InitialStates;
+    }
+  }
+
+  /* System object Outputs function: dsp.FIRFilter */
+  /* Reverse the coefficients */
+  for (srcIdx = 0; srcIdx < 10; srcIdx++) {
+    obj->cSFunObject.W2_simRevCoeff[(int32_T)(9 - srcIdx)] =
+      obj->cSFunObject.P1_Coefficients[(int32_T)srcIdx];
+  }
+
+  /* Reverse copy the states from States_Dwork to ContextBuff_Dwork */
+  /* Copy the initial part of input to ContextBuff_Dwork */
+  for (srcIdx = 0; srcIdx < 9; srcIdx++) {
+    obj->cSFunObject.W1_simContextBuf[(int32_T)(8 - srcIdx)] =
+      obj->cSFunObject.W0_states[(int32_T)srcIdx];
+  }
+
+  obj->cSFunObject.W1_simContextBuf[9L] = rtu_0;
+  localB->LowpassFilter3 = 0.0F;
+  for (srcIdx = 0; srcIdx < 10; srcIdx++) {
+    localB->LowpassFilter3 += obj->cSFunObject.W2_simRevCoeff[(int32_T)srcIdx] *
+      obj->cSFunObject.W1_simContextBuf[(int32_T)srcIdx];
+  }
+
+  /* store output sample */
+  /* Shift state buffer when input buffer is shorter than state buffer */
+  for (srcIdx = 7; srcIdx >= 0; srcIdx--) {
+    obj->cSFunObject.W0_states[(int32_T)(srcIdx + 1)] =
+      obj->cSFunObject.W0_states[(int32_T)srcIdx];
+  }
+
+  /* Reverse copy the states from input to States_Dwork */
+  obj->cSFunObject.W0_states[0L] = rtu_0;
+
+  /* End of MATLABSystem: '<S6>/Lowpass Filter3' */
+}
+
+/* Termination for atomic system: */
+void Main_Fi_LowpassFilter3_Term(DW_LowpassFilter3_Main_Firmwa_T *localDW)
+{
+  /* Terminate for MATLABSystem: '<S6>/Lowpass Filter3' */
+  if (!localDW->obj.matlabCodegenIsDeleted) {
+    localDW->obj.matlabCodegenIsDeleted = true;
+    if ((localDW->obj.isInitialized == 1L) && localDW->obj.isSetupComplete) {
+      if (localDW->obj.FilterObj->isInitialized == 1L) {
+        localDW->obj.FilterObj->isInitialized = 2L;
+      }
+
+      localDW->obj.NumChannels = -1L;
+    }
+  }
+
+  /* End of Terminate for MATLABSystem: '<S6>/Lowpass Filter3' */
+}
+
+/* Model step function for TID0 */
+void Main_Firmware_step0(void)         /* Sample time: [0.0s, 0.0s] */
+{
+  /* local block i/o variables */
+  real_T rtb_IntegralGain;
   real32_T rtb_TSamp;
-  real32_T rtb_Vd;
-  real32_T rtb_Vq;
-  real32_T rtb_a;
-  real32_T rtb_b;
+  real32_T rtb_Diff;
+  real32_T rtb_FilterCoefficient;
+  real32_T rtb_IntegralGain_p;
+  real_T rtb_Id_err;
+  real_T rtb_Vd;
+  real32_T rtb_Bias[2];
+  real32_T tmp_0[2];
+  real32_T TmpSignalConversionAtGain3Inp_0;
+  real32_T TmpSignalConversionAtGain3Inpor;
+  real32_T rtb_Filter;
+  real32_T rtb_Gain3_idx_0;
+  real32_T rtb_Gain3_idx_1;
+  real32_T rtb_Iq_error;
   int16_T rtb_Compare;
+  boolean_T tmp;
+
+  {                                    /* Sample time: [0.0s, 0.0s] */
+    rate_monotonic_scheduler();
+  }
+
+  /* Reset subsysRan breadcrumbs */
+  srClearBC(Main_Firmware_DW.SwitchCaseActionSubsystem2_Subs);
+
+  /* Reset subsysRan breadcrumbs */
+  srClearBC(Main_Firmware_DW.RegenMode_SubsysRanBC);
+
+  /* Reset subsysRan breadcrumbs */
+  srClearBC(Main_Firmware_DW.FaultState_SubsysRanBC);
 
   /* Reset subsysRan breadcrumbs */
   srClearBC(Main_Firmware_DW.Subsystempi2delay_SubsysRanBC);
@@ -81,172 +366,52 @@ void Main_Firmware_step(void)
   /* Reset subsysRan breadcrumbs */
   srClearBC(Main_Firmware_DW.Subsystem1_SubsysRanBC);
 
-  /* Saturate: '<S1>/Saturation' incorporates:
-   *  Delay: '<S1>/Sampling Delay'
+  /* Sin: '<S2>/Sine Wave' incorporates:
+   *  Sin: '<S2>/Sine Wave1'
+   *  Sin: '<S2>/Sine Wave2'
    */
-  if (Main_Firmware_DW.SamplingDelay_DSTATE[0] >
-      Main_Firmware_P.Saturation_UpperSat) {
-    rtb_Id_err = Main_Firmware_P.Saturation_UpperSat;
-  } else if (Main_Firmware_DW.SamplingDelay_DSTATE[0] <
-             Main_Firmware_P.Saturation_LowerSat) {
-    rtb_Id_err = Main_Firmware_P.Saturation_LowerSat;
-  } else {
-    rtb_Id_err = Main_Firmware_DW.SamplingDelay_DSTATE[0];
-  }
+  rtb_Id_err = Main_Firmware_M->Timing.t[0];
 
   /* Gain: '<S2>/Gain1' incorporates:
-   *  Saturate: '<S1>/Saturation'
+   *  Sin: '<S2>/Sine Wave'
+   *  Sin: '<S2>/Sine Wave1'
+   *  Sin: '<S2>/Sine Wave2'
    */
-  Main_Firmware_B.Gain1[0] = Main_Firmware_P.Gain1_Gain * (real32_T)rtb_Id_err;
+  Main_Firmware_B.Gain1[0] = (sin(Main_Firmware_P.SineWave_Freq * rtb_Id_err +
+    Main_Firmware_P.SineWave_Phase) * Main_Firmware_P.SineWave_Amp +
+    Main_Firmware_P.SineWave_Bias) * Main_Firmware_P.Gain1_Gain;
+  Main_Firmware_B.Gain1[1] = (sin(Main_Firmware_P.SineWave2_Freq * rtb_Id_err +
+    Main_Firmware_P.SineWave2_Phase) * Main_Firmware_P.SineWave2_Amp +
+    Main_Firmware_P.SineWave2_Bias) * Main_Firmware_P.Gain1_Gain;
+  Main_Firmware_B.Gain1[2] = (sin(Main_Firmware_P.SineWave1_Freq * rtb_Id_err +
+    Main_Firmware_P.SineWave1_Phase) * Main_Firmware_P.SineWave1_Amp +
+    Main_Firmware_P.SineWave1_Bias) * Main_Firmware_P.Gain1_Gain;
 
-  /* Saturate: '<S1>/Saturation' incorporates:
-   *  Delay: '<S1>/Sampling Delay'
-   */
-  if (Main_Firmware_DW.SamplingDelay_DSTATE[1] >
-      Main_Firmware_P.Saturation_UpperSat) {
-    rtb_Id_err = Main_Firmware_P.Saturation_UpperSat;
-  } else if (Main_Firmware_DW.SamplingDelay_DSTATE[1] <
-             Main_Firmware_P.Saturation_LowerSat) {
-    rtb_Id_err = Main_Firmware_P.Saturation_LowerSat;
-  } else {
-    rtb_Id_err = Main_Firmware_DW.SamplingDelay_DSTATE[1];
-  }
-
-  /* Gain: '<S2>/Gain1' incorporates:
-   *  Saturate: '<S1>/Saturation'
-   */
-  Main_Firmware_B.Gain1[1] = Main_Firmware_P.Gain1_Gain * (real32_T)rtb_Id_err;
-
-  /* Saturate: '<S1>/Saturation' incorporates:
-   *  Delay: '<S1>/Sampling Delay'
-   */
-  if (Main_Firmware_DW.SamplingDelay_DSTATE[2] >
-      Main_Firmware_P.Saturation_UpperSat) {
-    rtb_Id_err = Main_Firmware_P.Saturation_UpperSat;
-  } else if (Main_Firmware_DW.SamplingDelay_DSTATE[2] <
-             Main_Firmware_P.Saturation_LowerSat) {
-    rtb_Id_err = Main_Firmware_P.Saturation_LowerSat;
-  } else {
-    rtb_Id_err = Main_Firmware_DW.SamplingDelay_DSTATE[2];
-  }
-
-  /* Gain: '<S2>/Gain1' incorporates:
-   *  Saturate: '<S1>/Saturation'
-   */
-  Main_Firmware_B.Gain1[2] = Main_Firmware_P.Gain1_Gain * (real32_T)rtb_Id_err;
-
-  /* S-Function (c2802xadc): '<S5>/ADC2' */
+  /* S-Function (c2802xadc): '<S5>/ADC5' */
   {
     /*  Internal Reference Voltage : Fixed scale 0 to 3.3 V range.  */
     /*  External Reference Voltage : Allowable ranges of VREFHI(ADCINA0) = 3.3 and VREFLO(tied to ground) = 0  */
-    AdccRegs.ADCSOCFRC1.bit.SOC1 = 1U;
+    AdcaRegs.ADCSOCFRC1.bit.SOC5 = 1U;
 
     /* Wait for the period of Sampling window and EOC result to be latched after trigger */
 #ifndef __TMS320C28XX_CLA__
 
-    asm(" RPT #32|| NOP");
+    asm(" RPT #56|| NOP");
 
 #endif
 
 #ifdef __TMS320C28XX_CLA__
 
     real32_T wait_index;
-    for (wait_index= 5; wait_index > 0; wait_index--)
+    for (wait_index= 9; wait_index > 0; wait_index--)
       __mnop();
 
 #endif
 
-    Main_Firmware_B.ADC2 = (AdccResultRegs.ADCRESULT1);
+    Main_Firmware_B.ADC5 = (AdcaResultRegs.ADCRESULT5);
   }
 
-  /* S-Function (c2802xadc): '<S5>/ADC3' */
-  {
-    /*  Internal Reference Voltage : Fixed scale 0 to 3.3 V range.  */
-    /*  External Reference Voltage : Allowable ranges of VREFHI(ADCINA0) = 3.3 and VREFLO(tied to ground) = 0  */
-    AdccRegs.ADCSOCFRC1.bit.SOC2 = 1U;
-
-    /* Wait for the period of Sampling window and EOC result to be latched after trigger */
-#ifndef __TMS320C28XX_CLA__
-
-    asm(" RPT #32|| NOP");
-
-#endif
-
-#ifdef __TMS320C28XX_CLA__
-
-    real32_T wait_index;
-    for (wait_index= 5; wait_index > 0; wait_index--)
-      __mnop();
-
-#endif
-
-    Main_Firmware_B.ADC3 = (AdccResultRegs.ADCRESULT2);
-  }
-
-  /* S-Function (c2802xadc): '<S5>/ADC4' */
-  {
-    /*  Internal Reference Voltage : Fixed scale 0 to 3.3 V range.  */
-    /*  External Reference Voltage : Allowable ranges of VREFHI(ADCINA0) = 3.3 and VREFLO(tied to ground) = 0  */
-    AdcaRegs.ADCSOCFRC1.bit.SOC3 = 1U;
-
-    /* Wait for the period of Sampling window and EOC result to be latched after trigger */
-#ifndef __TMS320C28XX_CLA__
-
-    asm(" RPT #32|| NOP");
-
-#endif
-
-#ifdef __TMS320C28XX_CLA__
-
-    real32_T wait_index;
-    for (wait_index= 5; wait_index > 0; wait_index--)
-      __mnop();
-
-#endif
-
-    Main_Firmware_B.ADC4 = (AdcaResultRegs.ADCRESULT3);
-  }
-
-  /* Gain: '<S5>/Gain2' */
-  Main_Firmware_B.Gain2[0] = Main_Firmware_P.Gain2_Gain * Main_Firmware_B.ADC2;
-  Main_Firmware_B.Gain2[1] = Main_Firmware_P.Gain2_Gain * Main_Firmware_B.ADC3;
-  Main_Firmware_B.Gain2[2] = Main_Firmware_P.Gain2_Gain * Main_Firmware_B.ADC4;
-
-  /* Gain: '<S6>/Gain' incorporates:
-   *  Bias: '<S6>/Bias1'
-   */
-  Main_Firmware_B.I_ABC[0] = (Main_Firmware_B.Gain2[0] +
-    Main_Firmware_P.Bias1_Bias) * Main_Firmware_P.Gain_Gain;
-  Main_Firmware_B.I_ABC[1] = (Main_Firmware_B.Gain2[1] +
-    Main_Firmware_P.Bias1_Bias) * Main_Firmware_P.Gain_Gain;
-  Main_Firmware_B.I_ABC[2] = (Main_Firmware_B.Gain2[2] +
-    Main_Firmware_P.Bias1_Bias) * Main_Firmware_P.Gain_Gain;
-
-  /* Gain: '<S119>/Gain3' */
-  rtb_Electricalspeed = Main_Firmware_B.I_ABC[1];
-  rtb_Abs_idx_0 = Main_Firmware_B.I_ABC[0];
-  rtb_Abs_idx_1 = Main_Firmware_B.I_ABC[2];
-  for (rtb_Compare = 0; rtb_Compare < 3; rtb_Compare++) {
-    /* Gain: '<S119>/Gain1' incorporates:
-     *  Gain: '<S119>/Gain3'
-     */
-    Main_Firmware_B.Gain1_f[rtb_Compare] =
-      ((Main_Firmware_P.Gain3_Gain[rtb_Compare + 3] * rtb_Electricalspeed +
-        Main_Firmware_P.Gain3_Gain[rtb_Compare] * rtb_Abs_idx_0) +
-       Main_Firmware_P.Gain3_Gain[rtb_Compare + 6] * rtb_Abs_idx_1) *
-      Main_Firmware_P.Gain1_Gain_l;
-  }
-
-  /* End of Gain: '<S119>/Gain3' */
-
-  /* RelationalOperator: '<S120>/Compare' incorporates:
-   *  Constant: '<S118>/Constant'
-   *  Constant: '<S120>/Constant'
-   */
-  rtb_Compare = (Main_Firmware_P.AlphaBetaZerotodq0_Alignment ==
-                 Main_Firmware_P.CompareToConstant_const);
-
-  /* S-Function (c2802xadc): '<S5>/ADC' */
+  /* S-Function (c2802xadc): '<S5>/ADC6' */
   {
     /*  Internal Reference Voltage : Fixed scale 0 to 3.3 V range.  */
     /*  External Reference Voltage : Allowable ranges of VREFHI(ADCINA0) = 3.3 and VREFLO(tied to ground) = 0  */
@@ -255,469 +420,700 @@ void Main_Firmware_step(void)
     /* Wait for the period of Sampling window and EOC result to be latched after trigger */
 #ifndef __TMS320C28XX_CLA__
 
-    asm(" RPT #32|| NOP");
+    asm(" RPT #88|| NOP");
 
 #endif
 
 #ifdef __TMS320C28XX_CLA__
 
     real32_T wait_index;
-    for (wait_index= 5; wait_index > 0; wait_index--)
+    for (wait_index= 14; wait_index > 0; wait_index--)
       __mnop();
 
 #endif
 
-    Main_Firmware_B.VCos = (AdcbResultRegs.ADCRESULT0);
+    Main_Firmware_B.ADC6 = (AdcbResultRegs.ADCRESULT0);
+  }
+
+  /* S-Function (c2802xadc): '<S5>/ADC7' */
+  {
+    /*  Internal Reference Voltage : Fixed scale 0 to 3.3 V range.  */
+    /*  External Reference Voltage : Allowable ranges of VREFHI(ADCINA0) = 3.3 and VREFLO(tied to ground) = 0  */
+    AdccRegs.ADCSOCFRC1.bit.SOC2 = 1U;
+
+    /* Wait for the period of Sampling window and EOC result to be latched after trigger */
+#ifndef __TMS320C28XX_CLA__
+
+    asm(" RPT #88|| NOP");
+
+#endif
+
+#ifdef __TMS320C28XX_CLA__
+
+    real32_T wait_index;
+    for (wait_index= 14; wait_index > 0; wait_index--)
+      __mnop();
+
+#endif
+
+    Main_Firmware_B.ADC7 = (AdccResultRegs.ADCRESULT2);
+  }
+
+  /* Gain: '<S6>/Gain' incorporates:
+   *  Bias: '<S6>/Bias1'
+   *  Gain: '<S5>/Gain3'
+   */
+  Main_Firmware_B.I_ABC[0] = (Main_Firmware_P.Gain3_Gain * Main_Firmware_B.ADC5
+    + Main_Firmware_P.Bias1_Bias) * Main_Firmware_P.Gain_Gain;
+  Main_Firmware_B.I_ABC[1] = (Main_Firmware_P.Gain3_Gain * Main_Firmware_B.ADC6
+    + Main_Firmware_P.Bias1_Bias) * Main_Firmware_P.Gain_Gain;
+  Main_Firmware_B.I_ABC[2] = (Main_Firmware_P.Gain3_Gain * Main_Firmware_B.ADC7
+    + Main_Firmware_P.Bias1_Bias) * Main_Firmware_P.Gain_Gain;
+  Main_Firmwar_LowpassFilter1(Main_Firmware_B.I_ABC[0],
+    &Main_Firmware_B.LowpassFilter2, &Main_Firmware_DW.LowpassFilter2);
+
+  /* Bias: '<S6>/Bias2' */
+  Main_Firmware_B.Bias2 = Main_Firmware_B.LowpassFilter2.LowpassFilter1 +
+    Main_Firmware_P.Bias2_Bias;
+  Main_Firmwar_LowpassFilter1(Main_Firmware_B.I_ABC[1],
+    &Main_Firmware_B.LowpassFilter1, &Main_Firmware_DW.LowpassFilter1);
+
+  /* Bias: '<S6>/Bias3' */
+  Main_Firmware_B.Bias3 = Main_Firmware_B.LowpassFilter1.LowpassFilter1 +
+    Main_Firmware_P.Bias3_Bias;
+  Main_Firmwar_LowpassFilter1(Main_Firmware_B.I_ABC[2],
+    &Main_Firmware_B.LowpassFilter5, &Main_Firmware_DW.LowpassFilter5);
+
+  /* Bias: '<S6>/Bias4' */
+  Main_Firmware_B.Bias4 = Main_Firmware_B.LowpassFilter5.LowpassFilter1 +
+    Main_Firmware_P.Bias4_Bias;
+
+  /* SignalConversion generated from: '<S123>/Gain3' */
+  Main_Firmware_B.TmpSignalConversionAtGain3Inpor[0] = Main_Firmware_B.Bias2;
+  Main_Firmware_B.TmpSignalConversionAtGain3Inpor[1] = Main_Firmware_B.Bias3;
+  Main_Firmware_B.TmpSignalConversionAtGain3Inpor[2] = Main_Firmware_B.Bias4;
+
+  /* Abs: '<S4>/Abs' */
+  rtb_Gain3_idx_0 = fabsf(Main_Firmware_B.TmpSignalConversionAtGain3Inpor[0]);
+  rtb_Gain3_idx_1 = fabsf(Main_Firmware_B.TmpSignalConversionAtGain3Inpor[1]);
+
+  /* MinMax: '<S4>/Max' incorporates:
+   *  Abs: '<S4>/Abs'
+   */
+  Main_Firmware_B.Max = fabsf(Main_Firmware_B.TmpSignalConversionAtGain3Inpor[2]);
+  if ((rtb_Gain3_idx_0 >= rtb_Gain3_idx_1) || rtIsNaNF(rtb_Gain3_idx_1)) {
+    rtb_Gain3_idx_1 = rtb_Gain3_idx_0;
+  }
+
+  if ((rtb_Gain3_idx_1 >= Main_Firmware_B.Max) || rtIsNaNF(Main_Firmware_B.Max))
+  {
+    /* MinMax: '<S4>/Max' */
+    Main_Firmware_B.Max = rtb_Gain3_idx_1;
+  }
+
+  /* End of MinMax: '<S4>/Max' */
+
+  /* RelationalOperator: '<S182>/Compare' incorporates:
+   *  Constant: '<S182>/Constant'
+   */
+  Main_Firmware_B.Compare = (Main_Firmware_B.Max <=
+    Main_Firmware_P.CompareToConstant_const_k);
+
+  /* S-Function (c2802xadc): '<S5>/ADC' */
+  {
+    /*  Internal Reference Voltage : Fixed scale 0 to 3.3 V range.  */
+    /*  External Reference Voltage : Allowable ranges of VREFHI(ADCINA0) = 3.3 and VREFLO(tied to ground) = 0  */
+    AdcbRegs.ADCSOCFRC1.bit.SOC4 = 1U;
+
+    /* Wait for the period of Sampling window and EOC result to be latched after trigger */
+#ifndef __TMS320C28XX_CLA__
+
+    asm(" RPT #56|| NOP");
+
+#endif
+
+#ifdef __TMS320C28XX_CLA__
+
+    real32_T wait_index;
+    for (wait_index= 9; wait_index > 0; wait_index--)
+      __mnop();
+
+#endif
+
+    Main_Firmware_B.VCos = (AdcbResultRegs.ADCRESULT4);
   }
 
   /* S-Function (c2802xadc): '<S5>/ADC1' */
   {
     /*  Internal Reference Voltage : Fixed scale 0 to 3.3 V range.  */
     /*  External Reference Voltage : Allowable ranges of VREFHI(ADCINA0) = 3.3 and VREFLO(tied to ground) = 0  */
-    AdcaRegs.ADCSOCFRC1.bit.SOC8 = 1U;
+    AdcaRegs.ADCSOCFRC1.bit.SOC6 = 1U;
 
     /* Wait for the period of Sampling window and EOC result to be latched after trigger */
 #ifndef __TMS320C28XX_CLA__
 
-    asm(" RPT #32|| NOP");
+    asm(" RPT #56|| NOP");
 
 #endif
 
 #ifdef __TMS320C28XX_CLA__
 
     real32_T wait_index;
-    for (wait_index= 5; wait_index > 0; wait_index--)
+    for (wait_index= 9; wait_index > 0; wait_index--)
       __mnop();
 
 #endif
 
-    Main_Firmware_B.VSine = (AdcaResultRegs.ADCRESULT8);
+    Main_Firmware_B.VSine = (AdcaResultRegs.ADCRESULT6);
   }
 
   /* Gain: '<S5>/Gain1' */
-  Main_Firmware_B.Gain1_g[0] = Main_Firmware_P.Gain1_Gain_a *
+  Main_Firmware_B.Gain1_p[0] = Main_Firmware_P.Gain1_Gain_n *
     Main_Firmware_B.VCos;
-  Main_Firmware_B.Gain1_g[1] = Main_Firmware_P.Gain1_Gain_a *
+  Main_Firmware_B.Gain1_p[1] = Main_Firmware_P.Gain1_Gain_n *
     Main_Firmware_B.VSine;
 
+  /* Bias: '<S6>/Bias' */
+  Main_Firmwar_LowpassFilter3(Main_Firmware_B.Gain1_p[0] +
+    Main_Firmware_P.Bias_Bias_j, &Main_Firmware_B.LowpassFilter3,
+    &Main_Firmware_DW.LowpassFilter3);
+  Main_Firmwar_LowpassFilter3(Main_Firmware_B.Gain1_p[1] +
+    Main_Firmware_P.Bias_Bias_j, &Main_Firmware_B.LowpassFilter4,
+    &Main_Firmware_DW.LowpassFilter4);
+
   /* Gain: '<S3>/Gain2' incorporates:
-   *  Bias: '<S6>/Bias'
    *  Constant: '<S3>/Const'
    *  Product: '<S6>/Divide'
    *  Sum: '<S3>/Sum'
    *  Trigonometry: '<S6>/Atan'
    */
-  rtb_Electricalspeed = ((real32_T)atan((Main_Firmware_B.Gain1_g[0] +
-    Main_Firmware_P.Bias_Bias_g) / (Main_Firmware_B.Gain1_g[1] +
-    Main_Firmware_P.Bias_Bias_g)) - (real32_T)Main_Firmware_P.Encoder_Offset) *
-    Main_Firmware_P.ppair;
+  rtb_Gain3_idx_1 = ((real32_T)atan(1.0F /
+    Main_Firmware_B.LowpassFilter3.LowpassFilter3 *
+    Main_Firmware_B.LowpassFilter4.LowpassFilter3) - (real32_T)
+                     Main_Firmware_P.Encoder_Offset) * Main_Firmware_P.ppair;
 
-  /* Outputs for Enabled SubSystem: '<S118>/Subsystem1' incorporates:
-   *  EnablePort: '<S123>/Enable'
-   */
-  /* RelationalOperator: '<S120>/Compare' */
-  if (rtb_Compare > 0) {
-    /* Fcn: '<S123>/Fcn' incorporates:
-     *  Fcn: '<S123>/Fcn1'
-     */
-    rtb_Abs_idx_0 = (real32_T)sin(rtb_Electricalspeed);
-    rtb_Abs_idx_1 = (real32_T)cos(rtb_Electricalspeed);
-
-    /* Fcn: '<S123>/Fcn' */
-    Main_Firmware_B.Fcn = Main_Firmware_B.Gain1_f[0] * rtb_Abs_idx_1 +
-      Main_Firmware_B.Gain1_f[1] * rtb_Abs_idx_0;
-
-    /* Fcn: '<S123>/Fcn1' */
-    Main_Firmware_B.Fcn1 = -Main_Firmware_B.Gain1_f[0] * rtb_Abs_idx_0 +
-      Main_Firmware_B.Gain1_f[1] * rtb_Abs_idx_1;
-    srUpdateBC(Main_Firmware_DW.Subsystem1_SubsysRanBC);
-  }
-
-  /* End of Outputs for SubSystem: '<S118>/Subsystem1' */
-
-  /* Outputs for Enabled SubSystem: '<S118>/Subsystem - pi//2 delay' incorporates:
-   *  EnablePort: '<S122>/Enable'
-   */
-  /* RelationalOperator: '<S121>/Compare' incorporates:
-   *  Constant: '<S118>/Constant'
-   *  Constant: '<S121>/Constant'
-   */
-  if (Main_Firmware_P.AlphaBetaZerotodq0_Alignment ==
-      Main_Firmware_P.CompareToConstant1_const) {
-    /* Fcn: '<S122>/Fcn' incorporates:
-     *  Fcn: '<S122>/Fcn1'
-     */
-    rtb_Abs_idx_0 = (real32_T)cos(rtb_Electricalspeed);
-    rtb_Abs_idx_1 = (real32_T)sin(rtb_Electricalspeed);
-
-    /* Fcn: '<S122>/Fcn' */
-    Main_Firmware_B.Fcn_j = Main_Firmware_B.Gain1_f[0] * rtb_Abs_idx_1 -
-      Main_Firmware_B.Gain1_f[1] * rtb_Abs_idx_0;
-
-    /* Fcn: '<S122>/Fcn1' */
-    Main_Firmware_B.Fcn1_e = Main_Firmware_B.Gain1_f[0] * rtb_Abs_idx_0 +
-      Main_Firmware_B.Gain1_f[1] * rtb_Abs_idx_1;
-    srUpdateBC(Main_Firmware_DW.Subsystempi2delay_SubsysRanBC);
-  }
-
-  /* End of RelationalOperator: '<S121>/Compare' */
-  /* End of Outputs for SubSystem: '<S118>/Subsystem - pi//2 delay' */
-
-  /* Switch: '<S118>/Switch' incorporates:
-   *  RelationalOperator: '<S120>/Compare'
-   */
-  if (rtb_Compare != 0) {
-    /* Switch: '<S118>/Switch' */
-    Main_Firmware_B.Switch[0] = Main_Firmware_B.Fcn;
-    Main_Firmware_B.Switch[1] = Main_Firmware_B.Fcn1;
-  } else {
-    /* Switch: '<S118>/Switch' */
-    Main_Firmware_B.Switch[0] = Main_Firmware_B.Fcn_j;
-    Main_Firmware_B.Switch[1] = Main_Firmware_B.Fcn1_e;
-  }
-
-  /* End of Switch: '<S118>/Switch' */
-
-  /* SignalConversion generated from: '<S3>/Park Transform' */
-  Main_Firmware_B.TmpSignalConversionAtTAQSigLogg[0] = Main_Firmware_B.Switch[0];
-  Main_Firmware_B.TmpSignalConversionAtTAQSigLogg[1] = Main_Firmware_B.Switch[1];
-  Main_Firmware_B.TmpSignalConversionAtTAQSigLogg[2] = Main_Firmware_B.Gain1_f[2];
-
-  /* Abs: '<S4>/Abs' */
-  rtb_Abs_idx_0 = fabsf(Main_Firmware_B.I_ABC[0]);
-  rtb_Abs_idx_1 = fabsf(Main_Firmware_B.I_ABC[1]);
-  rtb_Abs_idx_2 = fabsf(Main_Firmware_B.I_ABC[2]);
-
-  /* Sum: '<S3>/Sum4' incorporates:
-   *  Constant: '<S3>/Constant1'
-   */
-  rtb_Id_err = Main_Firmware_P.Constant1_Value - Main_Firmware_B.Switch[0];
-
-  /* SampleTimeMath: '<S124>/TSamp'
+  /* SampleTimeMath: '<S128>/TSamp'
    *
-   * About '<S124>/TSamp':
+   * About '<S128>/TSamp':
    *  y = u * K where K = 1 / ( w * Ts )
    *   */
-  rtb_TSamp = rtb_Electricalspeed * Main_Firmware_P.TSamp_WtEt;
+  rtb_TSamp = rtb_Gain3_idx_1 * Main_Firmware_P.TSamp_WtEt;
 
-  /* Sum: '<S124>/Diff' incorporates:
-   *  UnitDelay: '<S124>/UD'
+  /* Sum: '<S128>/Diff' incorporates:
+   *  UnitDelay: '<S128>/UD'
    *
-   * Block description for '<S124>/Diff':
+   * Block description for '<S128>/Diff':
    *
    *  Add in CPU
    *
-   * Block description for '<S124>/UD':
+   * Block description for '<S128>/UD':
    *
    *  Store in Global RAM
    */
   rtb_Diff = rtb_TSamp - Main_Firmware_DW.UD_DSTATE;
 
-  /* SignalConversion generated from: '<S125>/Selector1' incorporates:
-   *  Delay: '<S125>/Delay1'
+  /* SignalConversion generated from: '<S129>/Selector1' incorporates:
+   *  Delay: '<S129>/Delay1'
    */
   rtb_Bias[0] = rtb_Diff;
   rtb_Bias[1] = Main_Firmware_DW.Delay1_DSTATE;
 
-  /* Bias: '<S125>/Bias' incorporates:
-   *  Abs: '<S125>/Abs'
-   *  Abs: '<S125>/Abs1'
-   *  Constant: '<S125>/Constant'
-   *  Constant: '<S125>/Constant1'
-   *  Delay: '<S125>/Delay1'
-   *  Delay: '<S125>/Delay2'
-   *  Product: '<S125>/Product'
-   *  RelationalOperator: '<S125>/GreaterThan'
-   *  RelationalOperator: '<S125>/GreaterThan1'
-   *  Sum: '<S125>/Subtract'
-   *  Sum: '<S125>/Subtract1'
+  /* Abs: '<S129>/Abs1' incorporates:
+   *  Delay: '<S129>/Delay2'
+   *  Sum: '<S129>/Subtract1'
    */
-  rtb_Bias_i_tmp = (fabsf(rtb_Diff - Main_Firmware_DW.Delay2_DSTATE[0]) >
-                    Main_Firmware_P.Constant1_Value_i) * (fabsf
-    (Main_Firmware_DW.Delay1_DSTATE - rtb_Diff) >
-    Main_Firmware_P.Constant_Value_f) + Main_Firmware_P.Bias_Bias;
+  rtb_Iq_error = fabsf(rtb_Diff - Main_Firmware_DW.Delay2_DSTATE[0]);
 
-  /* SignalConversion generated from: '<S125>/Selector1' incorporates:
-   *  Delay: '<S125>/Delay1'
+  /* Abs: '<S129>/Abs' incorporates:
+   *  Delay: '<S129>/Delay1'
+   *  Sum: '<S129>/Subtract'
    */
-  rtb_Diff_0[0] = rtb_Diff;
-  rtb_Diff_0[1] = Main_Firmware_DW.Delay1_DSTATE;
+  rtb_Filter = fabsf(Main_Firmware_DW.Delay1_DSTATE - rtb_Diff);
 
-  /* Selector: '<S125>/Selector1' */
-  rtb_Abs2 = rtb_Diff_0[(int16_T)rtb_Bias_i_tmp - 1];
-
-  /* Sum: '<S57>/Sum' incorporates:
-   *  DiscreteIntegrator: '<S48>/Integrator'
-   *  Gain: '<S53>/Proportional Gain'
+  /* SignalConversion generated from: '<S129>/Selector1' incorporates:
+   *  Delay: '<S129>/Delay1'
    */
-  rtb_a = (real32_T)(Main_Firmware_P.I_dqPID1_P * rtb_Id_err) +
-    Main_Firmware_DW.Integrator_DSTATE;
+  tmp_0[0] = rtb_Diff;
+  tmp_0[1] = Main_Firmware_DW.Delay1_DSTATE;
 
-  /* Saturate: '<S55>/Saturation' */
-  if (rtb_a > Main_Firmware_P.Voltage_max) {
-    rtb_a = Main_Firmware_P.Voltage_max;
-  } else if (rtb_a < Main_Firmware_P.I_dqPID1_LowerSaturationLimit) {
-    rtb_a = Main_Firmware_P.I_dqPID1_LowerSaturationLimit;
+  /* Selector: '<S129>/Selector1' incorporates:
+   *  Abs: '<S129>/Abs'
+   *  Abs: '<S129>/Abs1'
+   *  Bias: '<S129>/Bias'
+   *  Constant: '<S129>/Constant'
+   *  Constant: '<S129>/Constant1'
+   *  Product: '<S129>/Product'
+   *  RelationalOperator: '<S129>/GreaterThan'
+   *  RelationalOperator: '<S129>/GreaterThan1'
+   */
+  rtb_Gain3_idx_0 = tmp_0[(int16_T)((rtb_Iq_error >
+    Main_Firmware_P.Constant1_Value_b) * (rtb_Filter >
+    Main_Firmware_P.Constant_Value_h) + Main_Firmware_P.Bias_Bias) - 1];
+  rtb_Iq_error = rtb_Bias[(int16_T)((rtb_Iq_error >
+    Main_Firmware_P.Constant1_Value_b) * (rtb_Filter >
+    Main_Firmware_P.Constant_Value_h) + Main_Firmware_P.Bias_Bias) - 1];
+
+  /* Gain: '<Root>/Gain' incorporates:
+   *  Selector: '<S129>/Selector1'
+   */
+  Main_Firmware_B.Gain = rtb_Iq_error * Main_Firmware_P.Gain_Gain_n;
+
+  /* Abs: '<S4>/Abs2' */
+  Main_Firmware_B.Abs2 = fabsf(Main_Firmware_B.Gain);
+
+  /* RelationalOperator: '<S183>/Compare' incorporates:
+   *  Constant: '<S183>/Constant'
+   */
+  Main_Firmware_B.Compare_l = (Main_Firmware_B.Abs2 <=
+    Main_Firmware_P.CompareToConstant1_const_h);
+
+  /* Constant: '<Root>/Constant4' */
+  Main_Firmware_B.Constant4 = Main_Firmware_P.Constant4_Value;
+
+  /* Logic: '<S4>/AND' */
+  Main_Firmware_B.AND = ((!Main_Firmware_B.Compare) ||
+    (!Main_Firmware_B.Compare_l) || (!(Main_Firmware_B.Constant4 != 0.0)));
+
+  /* DataTypeConversion: '<S2>/Data Type Conversion' incorporates:
+   *  BitConcat: '<S7>/BitConcat2'
+   *  Constant: '<Root>/Constant'
+   *  DataTypeConversion: '<S2>/Data Type Conversion2'
+   */
+  Main_Firmware_B.DataTypeConversion = (int16_T)((uint16_T)Main_Firmware_B.AND <<
+    1 | (uint16_T)(Main_Firmware_P.Constant_Value != 0.0));
+
+  /* SwitchCase: '<S2>/Switch Case' incorporates:
+   *  DataTypeConversion: '<S2>/Data Type Conversion'
+   */
+  switch ((int32_T)Main_Firmware_B.DataTypeConversion) {
+   case 0L:
+    /* Outputs for IfAction SubSystem: '<S2>/Switch Case Action Subsystem2' incorporates:
+     *  ActionPort: '<S10>/Action Port'
+     */
+    /* Merge: '<S2>/Merge' incorporates:
+     *  Constant: '<S10>/Constant1'
+     *  Constant: '<S10>/Constant3'
+     *  DataTypeConversion: '<S2>/Data Type Conversion3'
+     *  SignalConversion generated from: '<S10>/Out1'
+     */
+    Main_Firmware_B.Merge[0] = (real32_T)Main_Firmware_B.Gain1[0];
+    Main_Firmware_B.Merge[1] = (real32_T)Main_Firmware_B.Gain1[1];
+    Main_Firmware_B.Merge[2] = (real32_T)Main_Firmware_B.Gain1[2];
+    Main_Firmware_B.Merge[3] = Main_Firmware_P.Constant1_Value_f;
+    Main_Firmware_B.Merge[4] = Main_Firmware_P.Constant3_Value;
+
+    /* End of Outputs for SubSystem: '<S2>/Switch Case Action Subsystem2' */
+
+    /* Update for IfAction SubSystem: '<S2>/Switch Case Action Subsystem2' incorporates:
+     *  ActionPort: '<S10>/Action Port'
+     */
+    /* Update for SwitchCase: '<S2>/Switch Case' */
+    srUpdateBC(Main_Firmware_DW.SwitchCaseActionSubsystem2_Subs);
+
+    /* End of Update for SubSystem: '<S2>/Switch Case Action Subsystem2' */
+    break;
+
+   case 1L:
+    /* Outputs for IfAction SubSystem: '<S2>/Regen Mode' incorporates:
+     *  ActionPort: '<S9>/Action Port'
+     */
+    /* Merge: '<S2>/Merge' incorporates:
+     *  Constant: '<S9>/Constant'
+     *  Constant: '<S9>/Constant2'
+     *  Constant: '<S9>/Constant5'
+     *  SignalConversion generated from: '<S9>/Out1'
+     */
+    Main_Firmware_B.Merge[0] = Main_Firmware_P.Constant2_Value_h;
+    Main_Firmware_B.Merge[1] = Main_Firmware_P.Constant2_Value_h;
+    Main_Firmware_B.Merge[2] = Main_Firmware_P.Constant2_Value_h;
+    Main_Firmware_B.Merge[3] = Main_Firmware_P.Constant5_Value;
+    Main_Firmware_B.Merge[4] = Main_Firmware_P.Constant_Value_c;
+
+    /* End of Outputs for SubSystem: '<S2>/Regen Mode' */
+
+    /* Update for IfAction SubSystem: '<S2>/Regen Mode' incorporates:
+     *  ActionPort: '<S9>/Action Port'
+     */
+    /* Update for SwitchCase: '<S2>/Switch Case' */
+    srUpdateBC(Main_Firmware_DW.RegenMode_SubsysRanBC);
+
+    /* End of Update for SubSystem: '<S2>/Regen Mode' */
+    break;
+
+   default:
+    /* Outputs for IfAction SubSystem: '<S2>/Fault State' incorporates:
+     *  ActionPort: '<S8>/Action Port'
+     */
+    /* Merge: '<S2>/Merge' incorporates:
+     *  Constant: '<S8>/Constant'
+     *  Constant: '<S8>/Constant1'
+     *  Constant: '<S8>/Constant3'
+     *  Constant: '<S8>/Constant4'
+     *  Constant: '<S8>/Constant5'
+     *  SignalConversion generated from: '<S8>/Out1'
+     */
+    Main_Firmware_B.Merge[0] = Main_Firmware_P.Constant3_Value_m;
+    Main_Firmware_B.Merge[1] = Main_Firmware_P.Constant4_Value_k;
+    Main_Firmware_B.Merge[2] = Main_Firmware_P.Constant5_Value_j;
+    Main_Firmware_B.Merge[3] = Main_Firmware_P.Constant1_Value_h;
+    Main_Firmware_B.Merge[4] = Main_Firmware_P.Constant_Value_l;
+
+    /* End of Outputs for SubSystem: '<S2>/Fault State' */
+
+    /* Update for IfAction SubSystem: '<S2>/Fault State' incorporates:
+     *  ActionPort: '<S8>/Action Port'
+     */
+    /* Update for SwitchCase: '<S2>/Switch Case' */
+    srUpdateBC(Main_Firmware_DW.FaultState_SubsysRanBC);
+
+    /* End of Update for SubSystem: '<S2>/Fault State' */
+    break;
   }
 
-  /* Selector: '<S125>/Selector1' */
-  rtb_FilterCoefficient = rtb_Bias[(int16_T)rtb_Bias_i_tmp - 1];
-
-  /* Sum: '<S3>/Sum1' incorporates:
-   *  Gain: '<S7>/Gain3'
-   *  Gain: '<S7>/Gain4'
-   *  Product: '<S7>/Product1'
-   *  Saturate: '<S55>/Saturation'
-   *  Selector: '<S125>/Selector1'
-   *  Sum: '<S7>/Add1'
-   */
-  rtb_Vd = (rtb_FilterCoefficient * Main_Firmware_P.Ld * Main_Firmware_B.Switch
-            [0] + Main_Firmware_P.lambda * rtb_Abs2) + rtb_a;
-
-  /* Saturate: '<S3>/Limiter 1' */
-  if (rtb_Vd > Main_Firmware_P.Voltage_max) {
-    rtb_Vd = Main_Firmware_P.Voltage_max;
-  } else if (rtb_Vd < Main_Firmware_P.Limiter1_LowerSat) {
-    rtb_Vd = Main_Firmware_P.Limiter1_LowerSat;
-  }
-
-  /* End of Saturate: '<S3>/Limiter 1' */
+  /* End of SwitchCase: '<S2>/Switch Case' */
 
   /* Saturate: '<S3>/Saturation' incorporates:
    *  Constant: '<Root>/Constant1'
    */
-  if (Main_Firmware_P.Constant1_Value_n > Main_Firmware_P.speed_max) {
-    rtb_Filter = Main_Firmware_P.speed_max;
-  } else if (Main_Firmware_P.Constant1_Value_n <
-             Main_Firmware_P.Saturation_LowerSat_a) {
-    rtb_Filter = Main_Firmware_P.Saturation_LowerSat_a;
+  if (Main_Firmware_P.Constant1_Value_k > Main_Firmware_P.speed_max) {
+    /* Saturate: '<S3>/Saturation' */
+    Main_Firmware_B.Saturation = Main_Firmware_P.speed_max;
+  } else if (Main_Firmware_P.Constant1_Value_k <
+             Main_Firmware_P.Saturation_LowerSat) {
+    /* Saturate: '<S3>/Saturation' */
+    Main_Firmware_B.Saturation = Main_Firmware_P.Saturation_LowerSat;
   } else {
-    rtb_Filter = Main_Firmware_P.Constant1_Value_n;
+    /* Saturate: '<S3>/Saturation' */
+    Main_Firmware_B.Saturation = Main_Firmware_P.Constant1_Value_k;
   }
+
+  /* End of Saturate: '<S3>/Saturation' */
+
+  /* SignalConversion generated from: '<Root>/Mux5' */
+  Main_Firmware_B.TmpSignalConversionAtTAQSigLogg[0] = Main_Firmware_B.Gain;
+  Main_Firmware_B.TmpSignalConversionAtTAQSigLogg[1] =
+    Main_Firmware_B.Saturation;
 
   /* Sum: '<S3>/Sum6' incorporates:
    *  Gain: '<S3>/Gain7'
-   *  Saturate: '<S3>/Saturation'
    */
-  rtb_Filter = Main_Firmware_P.ppair * rtb_Filter - rtb_FilterCoefficient;
+  rtb_Filter = Main_Firmware_P.ppair * Main_Firmware_B.Saturation - rtb_Iq_error;
 
-  /* Gain: '<S163>/Filter Coefficient' incorporates:
-   *  DiscreteIntegrator: '<S155>/Filter'
-   *  Gain: '<S153>/Derivative Gain'
-   *  Sum: '<S155>/SumD'
+  /* Gain: '<S167>/Filter Coefficient' incorporates:
+   *  DiscreteIntegrator: '<S159>/Filter'
+   *  Gain: '<S157>/Derivative Gain'
+   *  Sum: '<S159>/SumD'
    */
   rtb_FilterCoefficient = (Main_Firmware_P.SpeedPID1_D * rtb_Filter -
     Main_Firmware_DW.Filter_DSTATE) * Main_Firmware_P.SpeedPID1_N;
 
   /* Switch: '<S3>/Switch' incorporates:
    *  Constant: '<Root>/Constant2'
-   *  Constant: '<Root>/Constant3'
    */
   if (Main_Firmware_P.Constant2_Value > Main_Firmware_P.Switch_Threshold) {
-    rtb_a = Main_Firmware_P.Constant3_Value;
-  } else {
-    /* Sum: '<S169>/Sum' incorporates:
-     *  Gain: '<S165>/Proportional Gain'
+    /* Sum: '<S173>/Sum' incorporates:
+     *  Constant: '<Root>/Constant3'
      */
-    rtb_a = Main_Firmware_P.SpeedPID1_P * rtb_Filter + rtb_FilterCoefficient;
+    Main_Firmware_B.Saturation1 = Main_Firmware_P.Constant3_Value_j;
+  } else {
+    /* Sum: '<S173>/Sum' incorporates:
+     *  Gain: '<S169>/Proportional Gain'
+     */
+    Main_Firmware_B.Saturation1 = Main_Firmware_P.SpeedPID1_P * rtb_Filter +
+      rtb_FilterCoefficient;
 
-    /* Saturate: '<S167>/Saturation' */
-    if (rtb_a > Main_Firmware_P.Torque_max) {
-      rtb_a = Main_Firmware_P.Torque_max;
-    } else if (rtb_a < Main_Firmware_P.SpeedPID1_LowerSaturationLimit) {
-      rtb_a = Main_Firmware_P.SpeedPID1_LowerSaturationLimit;
+    /* Saturate: '<S171>/Saturation' */
+    if (Main_Firmware_B.Saturation1 > Main_Firmware_P.Torque_max) {
+      /* Sum: '<S173>/Sum' */
+      Main_Firmware_B.Saturation1 = Main_Firmware_P.Torque_max;
+    } else if (Main_Firmware_B.Saturation1 <
+               Main_Firmware_P.SpeedPID1_LowerSaturationLimit) {
+      /* Sum: '<S173>/Sum' */
+      Main_Firmware_B.Saturation1 =
+        Main_Firmware_P.SpeedPID1_LowerSaturationLimit;
     }
 
-    /* End of Saturate: '<S167>/Saturation' */
+    /* End of Saturate: '<S171>/Saturation' */
   }
 
   /* Saturate: '<S3>/Saturation1' incorporates:
    *  Switch: '<S3>/Switch'
    */
-  if (rtb_a > Main_Firmware_P.Torque_max) {
-    rtb_a = Main_Firmware_P.Torque_max;
-  } else if (rtb_a < Main_Firmware_P.Saturation1_LowerSat) {
-    rtb_a = Main_Firmware_P.Saturation1_LowerSat;
+  if (Main_Firmware_B.Saturation1 > Main_Firmware_P.Torque_max) {
+    /* Sum: '<S173>/Sum' incorporates:
+     *  Saturate: '<S3>/Saturation1'
+     */
+    Main_Firmware_B.Saturation1 = Main_Firmware_P.Torque_max;
+  } else if (Main_Firmware_B.Saturation1 < Main_Firmware_P.Saturation1_LowerSat)
+  {
+    /* Sum: '<S173>/Sum' incorporates:
+     *  Saturate: '<S3>/Saturation1'
+     */
+    Main_Firmware_B.Saturation1 = Main_Firmware_P.Saturation1_LowerSat;
   }
 
-  /* Gain: '<S3>/Gain6' incorporates:
-   *  Saturate: '<S3>/Saturation1'
+  /* End of Saturate: '<S3>/Saturation1' */
+
+  /* SignalConversion generated from: '<Root>/Mux4' */
+  Main_Firmware_B.TmpSignalConversionAtTAQSigLo_m[0] =
+    Main_Firmware_B.Saturation1;
+  Main_Firmware_B.TmpSignalConversionAtTAQSigLo_m[1] = 0.0F;
+
+  /* Gain: '<S123>/Gain3' */
+  rtb_Filter = Main_Firmware_B.TmpSignalConversionAtGain3Inpor[1];
+  TmpSignalConversionAtGain3Inpor =
+    Main_Firmware_B.TmpSignalConversionAtGain3Inpor[0];
+  TmpSignalConversionAtGain3Inp_0 =
+    Main_Firmware_B.TmpSignalConversionAtGain3Inpor[2];
+  for (rtb_Compare = 0; rtb_Compare < 3; rtb_Compare++) {
+    /* Gain: '<S123>/Gain1' incorporates:
+     *  Gain: '<S123>/Gain3'
+     */
+    Main_Firmware_B.Gain1_l[rtb_Compare] =
+      ((Main_Firmware_P.Gain3_Gain_m[rtb_Compare + 3] * rtb_Filter +
+        Main_Firmware_P.Gain3_Gain_m[rtb_Compare] *
+        TmpSignalConversionAtGain3Inpor) +
+       Main_Firmware_P.Gain3_Gain_m[rtb_Compare + 6] *
+       TmpSignalConversionAtGain3Inp_0) * Main_Firmware_P.Gain1_Gain_i;
+  }
+
+  /* End of Gain: '<S123>/Gain3' */
+
+  /* RelationalOperator: '<S124>/Compare' incorporates:
+   *  Constant: '<S122>/Constant'
+   *  Constant: '<S124>/Constant'
    */
-  rtb_a *= Main_Firmware_P.Gain6_Gain;
+  rtb_Compare = (Main_Firmware_P.AlphaBetaZerotodq0_Alignment ==
+                 Main_Firmware_P.CompareToConstant_const);
+
+  /* Outputs for Enabled SubSystem: '<S122>/Subsystem1' incorporates:
+   *  EnablePort: '<S127>/Enable'
+   */
+  /* RelationalOperator: '<S124>/Compare' */
+  if (rtb_Compare > 0) {
+    /* Fcn: '<S127>/Fcn' incorporates:
+     *  Fcn: '<S127>/Fcn1'
+     */
+    rtb_Filter = (real32_T)sin(rtb_Gain3_idx_1);
+    TmpSignalConversionAtGain3Inpor = (real32_T)cos(rtb_Gain3_idx_1);
+
+    /* Fcn: '<S127>/Fcn' */
+    Main_Firmware_B.Fcn = Main_Firmware_B.Gain1_l[0] *
+      TmpSignalConversionAtGain3Inpor + Main_Firmware_B.Gain1_l[1] * rtb_Filter;
+
+    /* Fcn: '<S127>/Fcn1' */
+    Main_Firmware_B.Fcn1 = -Main_Firmware_B.Gain1_l[0] * rtb_Filter +
+      Main_Firmware_B.Gain1_l[1] * TmpSignalConversionAtGain3Inpor;
+    srUpdateBC(Main_Firmware_DW.Subsystem1_SubsysRanBC);
+  }
+
+  /* End of Outputs for SubSystem: '<S122>/Subsystem1' */
+
+  /* Outputs for Enabled SubSystem: '<S122>/Subsystem - pi//2 delay' incorporates:
+   *  EnablePort: '<S126>/Enable'
+   */
+  /* RelationalOperator: '<S125>/Compare' incorporates:
+   *  Constant: '<S122>/Constant'
+   *  Constant: '<S125>/Constant'
+   */
+  if (Main_Firmware_P.AlphaBetaZerotodq0_Alignment ==
+      Main_Firmware_P.CompareToConstant1_const) {
+    /* Fcn: '<S126>/Fcn' incorporates:
+     *  Fcn: '<S126>/Fcn1'
+     */
+    rtb_Filter = (real32_T)cos(rtb_Gain3_idx_1);
+    TmpSignalConversionAtGain3Inpor = (real32_T)sin(rtb_Gain3_idx_1);
+
+    /* Fcn: '<S126>/Fcn' */
+    Main_Firmware_B.Fcn_n = Main_Firmware_B.Gain1_l[0] *
+      TmpSignalConversionAtGain3Inpor - Main_Firmware_B.Gain1_l[1] * rtb_Filter;
+
+    /* Fcn: '<S126>/Fcn1' */
+    Main_Firmware_B.Fcn1_f = Main_Firmware_B.Gain1_l[0] * rtb_Filter +
+      Main_Firmware_B.Gain1_l[1] * TmpSignalConversionAtGain3Inpor;
+    srUpdateBC(Main_Firmware_DW.Subsystempi2delay_SubsysRanBC);
+  }
+
+  /* End of RelationalOperator: '<S125>/Compare' */
+  /* End of Outputs for SubSystem: '<S122>/Subsystem - pi//2 delay' */
+
+  /* Switch: '<S122>/Switch' incorporates:
+   *  RelationalOperator: '<S124>/Compare'
+   */
+  if (rtb_Compare != 0) {
+    /* Switch: '<S122>/Switch' */
+    Main_Firmware_B.Switch[0] = Main_Firmware_B.Fcn;
+    Main_Firmware_B.Switch[1] = Main_Firmware_B.Fcn1;
+  } else {
+    /* Switch: '<S122>/Switch' */
+    Main_Firmware_B.Switch[0] = Main_Firmware_B.Fcn_n;
+    Main_Firmware_B.Switch[1] = Main_Firmware_B.Fcn1_f;
+  }
+
+  /* End of Switch: '<S122>/Switch' */
+
+  /* SignalConversion generated from: '<S3>/Park Transform' */
+  Main_Firmware_B.TmpSignalConversionAtTAQSigLo_j[0] = Main_Firmware_B.Switch[0];
+  Main_Firmware_B.TmpSignalConversionAtTAQSigLo_j[1] = Main_Firmware_B.Switch[1];
+  Main_Firmware_B.TmpSignalConversionAtTAQSigLo_j[2] = Main_Firmware_B.Gain1_l[2];
+
+  /* RateTransition generated from: '<Root>/Main Scope2' incorporates:
+   *  RateTransition generated from: '<S6>/Main Scope2'
+   * */
+  tmp = Main_Firmware_M->Timing.RateInteraction.TID1_2;
+  if (tmp) {
+    Main_Firmware_DW.TmpRTBAtMainScope2Inport3_Buffe[0] =
+      Main_Firmware_B.TmpSignalConversionAtGain3Inpor[0];
+    Main_Firmware_DW.TmpRTBAtMainScope2Inport3_Buffe[1] =
+      Main_Firmware_B.TmpSignalConversionAtGain3Inpor[1];
+    Main_Firmware_DW.TmpRTBAtMainScope2Inport3_Buffe[2] =
+      Main_Firmware_B.TmpSignalConversionAtGain3Inpor[2];
+
+    /* RateTransition generated from: '<S6>/Main Scope2' */
+    Main_Firmware_DW.TmpRTBAtMainScope2Inport3_Buf_o[0] =
+      Main_Firmware_B.TmpSignalConversionAtGain3Inpor[0];
+    Main_Firmware_DW.TmpRTBAtMainScope2Inport3_Buf_o[1] =
+      Main_Firmware_B.TmpSignalConversionAtGain3Inpor[1];
+    Main_Firmware_DW.TmpRTBAtMainScope2Inport3_Buf_o[2] =
+      Main_Firmware_B.TmpSignalConversionAtGain3Inpor[2];
+  }
+
+  /* End of RateTransition generated from: '<Root>/Main Scope2' */
+  /* RateTransition generated from: '<S6>/Main Scope2' */
+  if (tmp) {
+    Main_Firmware_DW.I_ABC_Buffer[0] = Main_Firmware_B.I_ABC[0];
+    Main_Firmware_DW.I_ABC_Buffer[1] = Main_Firmware_B.I_ABC[1];
+    Main_Firmware_DW.I_ABC_Buffer[2] = Main_Firmware_B.I_ABC[2];
+  }
+
+  /* Sum: '<S3>/Sum4' incorporates:
+   *  Constant: '<S3>/Constant1'
+   */
+  rtb_Id_err = Main_Firmware_P.Constant1_Value - Main_Firmware_B.Switch[0];
+
+  /* Sum: '<S3>/Sum1' incorporates:
+   *  DiscreteIntegrator: '<S52>/Integrator'
+   *  Gain: '<S11>/Gain3'
+   *  Gain: '<S11>/Gain4'
+   *  Gain: '<S57>/Proportional Gain'
+   *  Product: '<S11>/Product1'
+   *  Sum: '<S11>/Add1'
+   *  Sum: '<S61>/Sum'
+   */
+  rtb_Vd = (rtb_Iq_error * Main_Firmware_P.Ld * Main_Firmware_B.Switch[0] +
+            Main_Firmware_P.lambda * rtb_Gain3_idx_0) +
+    (Main_Firmware_P.I_dqPID1_P * rtb_Id_err +
+     Main_Firmware_DW.Integrator_DSTATE);
+
+  /* Saturate: '<S3>/Limiter 1' */
+  if (rtb_Vd > Main_Firmware_P.Limiter1_UpperSat) {
+    rtb_Vd = Main_Firmware_P.Limiter1_UpperSat;
+  } else if (rtb_Vd < Main_Firmware_P.Limiter1_LowerSat) {
+    rtb_Vd = Main_Firmware_P.Limiter1_LowerSat;
+  }
+
+  /* End of Saturate: '<S3>/Limiter 1' */
+
+  /* Gain: '<S3>/Gain6' */
+  rtb_Iq_error = Main_Firmware_P.Gain6_Gain * Main_Firmware_B.Saturation1;
 
   /* Saturate: '<S3>/Limiter1' */
-  if (rtb_a > Main_Firmware_P.Current_max) {
-    rtb_a = Main_Firmware_P.Current_max;
-  } else if (rtb_a < Main_Firmware_P.Limiter1_LowerSat_j) {
-    rtb_a = Main_Firmware_P.Limiter1_LowerSat_j;
+  if (rtb_Iq_error > Main_Firmware_P.Current_max) {
+    rtb_Iq_error = Main_Firmware_P.Current_max;
+  } else if (rtb_Iq_error < Main_Firmware_P.Limiter1_LowerSat_m) {
+    rtb_Iq_error = Main_Firmware_P.Limiter1_LowerSat_m;
   }
 
   /* Sum: '<S3>/Sum3' incorporates:
    *  Saturate: '<S3>/Limiter1'
    */
-  rtb_Filter = rtb_a - Main_Firmware_B.Switch[1];
-
-  /* Sum: '<S109>/Sum' incorporates:
-   *  DiscreteIntegrator: '<S100>/Integrator'
-   *  Gain: '<S105>/Proportional Gain'
-   */
-  rtb_a = Main_Firmware_P.I_dqPID2_P * rtb_Filter +
-    Main_Firmware_DW.Integrator_DSTATE_m;
-
-  /* Saturate: '<S107>/Saturation' */
-  if (rtb_a > Main_Firmware_P.Voltage_max) {
-    rtb_a = Main_Firmware_P.Voltage_max;
-  } else if (rtb_a < Main_Firmware_P.I_dqPID2_LowerSaturationLimit) {
-    rtb_a = Main_Firmware_P.I_dqPID2_LowerSaturationLimit;
-  }
+  rtb_Iq_error -= Main_Firmware_B.Switch[1];
 
   /* Sum: '<S3>/Sum7' incorporates:
-   *  Gain: '<S7>/Gain1'
-   *  Product: '<S7>/Product'
-   *  Saturate: '<S107>/Saturation'
+   *  DiscreteIntegrator: '<S104>/Integrator'
+   *  Gain: '<S109>/Proportional Gain'
+   *  Gain: '<S11>/Gain1'
+   *  Product: '<S11>/Product'
+   *  Sum: '<S113>/Sum'
    */
-  rtb_Vq = Main_Firmware_P.Gain1_Gain_n * rtb_Abs2 * Main_Firmware_B.Switch[1] +
-    rtb_a;
+  rtb_Gain3_idx_0 = (Main_Firmware_P.I_dqPID2_P * rtb_Iq_error +
+                     Main_Firmware_DW.Integrator_DSTATE_i) +
+    Main_Firmware_P.Gain1_Gain_k * rtb_Gain3_idx_0 * Main_Firmware_B.Switch[1];
 
   /* Saturate: '<S3>/Limiter' */
-  if (rtb_Vq > Main_Firmware_P.Voltage_max) {
-    rtb_Vq = Main_Firmware_P.Voltage_max;
-  } else if (rtb_Vq < Main_Firmware_P.Limiter_LowerSat) {
-    rtb_Vq = Main_Firmware_P.Limiter_LowerSat;
+  if (rtb_Gain3_idx_0 > Main_Firmware_P.Limiter_UpperSat) {
+    rtb_Gain3_idx_0 = Main_Firmware_P.Limiter_UpperSat;
+  } else if (rtb_Gain3_idx_0 < Main_Firmware_P.Limiter_LowerSat) {
+    rtb_Gain3_idx_0 = Main_Firmware_P.Limiter_LowerSat;
   }
 
   /* End of Saturate: '<S3>/Limiter' */
 
-  /* Sum: '<S10>/Add1' incorporates:
-   *  Product: '<S10>/Product'
-   *  Product: '<S10>/Product1'
-   *  Trigonometry: '<S10>/Trigonometric Function'
-   *  Trigonometry: '<S10>/Trigonometric Function1'
+  /* Sum: '<S14>/Add1' incorporates:
+   *  Product: '<S14>/Product'
+   *  Product: '<S14>/Product1'
+   *  Trigonometry: '<S14>/Trigonometric Function'
+   *  Trigonometry: '<S14>/Trigonometric Function1'
    */
-  rtb_a = rtb_Vd * (real32_T)cos(rtb_Electricalspeed) - (real32_T)sin
-    (rtb_Electricalspeed) * rtb_Vq;
+  Main_Firmware_B.a = (real32_T)(rtb_Vd * (real32_T)cos(rtb_Gain3_idx_1)) -
+    (real32_T)sin(rtb_Gain3_idx_1) * rtb_Gain3_idx_0;
 
-  /* Bias: '<S10>/Bias' */
-  rtb_b = rtb_Electricalspeed + Main_Firmware_P.Bias_Bias_e;
+  /* Bias: '<S14>/Bias' */
+  rtb_Filter = rtb_Gain3_idx_1 + Main_Firmware_P.Bias_Bias_o;
 
-  /* Sum: '<S10>/Add3' incorporates:
-   *  Product: '<S10>/Product2'
-   *  Product: '<S10>/Product3'
-   *  Trigonometry: '<S10>/Trigonometric Function2'
-   *  Trigonometry: '<S10>/Trigonometric Function3'
+  /* Sum: '<S14>/Add3' incorporates:
+   *  Product: '<S14>/Product2'
+   *  Product: '<S14>/Product3'
+   *  Trigonometry: '<S14>/Trigonometric Function2'
+   *  Trigonometry: '<S14>/Trigonometric Function3'
    */
-  rtb_b = rtb_Vd * (real32_T)cos(rtb_b) - (real32_T)sin(rtb_b) * rtb_Vq;
+  Main_Firmware_B.b = (real32_T)(rtb_Vd * (real32_T)cos(rtb_Filter)) - (real32_T)
+    sin(rtb_Filter) * rtb_Gain3_idx_0;
 
-  /* Bias: '<S10>/Bias1' */
-  rtb_Electricalspeed += Main_Firmware_P.Bias1_Bias_k;
+  /* Bias: '<S14>/Bias1' */
+  rtb_Gain3_idx_1 += Main_Firmware_P.Bias1_Bias_c;
 
-  /* Sum: '<S10>/Add2' incorporates:
-   *  Product: '<S10>/Product4'
-   *  Product: '<S10>/Product5'
-   *  Trigonometry: '<S10>/Trigonometric Function4'
-   *  Trigonometry: '<S10>/Trigonometric Function5'
+  /* Sum: '<S14>/Add2' incorporates:
+   *  Product: '<S14>/Product4'
+   *  Product: '<S14>/Product5'
+   *  Trigonometry: '<S14>/Trigonometric Function4'
+   *  Trigonometry: '<S14>/Trigonometric Function5'
    */
-  rtb_Electricalspeed = rtb_Vd * (real32_T)cos(rtb_Electricalspeed) - (real32_T)
-    sin(rtb_Electricalspeed) * rtb_Vq;
+  Main_Firmware_B.c = (real32_T)(rtb_Vd * (real32_T)cos(rtb_Gain3_idx_1)) -
+    (real32_T)sin(rtb_Gain3_idx_1) * rtb_Gain3_idx_0;
 
-  /* Abs: '<S4>/Abs1' */
-  rtb_Vd = fabsf(rtb_a);
-  rtb_Vq = fabsf(rtb_b);
-  rtb_Abs1_idx_2 = fabsf(rtb_Electricalspeed);
+  /* SignalConversion generated from: '<Root>/From17' */
+  Main_Firmware_B.TmpSignalConversionAtTAQSigLo_d[0] = Main_Firmware_B.a;
+  Main_Firmware_B.TmpSignalConversionAtTAQSigLo_d[1] = Main_Firmware_B.b;
+  Main_Firmware_B.TmpSignalConversionAtTAQSigLo_d[2] = Main_Firmware_B.c;
 
-  /* Sum: '<S1>/Sum' incorporates:
-   *  Constant: '<S1>/Constant7'
-   *  Delay: '<S1>/Sampling Delay'
-   *  Gain: '<S1>/Gain5'
-   */
-  Main_Firmware_DW.SamplingDelay_DSTATE[0] = Main_Firmware_P.Gain5_Gain * rtb_a
-    + Main_Firmware_P.Constant7_Value;
-  Main_Firmware_DW.SamplingDelay_DSTATE[1] = Main_Firmware_P.Gain5_Gain * rtb_b
-    + Main_Firmware_P.Constant7_Value;
-  Main_Firmware_DW.SamplingDelay_DSTATE[2] = Main_Firmware_P.Gain5_Gain *
-    rtb_Electricalspeed + Main_Firmware_P.Constant7_Value;
-
-  /* MinMax: '<S4>/Max' */
-  if ((rtb_Abs_idx_0 >= rtb_Abs_idx_1) || rtIsNaNF(rtb_Abs_idx_1)) {
-    rtb_Abs_idx_1 = rtb_Abs_idx_0;
+  /* RateTransition generated from: '<Root>/Main Scope2' */
+  if (tmp) {
+    Main_Firmware_DW.a_Buffer[0] =
+      Main_Firmware_B.TmpSignalConversionAtTAQSigLo_d[0];
+    Main_Firmware_DW.a_Buffer[1] =
+      Main_Firmware_B.TmpSignalConversionAtTAQSigLo_d[1];
+    Main_Firmware_DW.a_Buffer[2] =
+      Main_Firmware_B.TmpSignalConversionAtTAQSigLo_d[2];
   }
 
-  /* MinMax: '<S4>/Max1' */
-  if ((rtb_Vd >= rtb_Vq) || rtIsNaNF(rtb_Vq)) {
-    rtb_Vq = rtb_Vd;
+  /* RateTransition generated from: '<Root>/Main Scope2' */
+  if (tmp) {
+    Main_Firmware_DW.v_SineCos_Buffer[0] = Main_Firmware_B.Gain1_p[0];
+    Main_Firmware_DW.v_SineCos_Buffer[1] = Main_Firmware_B.Gain1_p[1];
   }
 
-  /* MinMax: '<S4>/Max' */
-  if ((rtb_Abs_idx_1 >= rtb_Abs_idx_2) || rtIsNaNF(rtb_Abs_idx_2)) {
-    rtb_Abs_idx_2 = rtb_Abs_idx_1;
+  /* RateTransition generated from: '<S6>/Main Scope2' */
+  if (tmp) {
+    Main_Firmware_DW.v_SineCos_Buffer_m[0] = Main_Firmware_B.Gain1_p[0];
+    Main_Firmware_DW.v_SineCos_Buffer_m[1] = Main_Firmware_B.Gain1_p[1];
   }
 
-  /* MinMax: '<S4>/Max1' */
-  if ((rtb_Vq >= rtb_Abs1_idx_2) || rtIsNaNF(rtb_Abs1_idx_2)) {
-    rtb_Abs1_idx_2 = rtb_Vq;
-  }
+  /* Gain: '<S101>/Integral Gain' */
+  rtb_IntegralGain_p = Main_Firmware_P.I_dqPID2_I * rtb_Iq_error;
 
-  /* Logic: '<S4>/AND' incorporates:
-   *  Abs: '<S4>/Abs2'
-   *  Constant: '<Root>/Constant4'
-   *  Constant: '<S178>/Constant'
-   *  Constant: '<S179>/Constant'
-   *  Constant: '<S180>/Constant'
-   *  Gain: '<Root>/Gain'
-   *  MinMax: '<S4>/Max'
-   *  MinMax: '<S4>/Max1'
-   *  RelationalOperator: '<S178>/Compare'
-   *  RelationalOperator: '<S179>/Compare'
-   *  RelationalOperator: '<S180>/Compare'
-   */
-  Main_Firmware_B.AND = ((!(rtb_Abs_idx_2 <=
-    Main_Firmware_P.CompareToConstant_const_m)) || (!(fabsf
-    (Main_Firmware_P.Gain_Gain_d * rtb_Abs2) <=
-    Main_Firmware_P.CompareToConstant1_const_j)) || (!(rtb_Abs1_idx_2 <=
-    Main_Firmware_P.CompareToConstant3_const)) ||
-    (!(Main_Firmware_P.Constant4_Value != 0.0)));
-
-  /* S-Function (c2802xpwm): '<S2>/AHI' incorporates:
-   *  Constant: '<S2>/Constant'
-   */
-  uint16_T tbprdValue1Outputs = (EPwm1Regs.TBPRD + 1);
-
-  /*-- Update CMPA value for ePWM1 --*/
-  {
-    EPwm1Regs.CMPA.bit.CMPA = (uint16_T)((uint32_T)(EPwm1Regs.TBPRD + 1) *
-      Main_Firmware_P.Constant_Value * 0.01);
-  }
-
-  EPwm1Regs.AQCSFRC.bit.CSFA = (uint16_T)0U;
-  EPwm1Regs.AQCSFRC.bit.CSFB = (uint16_T)0U;
-
-  /* S-Function (c2802xpwm): '<S2>/B1' incorporates:
-   *  Constant: '<S2>/Constant1'
-   */
-  uint16_T tbprdValue4Outputs = (EPwm4Regs.TBPRD + 1);
-
-  /*-- Update CMPA value for ePWM4 --*/
-  {
-    EPwm4Regs.CMPA.bit.CMPA = (uint16_T)((uint32_T)(EPwm4Regs.TBPRD + 1) *
-      Main_Firmware_P.Constant1_Value_p * 0.01);
-  }
-
-  EPwm4Regs.AQCSFRC.bit.CSFA = (uint16_T)0U;
-  EPwm4Regs.AQCSFRC.bit.CSFB = (uint16_T)0U;
-
-  /* S-Function (c2802xpwm): '<S2>/C1' incorporates:
-   *  Constant: '<S2>/Constant2'
-   */
-  uint16_T tbprdValue2Outputs = (EPwm2Regs.TBPRD + 1);
-
-  /*-- Update CMPA value for ePWM2 --*/
-  {
-    EPwm2Regs.CMPA.bit.CMPA = (uint16_T)((uint32_T)(EPwm2Regs.TBPRD + 1) *
-      Main_Firmware_P.Constant2_Value_m * 0.01);
-  }
-
-  EPwm2Regs.AQCSFRC.bit.CSFA = (uint16_T)0U;
-  EPwm2Regs.AQCSFRC.bit.CSFB = (uint16_T)0U;
+  /* Gain: '<S49>/Integral Gain' */
+  rtb_IntegralGain = Main_Firmware_P.I_dqPID1_I * rtb_Id_err;
 
   /* DiscretePulseGenerator: '<Root>/LED Heartbeat' */
   Main_Firmware_B.LEDHeartbeat = (Main_Firmware_DW.clockTickCounter <
@@ -732,6 +1128,42 @@ void Main_Firmware_step(void)
     Main_Firmware_DW.clockTickCounter++;
   }
 
+  /* S-Function (c2802xpwm): '<S2>/AHI' */
+  uint16_T tbprdValue1Outputs = (EPwm1Regs.TBPRD + 1);
+
+  /*-- Update CMPA value for ePWM1 --*/
+  {
+    EPwm1Regs.CMPA.bit.CMPA = (uint16_T)((uint32_T)(EPwm1Regs.TBPRD + 1) *
+      Main_Firmware_B.Merge[0] * 0.01);
+  }
+
+  EPwm1Regs.AQCSFRC.bit.CSFA = (uint16_T)Main_Firmware_B.Merge[3];
+  EPwm1Regs.AQCSFRC.bit.CSFB = (uint16_T)Main_Firmware_B.Merge[4];
+
+  /* S-Function (c2802xpwm): '<S2>/B1' */
+  uint16_T tbprdValue4Outputs = (EPwm4Regs.TBPRD + 1);
+
+  /*-- Update CMPA value for ePWM4 --*/
+  {
+    EPwm4Regs.CMPA.bit.CMPA = (uint16_T)((uint32_T)(EPwm4Regs.TBPRD + 1) *
+      Main_Firmware_B.Merge[1] * 0.01);
+  }
+
+  EPwm4Regs.AQCSFRC.bit.CSFA = (uint16_T)Main_Firmware_B.Merge[3];
+  EPwm4Regs.AQCSFRC.bit.CSFB = (uint16_T)Main_Firmware_B.Merge[4];
+
+  /* S-Function (c2802xpwm): '<S2>/C1' */
+  uint16_T tbprdValue2Outputs = (EPwm2Regs.TBPRD + 1);
+
+  /*-- Update CMPA value for ePWM2 --*/
+  {
+    EPwm2Regs.CMPA.bit.CMPA = (uint16_T)((uint32_T)(EPwm2Regs.TBPRD + 1) *
+      Main_Firmware_B.Merge[2] * 0.01);
+  }
+
+  EPwm2Regs.AQCSFRC.bit.CSFA = (uint16_T)Main_Firmware_B.Merge[3];
+  EPwm2Regs.AQCSFRC.bit.CSFB = (uint16_T)Main_Firmware_B.Merge[4];
+
   /* S-Function (c280xgpio_do): '<Root>/Digital Output' */
   {
     if (Main_Firmware_B.LEDHeartbeat) {
@@ -741,64 +1173,135 @@ void Main_Firmware_step(void)
     }
   }
 
-  /* Update for DiscreteIntegrator: '<S48>/Integrator' incorporates:
-   *  Gain: '<S45>/Integral Gain'
-   */
-  Main_Firmware_DW.Integrator_DSTATE += (real32_T)(Main_Firmware_P.I_dqPID1_I *
-    rtb_Id_err) * Main_Firmware_P.Integrator_gainval;
-  if (Main_Firmware_DW.Integrator_DSTATE > Main_Firmware_P.Voltage_max) {
-    Main_Firmware_DW.Integrator_DSTATE = Main_Firmware_P.Voltage_max;
-  } else if (Main_Firmware_DW.Integrator_DSTATE <
-             Main_Firmware_P.I_dqPID1_LowerIntegratorSaturat) {
-    Main_Firmware_DW.Integrator_DSTATE =
-      Main_Firmware_P.I_dqPID1_LowerIntegratorSaturat;
-  }
-
-  /* End of Update for DiscreteIntegrator: '<S48>/Integrator' */
-
-  /* Update for UnitDelay: '<S124>/UD'
+  /* Update for UnitDelay: '<S128>/UD'
    *
-   * Block description for '<S124>/UD':
+   * Block description for '<S128>/UD':
    *
    *  Store in Global RAM
    */
   Main_Firmware_DW.UD_DSTATE = rtb_TSamp;
 
-  /* Update for Delay: '<S125>/Delay1' */
+  /* Update for Delay: '<S129>/Delay1' */
   Main_Firmware_DW.Delay1_DSTATE = rtb_Diff;
 
-  /* Update for Delay: '<S125>/Delay2' */
+  /* Update for Delay: '<S129>/Delay2' */
   Main_Firmware_DW.Delay2_DSTATE[0] = Main_Firmware_DW.Delay2_DSTATE[1];
   Main_Firmware_DW.Delay2_DSTATE[1] = rtb_Diff;
 
-  /* Update for DiscreteIntegrator: '<S155>/Filter' */
+  /* Update for DiscreteIntegrator: '<S159>/Filter' */
   Main_Firmware_DW.Filter_DSTATE += Main_Firmware_P.Filter_gainval *
     rtb_FilterCoefficient;
 
-  /* Update for DiscreteIntegrator: '<S100>/Integrator' incorporates:
-   *  Gain: '<S97>/Integral Gain'
-   */
-  Main_Firmware_DW.Integrator_DSTATE_m += Main_Firmware_P.I_dqPID2_I *
-    rtb_Filter * Main_Firmware_P.Integrator_gainval_n;
-  if (Main_Firmware_DW.Integrator_DSTATE_m > Main_Firmware_P.Voltage_max) {
-    Main_Firmware_DW.Integrator_DSTATE_m = Main_Firmware_P.Voltage_max;
-  } else if (Main_Firmware_DW.Integrator_DSTATE_m <
+  /* Update for DiscreteIntegrator: '<S52>/Integrator' */
+  Main_Firmware_DW.Integrator_DSTATE += Main_Firmware_P.Integrator_gainval *
+    rtb_IntegralGain;
+  if (Main_Firmware_DW.Integrator_DSTATE > Main_Firmware_P.Integrator_UpperSat)
+  {
+    Main_Firmware_DW.Integrator_DSTATE = Main_Firmware_P.Integrator_UpperSat;
+  } else if (Main_Firmware_DW.Integrator_DSTATE <
+             Main_Firmware_P.Integrator_LowerSat) {
+    Main_Firmware_DW.Integrator_DSTATE = Main_Firmware_P.Integrator_LowerSat;
+  }
+
+  /* End of Update for DiscreteIntegrator: '<S52>/Integrator' */
+
+  /* Update for DiscreteIntegrator: '<S104>/Integrator' */
+  Main_Firmware_DW.Integrator_DSTATE_i += Main_Firmware_P.Integrator_gainval_p *
+    rtb_IntegralGain_p;
+  if (Main_Firmware_DW.Integrator_DSTATE_i >
+      Main_Firmware_P.Integrator_UpperSat_b) {
+    Main_Firmware_DW.Integrator_DSTATE_i = Main_Firmware_P.Integrator_UpperSat_b;
+  } else if (Main_Firmware_DW.Integrator_DSTATE_i <
              Main_Firmware_P.I_dqPID2_LowerIntegratorSaturat) {
-    Main_Firmware_DW.Integrator_DSTATE_m =
+    Main_Firmware_DW.Integrator_DSTATE_i =
       Main_Firmware_P.I_dqPID2_LowerIntegratorSaturat;
   }
 
-  /* End of Update for DiscreteIntegrator: '<S100>/Integrator' */
+  /* End of Update for DiscreteIntegrator: '<S104>/Integrator' */
 
-  /* Update absolute time for base rate */
+  /* Update absolute time */
   /* The "clockTick0" counts the number of times the code of this task has
    * been executed. The absolute time is the multiplication of "clockTick0"
    * and "Timing.stepSize0". Size of "clockTick0" ensures timer will not
    * overflow during the application lifespan selected.
    */
-  Main_Firmware_M->Timing.taskTime0 =
+  Main_Firmware_M->Timing.t[0] =
     ((time_T)(++Main_Firmware_M->Timing.clockTick0)) *
     Main_Firmware_M->Timing.stepSize0;
+
+  /* Update absolute time */
+  /* The "clockTick1" counts the number of times the code of this task has
+   * been executed. The resolution of this integer timer is 0.0001, which is the step size
+   * of the task. Size of "clockTick1" ensures timer will not overflow during the
+   * application lifespan selected.
+   */
+  Main_Firmware_M->Timing.clockTick1++;
+}
+
+/* Model step function for TID2 */
+void Main_Firmware_step2(void)         /* Sample time: [0.01s, 0.0s] */
+{
+  /* RateTransition generated from: '<Root>/Main Scope2' */
+  Main_Firmware_B.TmpRTBAtMainScope2Inport3[0] =
+    Main_Firmware_DW.TmpRTBAtMainScope2Inport3_Buffe[0];
+
+  /* RateTransition generated from: '<S6>/Main Scope2' */
+  Main_Firmware_B.I_ABC_a[0] = Main_Firmware_DW.TmpRTBAtMainScope2Inport3_Buf_o
+    [0];
+
+  /* RateTransition generated from: '<S6>/Main Scope2' */
+  Main_Firmware_B.I_ABC_av[0] = Main_Firmware_DW.I_ABC_Buffer[0];
+
+  /* RateTransition generated from: '<Root>/Main Scope2' */
+  Main_Firmware_B.a_l[0] = Main_Firmware_DW.a_Buffer[0];
+
+  /* RateTransition generated from: '<Root>/Main Scope2' */
+  Main_Firmware_B.TmpRTBAtMainScope2Inport3[1] =
+    Main_Firmware_DW.TmpRTBAtMainScope2Inport3_Buffe[1];
+
+  /* RateTransition generated from: '<S6>/Main Scope2' */
+  Main_Firmware_B.I_ABC_a[1] = Main_Firmware_DW.TmpRTBAtMainScope2Inport3_Buf_o
+    [1];
+
+  /* RateTransition generated from: '<S6>/Main Scope2' */
+  Main_Firmware_B.I_ABC_av[1] = Main_Firmware_DW.I_ABC_Buffer[1];
+
+  /* RateTransition generated from: '<Root>/Main Scope2' */
+  Main_Firmware_B.a_l[1] = Main_Firmware_DW.a_Buffer[1];
+
+  /* RateTransition generated from: '<Root>/Main Scope2' */
+  Main_Firmware_B.TmpRTBAtMainScope2Inport3[2] =
+    Main_Firmware_DW.TmpRTBAtMainScope2Inport3_Buffe[2];
+
+  /* RateTransition generated from: '<S6>/Main Scope2' */
+  Main_Firmware_B.I_ABC_a[2] = Main_Firmware_DW.TmpRTBAtMainScope2Inport3_Buf_o
+    [2];
+
+  /* RateTransition generated from: '<S6>/Main Scope2' */
+  Main_Firmware_B.I_ABC_av[2] = Main_Firmware_DW.I_ABC_Buffer[2];
+
+  /* RateTransition generated from: '<Root>/Main Scope2' */
+  Main_Firmware_B.a_l[2] = Main_Firmware_DW.a_Buffer[2];
+
+  /* RateTransition generated from: '<Root>/Main Scope2' */
+  Main_Firmware_B.v_SineCos[0] = Main_Firmware_DW.v_SineCos_Buffer[0];
+
+  /* RateTransition generated from: '<S6>/Main Scope2' */
+  Main_Firmware_B.SINECOSADC[0] = Main_Firmware_DW.v_SineCos_Buffer_m[0];
+
+  /* RateTransition generated from: '<Root>/Main Scope2' */
+  Main_Firmware_B.v_SineCos[1] = Main_Firmware_DW.v_SineCos_Buffer[1];
+
+  /* RateTransition generated from: '<S6>/Main Scope2' */
+  Main_Firmware_B.SINECOSADC[1] = Main_Firmware_DW.v_SineCos_Buffer_m[1];
+
+  /* Update absolute time */
+  /* The "clockTick2" counts the number of times the code of this task has
+   * been executed. The resolution of this integer timer is 0.01, which is the step size
+   * of the task. Size of "clockTick2" ensures timer will not overflow during the
+   * application lifespan selected.
+   */
+  Main_Firmware_M->Timing.clockTick2++;
 }
 
 /* Model initialize function */
@@ -812,26 +1315,53 @@ void Main_Firmware_initialize(void)
   /* initialize real-time model */
   (void) memset((void *)Main_Firmware_M, 0,
                 sizeof(RT_MODEL_Main_Firmware_T));
+
+  {
+    /* Setup solver object */
+    rtsiSetSimTimeStepPtr(&Main_Firmware_M->solverInfo,
+                          &Main_Firmware_M->Timing.simTimeStep);
+    rtsiSetTPtr(&Main_Firmware_M->solverInfo, &rtmGetTPtr(Main_Firmware_M));
+    rtsiSetStepSizePtr(&Main_Firmware_M->solverInfo,
+                       &Main_Firmware_M->Timing.stepSize0);
+    rtsiSetErrorStatusPtr(&Main_Firmware_M->solverInfo, (&rtmGetErrorStatus
+      (Main_Firmware_M)));
+    rtsiSetRTModelPtr(&Main_Firmware_M->solverInfo, Main_Firmware_M);
+  }
+
+  rtsiSetSimTimeStep(&Main_Firmware_M->solverInfo, MAJOR_TIME_STEP);
+  rtsiSetIsMinorTimeStepWithModeChange(&Main_Firmware_M->solverInfo, false);
+  rtsiSetIsContModeFrozen(&Main_Firmware_M->solverInfo, false);
+  rtsiSetSolverName(&Main_Firmware_M->solverInfo,"FixedStepDiscrete");
+  rtmSetTPtr(Main_Firmware_M, &Main_Firmware_M->Timing.tArray[0]);
   rtmSetTFinal(Main_Firmware_M, -1);
   Main_Firmware_M->Timing.stepSize0 = 0.0001;
 
   /* External mode info */
-  Main_Firmware_M->Sizes.checksums[0] = (252938674U);
-  Main_Firmware_M->Sizes.checksums[1] = (2196628880U);
-  Main_Firmware_M->Sizes.checksums[2] = (960147150U);
-  Main_Firmware_M->Sizes.checksums[3] = (3432762314U);
+  Main_Firmware_M->Sizes.checksums[0] = (1059241522U);
+  Main_Firmware_M->Sizes.checksums[1] = (1291648666U);
+  Main_Firmware_M->Sizes.checksums[2] = (3359022316U);
+  Main_Firmware_M->Sizes.checksums[3] = (3291759375U);
 
   {
     static const sysRanDType rtAlwaysEnabled = SUBSYS_RAN_BC_ENABLE;
     static RTWExtModeInfo rt_ExtModeInfo;
-    static const sysRanDType *systemRan[4];
+    static const sysRanDType *systemRan[12];
     Main_Firmware_M->extModeInfo = (&rt_ExtModeInfo);
     rteiSetSubSystemActiveVectorAddresses(&rt_ExtModeInfo, systemRan);
     systemRan[0] = &rtAlwaysEnabled;
-    systemRan[1] = (sysRanDType *)
+    systemRan[1] = (sysRanDType *)&Main_Firmware_DW.FaultState_SubsysRanBC;
+    systemRan[2] = (sysRanDType *)&Main_Firmware_DW.RegenMode_SubsysRanBC;
+    systemRan[3] = (sysRanDType *)
+      &Main_Firmware_DW.SwitchCaseActionSubsystem2_Subs;
+    systemRan[4] = (sysRanDType *)
       &Main_Firmware_DW.Subsystempi2delay_SubsysRanBC;
-    systemRan[2] = (sysRanDType *)&Main_Firmware_DW.Subsystem1_SubsysRanBC;
-    systemRan[3] = &rtAlwaysEnabled;
+    systemRan[5] = (sysRanDType *)&Main_Firmware_DW.Subsystem1_SubsysRanBC;
+    systemRan[6] = &rtAlwaysEnabled;
+    systemRan[7] = &rtAlwaysEnabled;
+    systemRan[8] = &rtAlwaysEnabled;
+    systemRan[9] = &rtAlwaysEnabled;
+    systemRan[10] = &rtAlwaysEnabled;
+    systemRan[11] = &rtAlwaysEnabled;
     rteiSetModelMappingInfoPtr(Main_Firmware_M->extModeInfo,
       &Main_Firmware_M->SpecialInfo.mappingInfo);
     rteiSetChecksumsPtr(Main_Firmware_M->extModeInfo,
@@ -847,31 +1377,15 @@ void Main_Firmware_initialize(void)
   (void) memset((void *)&Main_Firmware_DW, 0,
                 sizeof(DW_Main_Firmware_T));
 
-  /* Start for S-Function (c2802xadc): '<S5>/ADC2' */
-  if (MW_adcCInitFlag == 0U) {
-    InitAdcC();
-    MW_adcCInitFlag = 1U;
-  }
-
-  config_ADCC_SOC1 ();
-
-  /* Start for S-Function (c2802xadc): '<S5>/ADC3' */
-  if (MW_adcCInitFlag == 0U) {
-    InitAdcC();
-    MW_adcCInitFlag = 1U;
-  }
-
-  config_ADCC_SOC2 ();
-
-  /* Start for S-Function (c2802xadc): '<S5>/ADC4' */
+  /* Start for S-Function (c2802xadc): '<S5>/ADC5' */
   if (MW_adcAInitFlag == 0U) {
     InitAdcA();
     MW_adcAInitFlag = 1U;
   }
 
-  config_ADCA_SOC3 ();
+  config_ADCA_SOC5 ();
 
-  /* Start for S-Function (c2802xadc): '<S5>/ADC' */
+  /* Start for S-Function (c2802xadc): '<S5>/ADC6' */
   if (MW_adcBInitFlag == 0U) {
     InitAdcB();
     MW_adcBInitFlag = 1U;
@@ -879,17 +1393,34 @@ void Main_Firmware_initialize(void)
 
   config_ADCB_SOC0 ();
 
+  /* Start for S-Function (c2802xadc): '<S5>/ADC7' */
+  if (MW_adcCInitFlag == 0U) {
+    InitAdcC();
+    MW_adcCInitFlag = 1U;
+  }
+
+  config_ADCC_SOC2 ();
+
+  /* Start for S-Function (c2802xadc): '<S5>/ADC' */
+  if (MW_adcBInitFlag == 0U) {
+    InitAdcB();
+    MW_adcBInitFlag = 1U;
+  }
+
+  config_ADCB_SOC4 ();
+
   /* Start for S-Function (c2802xadc): '<S5>/ADC1' */
   if (MW_adcAInitFlag == 0U) {
     InitAdcA();
     MW_adcAInitFlag = 1U;
   }
 
-  config_ADCA_SOC8 ();
+  config_ADCA_SOC6 ();
 
-  /* Start for S-Function (c2802xpwm): '<S2>/AHI' incorporates:
-   *  Constant: '<S2>/Constant'
-   */
+  /* Start for DiscretePulseGenerator: '<Root>/LED Heartbeat' */
+  Main_Firmware_DW.clockTickCounter = 0L;
+
+  /* Start for S-Function (c2802xpwm): '<S2>/AHI' */
   real32_T tbprdValue1 = (real32_T)(EPwm1Regs.TBPRD + 1);
 
   /*** Initialize ePWM1 modules ***/
@@ -1111,9 +1642,7 @@ void Main_Firmware_initialize(void)
     EDIS;
   }
 
-  /* Start for S-Function (c2802xpwm): '<S2>/B1' incorporates:
-   *  Constant: '<S2>/Constant1'
-   */
+  /* Start for S-Function (c2802xpwm): '<S2>/B1' */
   real32_T tbprdValue4 = (real32_T)(EPwm4Regs.TBPRD + 1);
 
   /*** Initialize ePWM4 modules ***/
@@ -1335,9 +1864,7 @@ void Main_Firmware_initialize(void)
     EDIS;
   }
 
-  /* Start for S-Function (c2802xpwm): '<S2>/C1' incorporates:
-   *  Constant: '<S2>/Constant2'
-   */
+  /* Start for S-Function (c2802xpwm): '<S2>/C1' */
   real32_T tbprdValue2 = (real32_T)(EPwm2Regs.TBPRD + 1);
 
   /*** Initialize ePWM2 modules ***/
@@ -1559,81 +2086,79 @@ void Main_Firmware_initialize(void)
     EDIS;
   }
 
-  /* Start for DiscretePulseGenerator: '<Root>/LED Heartbeat' */
-  Main_Firmware_DW.clockTickCounter = 0L;
-
   /* Start for S-Function (c280xgpio_do): '<Root>/Digital Output' */
   EALLOW;
   GpioCtrlRegs.GPAMUX2.all &= 0xFFFF3FFFU;
   GpioCtrlRegs.GPADIR.all |= 0x800000U;
   EDIS;
 
-  /* InitializeConditions for Delay: '<S1>/Sampling Delay' */
-  Main_Firmware_DW.SamplingDelay_DSTATE[0] =
-    Main_Firmware_P.SamplingDelay_InitialCondition;
-  Main_Firmware_DW.SamplingDelay_DSTATE[1] =
-    Main_Firmware_P.SamplingDelay_InitialCondition;
-  Main_Firmware_DW.SamplingDelay_DSTATE[2] =
-    Main_Firmware_P.SamplingDelay_InitialCondition;
-
-  /* InitializeConditions for DiscreteIntegrator: '<S48>/Integrator' */
-  Main_Firmware_DW.Integrator_DSTATE =
-    Main_Firmware_P.I_dqPID1_InitialConditionForInt;
-
-  /* InitializeConditions for UnitDelay: '<S124>/UD'
+  /* InitializeConditions for UnitDelay: '<S128>/UD'
    *
-   * Block description for '<S124>/UD':
+   * Block description for '<S128>/UD':
    *
    *  Store in Global RAM
    */
   Main_Firmware_DW.UD_DSTATE = Main_Firmware_P.DiscreteDerivativecalc2_ICPrevS;
 
-  /* InitializeConditions for Delay: '<S125>/Delay1' */
+  /* InitializeConditions for Delay: '<S129>/Delay1' */
   Main_Firmware_DW.Delay1_DSTATE = Main_Firmware_P.Delay1_InitialCondition;
 
-  /* InitializeConditions for Delay: '<S125>/Delay2' */
+  /* InitializeConditions for Delay: '<S129>/Delay2' */
   Main_Firmware_DW.Delay2_DSTATE[0] = Main_Firmware_P.Delay2_InitialCondition;
   Main_Firmware_DW.Delay2_DSTATE[1] = Main_Firmware_P.Delay2_InitialCondition;
 
-  /* InitializeConditions for DiscreteIntegrator: '<S155>/Filter' */
+  /* InitializeConditions for DiscreteIntegrator: '<S159>/Filter' */
   Main_Firmware_DW.Filter_DSTATE =
     Main_Firmware_P.SpeedPID1_InitialConditionForFi;
 
-  /* InitializeConditions for DiscreteIntegrator: '<S100>/Integrator' */
-  Main_Firmware_DW.Integrator_DSTATE_m =
+  /* InitializeConditions for DiscreteIntegrator: '<S52>/Integrator' */
+  Main_Firmware_DW.Integrator_DSTATE =
+    Main_Firmware_P.I_dqPID1_InitialConditionForInt;
+
+  /* InitializeConditions for DiscreteIntegrator: '<S104>/Integrator' */
+  Main_Firmware_DW.Integrator_DSTATE_i =
     Main_Firmware_P.I_dqPID2_InitialConditionForInt;
+  Main_Fi_LowpassFilter1_Init(&Main_Firmware_DW.LowpassFilter2);
+  Main_Fi_LowpassFilter1_Init(&Main_Firmware_DW.LowpassFilter1);
+  Main_Fi_LowpassFilter1_Init(&Main_Firmware_DW.LowpassFilter5);
+  Main_Fi_LowpassFilter3_Init(&Main_Firmware_DW.LowpassFilter3);
+  Main_Fi_LowpassFilter3_Init(&Main_Firmware_DW.LowpassFilter4);
 
-  /* SystemInitialize for Enabled SubSystem: '<S118>/Subsystem1' */
-  /* SystemInitialize for Fcn: '<S123>/Fcn' incorporates:
-   *  Outport: '<S123>/dq'
+  /* SystemInitialize for Enabled SubSystem: '<S122>/Subsystem1' */
+  /* SystemInitialize for Fcn: '<S127>/Fcn' incorporates:
+   *  Outport: '<S127>/dq'
    */
-  Main_Firmware_B.Fcn = Main_Firmware_P.dq_Y0_p[0];
+  Main_Firmware_B.Fcn = Main_Firmware_P.dq_Y0_c[0];
 
-  /* SystemInitialize for Fcn: '<S123>/Fcn1' incorporates:
-   *  Outport: '<S123>/dq'
+  /* SystemInitialize for Fcn: '<S127>/Fcn1' incorporates:
+   *  Outport: '<S127>/dq'
    */
-  Main_Firmware_B.Fcn1 = Main_Firmware_P.dq_Y0_p[1];
+  Main_Firmware_B.Fcn1 = Main_Firmware_P.dq_Y0_c[1];
 
-  /* End of SystemInitialize for SubSystem: '<S118>/Subsystem1' */
+  /* End of SystemInitialize for SubSystem: '<S122>/Subsystem1' */
 
-  /* SystemInitialize for Enabled SubSystem: '<S118>/Subsystem - pi//2 delay' */
-  /* SystemInitialize for Fcn: '<S122>/Fcn' incorporates:
-   *  Outport: '<S122>/dq'
+  /* SystemInitialize for Enabled SubSystem: '<S122>/Subsystem - pi//2 delay' */
+  /* SystemInitialize for Fcn: '<S126>/Fcn' incorporates:
+   *  Outport: '<S126>/dq'
    */
-  Main_Firmware_B.Fcn_j = Main_Firmware_P.dq_Y0[0];
+  Main_Firmware_B.Fcn_n = Main_Firmware_P.dq_Y0[0];
 
-  /* SystemInitialize for Fcn: '<S122>/Fcn1' incorporates:
-   *  Outport: '<S122>/dq'
+  /* SystemInitialize for Fcn: '<S126>/Fcn1' incorporates:
+   *  Outport: '<S126>/dq'
    */
-  Main_Firmware_B.Fcn1_e = Main_Firmware_P.dq_Y0[1];
+  Main_Firmware_B.Fcn1_f = Main_Firmware_P.dq_Y0[1];
 
-  /* End of SystemInitialize for SubSystem: '<S118>/Subsystem - pi//2 delay' */
+  /* End of SystemInitialize for SubSystem: '<S122>/Subsystem - pi//2 delay' */
 }
 
 /* Model terminate function */
 void Main_Firmware_terminate(void)
 {
-  /* (no terminate code required) */
+  Main_Fi_LowpassFilter1_Term(&Main_Firmware_DW.LowpassFilter2);
+  Main_Fi_LowpassFilter1_Term(&Main_Firmware_DW.LowpassFilter1);
+  Main_Fi_LowpassFilter1_Term(&Main_Firmware_DW.LowpassFilter5);
+  Main_Fi_LowpassFilter3_Term(&Main_Firmware_DW.LowpassFilter3);
+  Main_Fi_LowpassFilter3_Term(&Main_Firmware_DW.LowpassFilter4);
 }
 
 /*

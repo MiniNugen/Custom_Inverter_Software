@@ -14,9 +14,11 @@ Lq = Ld;            % [H] Quadrature-axis inductance (SPMSM assumption)
 lambda = 0.0375;    % [Wb] Permanent magnet flux linkage
 rpm_max = 5000;                             % [RPM] Max rate rotor RPM
 speed_max=rpm_max*2*pi/60;                  % [Rad/s] Max rated speed for the motor
-PhaseA_offset = -180;                       % [Deg] Offset angle between phase A and the encoder's 0 degree (theta-PhaseA)
-Encoder_Offset=(PhaseA_offset/ppair)*pi/180;% [Rad] Ecoder Offset
 
+% PhaseA_offset = 0;                          % [Deg] Offset angle between phase A and the encoder's 0 degree (theta-PhaseA)
+% Encoder_Offset=(PhaseA_offset/ppair)*pi/180;% [Rad] Ecoder Offset
+
+Encoder_Offset=-11*pi/180;                      % [Rad] Ecoder Offset
 
 %% -------Enter Car parameters Here ---------------
 m = 1;              % [kg] Vehicle mass
@@ -34,10 +36,11 @@ f = 3.03448e-4;     %viscous friction coefficient
 
 %% -------Enter inverter parameters here ---------
 
-V_dd = 96;                             % [V] High voltage DC supply voltage;
-InvCurr_RMS= 30;                        % [A] Max RMS current output
+%V_dd = 96;                             % [V] High voltage DC supply voltage;
+%InvCurr_RMS= 30;                        % [A] Max RMS current output
 
-
+V_dd = 60;                             % [V] High voltage DC supply voltage;
+InvCurr_RMS= 5/sqrt(2);                        % [A] Max RMS current output
 %% ---- Peak current and Voltage calc-----
 Current_max =min(InvCurr_RMS,mCurr_RMS)*sqrt(2);% [A] Max Allowable peak phase curent output
 % (not RMS but peak value).
